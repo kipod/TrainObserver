@@ -5,9 +5,9 @@
 #include <Ws2tcpip.h>
 
 
-const unsigned int WSA_VERSION_LO = 2;
-const unsigned int WSA_VERSION_HI = 2;
-const unsigned int READ_BUFFER_SIZE = 1000;
+const uint WSA_VERSION_LO = 2;
+const uint WSA_VERSION_HI = 2;
+const uint READ_BUFFER_SIZE = 1000;
 
 ConnectionManager::ConnectionManager():
 	m_initialized(false),
@@ -105,10 +105,10 @@ bool ConnectionManager::connect(const wchar_t* servername, int portNumber)
 
 bool ConnectionManager::sendMessage(Action actionCode, const std::string* message) const
 {
-	unsigned int msgLength = message ? message->length() : 0;
+	uint msgLength = message ? message->length() : 0;
 	if (msgLength > 0)
 	{
-		unsigned int fullLength = msgLength + sizeof(ActionMessageHeader);
+		uint fullLength = msgLength + sizeof(ActionMessageHeader);
 		std::unique_ptr<char> buf(new char[fullLength + 1]);
 		ActionMessageHeader& header = (ActionMessageHeader&)*buf;
 		header.actionCode = actionCode;
@@ -137,7 +137,7 @@ Result ConnectionManager::receiveMessage(std::string& message) const
 		return Result::INCORRECT_RESPOND_FORMAT;
 	}
 
-	unsigned int length = 0;
+	uint length = 0;
 	if (!receive(length))
 	{
 		return Result::INCORRECT_RESPOND_FORMAT;
@@ -147,7 +147,7 @@ Result ConnectionManager::receiveMessage(std::string& message) const
 	{
 		message.resize(length);
 
-		unsigned int receivedBytes = 0;
+		uint receivedBytes = 0;
 		char buf[READ_BUFFER_SIZE];
 		while (receivedBytes < length)
 		{
@@ -196,7 +196,7 @@ bool ConnectionManager::send(const void* buf, int nbytes) const
 	return bytesSent == nbytes;
 }
 
-int ConnectionManager::receive(char* buf, unsigned int length) const
+int ConnectionManager::receive(char* buf, uint length) const
 {
 	if (!m_initialized || m_socket == INVALID_SOCKET)
 	{

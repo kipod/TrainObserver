@@ -1,4 +1,5 @@
 #include "json_query_builder.h"
+#include "defs.hpp"
 
 #include <iosfwd>
 #include <sstream>
@@ -10,7 +11,7 @@ JSONQueryWriter::JSONQueryWriter()
 	m_writer.reset(writerBuilder.newStreamWriter());
 }
 
-std::string JSONQueryWriter::flush()
+std::string JSONQueryWriter::str()
 {
 	std::ostringstream ss;
 	m_writer->write(m_root, &ss);
@@ -59,7 +60,7 @@ int JSONQueryReader::get<int>(const char* name) const
 }
 
 template<>
-unsigned int JSONQueryReader::get<unsigned int>(const char* name) const
+uint JSONQueryReader::get<uint>(const char* name) const
 {
 	return m_root[name].asUInt();
 }

@@ -1,7 +1,19 @@
 #pragma once
 #include <stdint.h>
 
-enum Action : uint32_t
+typedef unsigned int uint;
+typedef unsigned char uchar;
+typedef long HRESULT;
+typedef struct HWND__ *HWND;
+typedef struct HINSTANCE__ *HINSTANCE;
+
+enum SpaceLayer : uint
+{
+	STATIC = 0,
+	DYNAMIC = 1
+};
+
+enum Action : uint
 {
 	LOGIN = 1,
 	LOGOUT = 2,
@@ -10,7 +22,7 @@ enum Action : uint32_t
 	MAP = 10
 };
 
-enum Result : uint32_t
+enum Result : uint
 {
 	OKEY					= 0,
 	BAD_COMMAND				= 1,

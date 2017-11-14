@@ -19,7 +19,7 @@ public:
 		m_root[name] = val;
 	}
 
-	std::string flush();
+	std::string str();
 
 private:
 	Json::Value							m_root;

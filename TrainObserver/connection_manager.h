@@ -23,7 +23,7 @@ private:
 	bool createSocket();
 	bool initAddr(const wchar_t* servername, int portNumber);
 	bool send(const void* buf, int nbytes) const;
-	int receive(char* buf, unsigned int length) const;
+	int receive(char* buf, uint length) const;
 
 	template<class T>
 	bool receive(T& val) const
@@ -33,7 +33,7 @@ private:
 	}
 
 private:
-	unsigned int						m_socket;
+	uint								m_socket;
 	std::unique_ptr<struct sockaddr_in>	m_addr;
 	bool								m_initialized;
 };

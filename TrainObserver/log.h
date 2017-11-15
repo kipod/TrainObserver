@@ -11,7 +11,7 @@ enum OutputImportance
 class LogInterface
 {
 public:
-	virtual void logMsg(OutputImportance importance, const wchar_t* msg) = 0;
+	virtual void logMsg(OutputImportance importance, const char* msg) = 0;
 };
 
 void initLog(LogInterface* pInterface);
@@ -27,7 +27,7 @@ public:
 	~Logger();
 
 	static void	init(LogInterface* pImpl);
-	static void log(OutputImportance importance, const wchar_t* msg, ...);
+	static void log(OutputImportance importance, const char* msg, ...);
 
 private:
 	Logger(LogInterface * pImpl);
@@ -43,7 +43,7 @@ class ConsoleLog : public LogInterface
 public:
 	ConsoleLog();
 
-	virtual void logMsg(OutputImportance importance, const wchar_t* msg) override;
+	virtual void logMsg(OutputImportance importance, const char* msg) override;
 };
 
 #define LOG(priority, msg, ...) Logger::log(priority, msg, ##__VA_ARGS__);

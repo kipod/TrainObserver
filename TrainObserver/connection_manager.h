@@ -14,14 +14,14 @@ public:
 	bool init();
 	void reset();
 
-	bool connect(const wchar_t* servername, int portNumber);
+	bool connect(const char* servername, int portNumber);
 	bool sendMessage(Action actionCode, const std::string* message) const;
 	Result receiveMessage(std::string& message) const;
 
 private:
 	void closeSocket();
 	bool createSocket();
-	bool initAddr(const wchar_t* servername, int portNumber);
+	bool initAddr(const char* servername, int portNumber);
 	bool send(const void* buf, int nbytes) const;
 	int receive(char* buf, uint length) const;
 

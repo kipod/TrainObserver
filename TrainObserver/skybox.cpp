@@ -77,7 +77,7 @@ SkyBox::~SkyBox()
 	}
 }
 
-bool SkyBox::create(RendererDX9& renderer, const wchar_t* textures[6])
+bool SkyBox::create(RendererDX9& renderer, const char* textures[6])
 {
 	HRESULT hRet;
 
@@ -88,7 +88,7 @@ bool SkyBox::create(RendererDX9& renderer, const wchar_t* textures[6])
 		D3DPOOL_MANAGED, &m_vb, NULL);
 	if (FAILED(hRet))
 	{
-		LOG(MSG_ERROR, L"Failed to create vertex buffer for skybox");
+		LOG(MSG_ERROR, "Failed to create vertex buffer for skybox");
 		return false;
 	}
 
@@ -114,7 +114,7 @@ bool SkyBox::create(RendererDX9& renderer, const wchar_t* textures[6])
 		}
 		else
 		{
-			LOG(MSG_ERROR, L"Couldn't load texture %s for skybox", textures[i]);
+			LOG(MSG_ERROR, "Couldn't load texture %s for skybox", textures[i]);
 			return false;
 		}
 	}

@@ -12,7 +12,7 @@ public:
 	~AppManager();
 
 	bool initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint height);
-	bool connect(const wchar_t* servername, int portNumber, const char* username);
+	bool connect(const char* servername, int portNumber, const char* username);
 	uint mainLoop();
 	void disconnect();
 	void finalize();

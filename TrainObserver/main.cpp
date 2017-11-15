@@ -15,7 +15,7 @@
 #include "app_manager.h"
 
 #define PORT			2000              
-#define SERVER_ADDR     L"127.0.0.1"     /* localhost */
+#define SERVER_ADDR     "127.0.0.1"     /* localhost */
 #define MAXBUF          1024
 
 #define USER_NAME		"Spectator"
@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	else
 	{
-		LOG(MSG_ERROR, L"Failed to init app");
+		LOG(MSG_ERROR, "Failed to init app");
 	}
 
 	app.finalize();

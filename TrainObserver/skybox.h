@@ -11,7 +11,7 @@ public:
 	SkyBox();
 	~SkyBox();
 
-	bool create(RendererDX9& renderer, const wchar_t* textures[6]);
+	bool create(RendererDX9& renderer, const char* textures[6]);
 
 	virtual void draw(class RendererDX9& renderer) override;
 

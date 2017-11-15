@@ -55,10 +55,6 @@ XYZUV g_boxMesh[24] =
 
 bool Box::create(float width, float length, float height)
 {
-
+	return false;
 }
 
-void Box::draw(class RendererDX9& renderer)
-{
-
-}

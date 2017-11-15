@@ -11,9 +11,6 @@ public:
 
 	bool create(float width, float length, float height);
 
-	virtual void draw(class RendererDX9& renderer) override;
 
-private:
-	LPDIRECT3DVERTEXBUFFER9 m_vb;
 };
 

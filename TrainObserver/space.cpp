@@ -23,14 +23,14 @@ JSONQueryReader* getLayer(const ConnectionManager& manager, SpaceLayer layerId)
 
 	if (!manager.sendMessage(Action::MAP, &writer.str()))
 	{
-		LOG(MSG_ERROR, L"Failed to create space. Reason: send MAP message failed");
+		LOG(MSG_ERROR, "Failed to create space. Reason: send MAP message failed");
 		return nullptr;
 	}
 
 	std::string msg;
 	if (manager.receiveMessage(msg) != Result::OKEY)
 	{
-		LOG(MSG_ERROR, L"Failed to create space. Reason: receive MAP message failed");
+		LOG(MSG_ERROR, "Failed to create space. Reason: receive MAP message failed");
 		return nullptr;
 	}
 
@@ -51,24 +51,24 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 
 		if (!loadLines(*reader))
 		{
-			LOG(MSG_ERROR, L"Failed to create static layer on space. Reason: cannot load lines.");
+			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load lines.");
 			return false;
 		}
 
 		if (!loadPoints(*reader))
 		{
-			LOG(MSG_ERROR, L"Failed to create static layer on space. Reason: cannot load points.");
+			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load points.");
 			return false;
 		}
 	}
 	else
 	{
-		LOG(MSG_ERROR, L"Failed to create static layer on space. Reason: parcing MAP message failed");
+		LOG(MSG_ERROR, "Failed to create static layer on space. Reason: parcing MAP message failed");
 		return false;
 	}
 
 	m_staticLayerLoaded = true;
-	LOG(MSG_NORMAL, L"Static space layer created. Points: %d. Lines: %d", m_points.size(), m_lines.size());
+	LOG(MSG_NORMAL, "Static space layer created. Points: %d. Lines: %d", m_points.size(), m_lines.size());
 	return true;
 }
 
@@ -83,24 +83,24 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 	{
 		if (!loadTrains(*reader))
 		{
-			LOG(MSG_ERROR, L"Failed to create dynamic layer on space. Reason: cannot load trains.");
+			LOG(MSG_ERROR, "Failed to create dynamic layer on space. Reason: cannot load trains.");
 		}
 
 		if (!loadPosts(*reader))
 		{
-			LOG(MSG_ERROR, L"Failed to create static layer on space. Reason: cannot load posts.");
+			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load posts.");
 		}
 	}
 	else
 	{
-		LOG(MSG_ERROR, L"Failed to create dynamic layer on  space. Reason: parcing MAP message failed");
+		LOG(MSG_ERROR, "Failed to create dynamic layer on  space. Reason: parcing MAP message failed");
 	}
 
 }
 
 void Space::draw(RendererDX9& renderer) const
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)
@@ -123,7 +123,7 @@ bool Space::loadLines(const JSONQueryReader& reader)
 			}
 			else
 			{
-				LOG(MSG_ERROR, L"Incorrect format of line!\n");
+				LOG(MSG_ERROR, "Incorrect format of line!\n");
 				return false;
 			}
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -29,7 +29,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -130,7 +130,6 @@
     <ClCompile Include="box.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="connection_manager.cpp" />
-    <ClCompile Include="effect.cpp" />
     <ClCompile Include="json_query_builder.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -150,7 +149,6 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="connection_manager.h" />
     <ClInclude Include="defs.hpp" />
-    <ClInclude Include="effect.h" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="math\defs.h" />

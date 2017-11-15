@@ -27,26 +27,26 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 {
 	if ( FAILED( m_windowManager->create(hInstance, nCmdShow, width, height) ) )
 	{
-		LOG(MSG_ERROR, L"Failed to initialize window manager");
+		LOG(MSG_ERROR, "Failed to initialize window manager");
 		return false;
 	}
 
 	if ( FAILED( m_renderSystem->init(m_windowManager->hwnd()) ) )
 	{
-		LOG(MSG_ERROR, L"Failed to initialize render system");
+		LOG(MSG_ERROR, "Failed to initialize render system");
 		return false;
 	}
 
 
 	if ( FAILED( m_connectionManager->init() ) )
 	{
-		LOG(MSG_ERROR, L"Failed to initialize connection manager");
+		LOG(MSG_ERROR, "Failed to initialize connection manager");
 		return false;
 	}
 
 	if (!m_sceneManager->init(m_renderSystem->renderer()))
 	{
-		LOG(MSG_ERROR, L"Failed to initialize scene manager");
+		LOG(MSG_ERROR, "Failed to initialize scene manager");
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	return true;
 }
 
-bool AppManager::connect(const wchar_t* servername, int portNumber, const char* username)
+bool AppManager::connect(const char* servername, int portNumber, const char* username)
 {
 	if(m_connected)
 	{
@@ -69,7 +69,7 @@ bool AppManager::connect(const wchar_t* servername, int portNumber, const char* 
 
 	if (!m_connectionManager->connect(servername, portNumber))
 	{
-		LOG(MSG_ERROR, L"Connection failed");
+		LOG(MSG_ERROR, "Connection failed");
 		m_connectionManager->reset();
 		return false;
 	}
@@ -83,9 +83,7 @@ bool AppManager::connect(const wchar_t* servername, int portNumber, const char* 
 		Result res = m_connectionManager->receiveMessage(msg);
 		if (res == Result::OKEY)
 		{
-			wchar_t buf[MAX_PATH];
-			mbstowcs_s(nullptr, buf, username, MAX_PATH);
-			LOG(MSG_NORMAL, L"Logged in to server as %s.", buf);
+			LOG(MSG_NORMAL, "Logged in to server as %s.", username);
 			m_connected = true;
 			return true;
 		}
@@ -109,7 +107,7 @@ void AppManager::disconnect()
 			Result res = m_connectionManager->receiveMessage(msg);
 			if (res == Result::OKEY)
 			{
-				LOG(MSG_NORMAL, L"Logged out from server.");
+				LOG(MSG_NORMAL, "Logged out from server.");
 				m_connected = false;
 			}
 		}

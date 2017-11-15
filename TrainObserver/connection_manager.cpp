@@ -31,7 +31,7 @@ bool ConnectionManager::init()
 	if (err != 0) {
 		/* Tell the user that we could not find a usable */
 		/* Winsock DLL.                                  */
-		LOG(MSG_ERROR, L"WSAStartup failed with error: %d", err);
+		LOG(MSG_ERROR, "WSAStartup failed with error: %d", err);
 		return false;
 	}
 
@@ -44,12 +44,12 @@ bool ConnectionManager::init()
 	if (LOBYTE(wsaData.wVersion) != WSA_VERSION_LO || HIBYTE(wsaData.wVersion) != WSA_VERSION_HI) {
 		/* Tell the user that we could not find a usable */
 		/* WinSock DLL.                                  */
-		LOG(MSG_ERROR, L"Could not find a usable version of Winsock.dll");
+		LOG(MSG_ERROR, "Could not find a usable version of Winsock.dll");
 		WSACleanup();
 		return false;
 	}
 	else
-		LOG(MSG_NORMAL, L"The Winsock %d.%d dll was found okay", WSA_VERSION_HI, WSA_VERSION_LO);
+		LOG(MSG_NORMAL, "The Winsock %d.%d dll was found okay", WSA_VERSION_HI, WSA_VERSION_LO);
 
 	m_initialized = true;
 
@@ -73,11 +73,11 @@ void ConnectionManager::reset()
 	}
 }
 
-bool ConnectionManager::connect(const wchar_t* servername, int portNumber)
+bool ConnectionManager::connect(const char* servername, int portNumber)
 {
 	if (!m_initialized)
 	{
-		LOG(MSG_ERROR, L"Trying to connect with uninitialized WSA");
+		LOG(MSG_ERROR, "Trying to connect with uninitialized WSA");
 		return false;
 	}
 
@@ -90,16 +90,16 @@ bool ConnectionManager::connect(const wchar_t* servername, int portNumber)
 	int result = ::connect(m_socket, (sockaddr*)m_addr.get(), sizeof(sockaddr_in));
 	if (result == SOCKET_ERROR)
 	{
-		LOG(MSG_ERROR, L"connect function failed with error: %ld", WSAGetLastError());
+		LOG(MSG_ERROR, "connect function failed with error: %ld", WSAGetLastError());
 		result = closesocket(m_socket);
 		if (result == SOCKET_ERROR)
 		{
-			LOG(MSG_ERROR, L"closesocket function failed with error: %ld", WSAGetLastError());
+			LOG(MSG_ERROR, "closesocket function failed with error: %ld", WSAGetLastError());
 		}
 		return false;
 	}
 
-	LOG(MSG_NORMAL, L"Connected to server %s:%d.", servername, portNumber);
+	LOG(MSG_NORMAL, "Connected to server %s:%d.", servername, portNumber);
 	return true;
 }
 
@@ -127,7 +127,7 @@ Result ConnectionManager::receiveMessage(std::string& message) const
 {
 	if (!m_initialized || m_socket == INVALID_SOCKET)
 	{
-		LOG(MSG_ERROR, L"Trying to receive message with uninitialized WSA");
+		LOG(MSG_ERROR, "Trying to receive message with uninitialized WSA");
 		return Result::SOCKET_UNINITIALIZED;
 	}
 
@@ -175,13 +175,13 @@ bool ConnectionManager::send(const void* buf, int nbytes) const
 {
 	if (!m_initialized)
 	{
-		LOG(MSG_ERROR, L"Trying to send message with uninitialized WSA");
+		LOG(MSG_ERROR, "Trying to send message with uninitialized WSA");
 		return false;
 	}
 
 	if (!m_addr)
 	{
-		LOG(MSG_ERROR, L"Trying to send message to disconnected server");
+		LOG(MSG_ERROR, "Trying to send message to disconnected server");
 		return false;
 	}
 
@@ -190,7 +190,7 @@ bool ConnectionManager::send(const void* buf, int nbytes) const
 
 	if (bytesSent == SOCKET_ERROR)
 	{
-		LOG(MSG_WARNING, L"send of message failed!");
+		LOG(MSG_WARNING, "send of message failed!");
 	}
 
 	return bytesSent == nbytes;
@@ -200,14 +200,14 @@ int ConnectionManager::receive(char* buf, uint length) const
 {
 	if (!m_initialized || m_socket == INVALID_SOCKET)
 	{
-		LOG(MSG_ERROR, L"Trying to receive message with uninitialized WSA");
+		LOG(MSG_ERROR, "Trying to receive message with uninitialized WSA");
 		return -1;
 	}
 
 	int n = ::recv(m_socket, buf, length, 0);
 	if (n < 0)
 	{
-		LOG(MSG_ERROR, L"SOCKET_ERROR while receiving message");
+		LOG(MSG_ERROR, "SOCKET_ERROR while receiving message");
 		//if (WSAGetLastError() != WSAEWOULDBLOCK)
 		//{
 		//	closeSocket();
@@ -230,21 +230,21 @@ bool ConnectionManager::createSocket()
 {
 	if (!m_initialized)
 	{
-		LOG(MSG_ERROR, L"Trying to create a socket with uninitialized WSA");
+		LOG(MSG_ERROR, "Trying to create a socket with uninitialized WSA");
 		return false;
 	}
 
 	/*---Open socket for streaming---*/
 	if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		LOG(MSG_ERROR, L"socket function failed with error: %ld\n", WSAGetLastError());
+		LOG(MSG_ERROR, "socket function failed with error: %ld\n", WSAGetLastError());
 		return false;
 	}
 
 	return true;
 }
 
-bool ConnectionManager::initAddr(const wchar_t* servername, int portNumber)
+bool ConnectionManager::initAddr(const char* servername, int portNumber)
 {
 	/*---Initialize server address/port struct---*/
 	m_addr.reset(new sockaddr_in());
@@ -254,7 +254,7 @@ bool ConnectionManager::initAddr(const wchar_t* servername, int portNumber)
 	//dest.sin_addr.s_addr = ::inet_addr(SERVER_ADDR);
 	if (InetPton(AF_INET, servername, &m_addr->sin_addr) != 1)
 	{
-		LOG(MSG_ERROR, L"Could not resolve server name: \"%s\"", servername);
+		LOG(MSG_ERROR, "Could not resolve server name: \"%s\"", servername);
 		return false;
 	}
 

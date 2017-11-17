@@ -59,7 +59,7 @@ bool Effect::setProperties()
 		result = true;
 		for (auto& property : m_properties)
 		{
-			result &= property->setProperty(m_effect);
+			result &= property->applyProperty(m_effect);
 		}
 	}
 
@@ -143,32 +143,51 @@ Effect* Effect::create(LPDIRECT3DDEVICE9 pDevice, const std::string& path)
 using PChar = char*;
 
 template<>
-void Effect::addProperty<PChar>(LPDIRECT3DDEVICE9 pDevice, const char* name, const PChar& value)
+void Effect::setProperty<PChar>(LPDIRECT3DDEVICE9 pDevice, const char* name, const PChar& value)
 {
-	m_properties.emplace_back(new TextureEffectProperty(pDevice, name, value));
+	setProp(new TextureEffectProperty(pDevice, name, value));
 }
 
-bool SimpleEffectProperty<int>::setProperty(LPD3DXEFFECT pEffect) const
+void Effect::setProp(IEffectProperty* newProp)
+{
+	for (auto& prop : m_properties)
+	{
+		if (prop->name() == newProp->name())
+		{
+			prop.reset(newProp);
+			return;
+		}
+	}
+
+	m_properties.emplace_back(newProp);
+}
+
+bool SimpleEffectProperty<bool>::applyProperty(LPD3DXEFFECT pEffect) const
+{
+	return SUCCEEDED(pEffect->SetBool(m_name.c_str(), m_value));
+}
+
+bool SimpleEffectProperty<int>::applyProperty(LPD3DXEFFECT pEffect) const
 {
 	return SUCCEEDED(pEffect->SetInt(m_name.c_str(), m_value));
 }
 
-bool SimpleEffectProperty<float>::setProperty(LPD3DXEFFECT pEffect) const
+bool SimpleEffectProperty<float>::applyProperty(LPD3DXEFFECT pEffect) const
 {
 	return SUCCEEDED(pEffect->SetFloat(m_name.c_str(), m_value));
 }
 
-bool SimpleEffectProperty<graph::Vector4>::setProperty(LPD3DXEFFECT pEffect) const
+bool SimpleEffectProperty<graph::Vector4>::applyProperty(LPD3DXEFFECT pEffect) const
 {
 	return SUCCEEDED(pEffect->SetVector(m_name.c_str(), &m_value));
 }
 
-bool SimpleEffectProperty<graph::Matrix>::setProperty(LPD3DXEFFECT pEffect) const
+bool SimpleEffectProperty<graph::Matrix>::applyProperty(LPD3DXEFFECT pEffect) const
 {
 	return SUCCEEDED(pEffect->SetMatrix(m_name.c_str(), &m_value));
 }
 
-bool SimpleEffectProperty<LPDIRECT3DTEXTURE9>::setProperty(LPD3DXEFFECT pEffect) const
+bool SimpleEffectProperty<LPDIRECT3DTEXTURE9>::applyProperty(LPD3DXEFFECT pEffect) const
 {
 	return SUCCEEDED(pEffect->SetTexture(m_name.c_str(), m_value));
 }
@@ -184,4 +203,10 @@ TextureEffectProperty::TextureEffectProperty(LPDIRECT3DDEVICE9 pDevice, const ch
 
 {
 	auto hRet = D3DXCreateTextureFromFile(pDevice, path, &m_value);
+}
+
+IEffectProperty::IEffectProperty(const std::string& name):
+	m_name(name)
+{
+
 }

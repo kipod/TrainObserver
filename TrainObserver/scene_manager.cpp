@@ -1,9 +1,11 @@
 #include "scene_manager.h"
 #include "skybox.h"
 #include "space.h"
+#include "space_renderer.h"
 
 
-SceneManager::SceneManager()
+SceneManager::SceneManager():
+	m_renderer(new SpaceRenderer())
 {
 }
 
@@ -31,6 +33,8 @@ bool SceneManager::init(RendererDX9& renderer)
 
 	renderer.addRenderItem(this);
 
+	m_renderer->setupStaticScene();
+
 	return result;
 }
 
@@ -41,8 +45,8 @@ Space& SceneManager::space()
 
 void SceneManager::draw(RendererDX9& renderer)
 {
-	m_skybox->draw(renderer);
-	m_space->draw(renderer);
+	//m_skybox->draw(renderer);
+	m_renderer->draw(renderer);
 }
 
 void SceneManager::tick(float deltaTime)

@@ -30,10 +30,11 @@ public:
 
 	void addRenderItem(IRenderable* obj);
 
-private:
-	LPDIRECT3DDEVICE9	m_pD3DDevice = nullptr;
 
-	std::vector<IRenderable*> m_renderQueue;
+private:
+	LPDIRECT3DDEVICE9						m_pD3DDevice = nullptr;
+
+	std::vector<IRenderable*>				m_renderQueue;
 };
 
 
@@ -42,14 +43,17 @@ class RenderSystemDX9 : public IRenderSystem
 
 public:
 	RenderSystemDX9();
+	~RenderSystemDX9();
 
 	virtual HRESULT init(HWND hwnd) override;
 	virtual void fini() override;
 
 	RendererDX9& renderer();
+	class EffectManager& effectManager();
 	HRESULT loadEffect(LPD3DXEFFECT& pEffect, D3DXHANDLE& hTechnique, const TCHAR* path);
 	HRESULT loadMesh(LPD3DXMESH& mesh, const TCHAR* path);
 
+	static RenderSystemDX9& instance();
 
 
 private:
@@ -58,6 +62,8 @@ private:
 	D3DPRESENT_PARAMETERS					m_d3dpp;
 
 	std::unique_ptr<RendererDX9>			m_renderer;
+	std::unique_ptr<EffectManager>			m_effectManager;
+	static RenderSystemDX9*					s_pInstance;
 };
 
 

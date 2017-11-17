@@ -67,6 +67,25 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 		return false;
 	}
 
+	// read geometry coordinates of points
+	reader.reset(getLayer(manager, SpaceLayer::COORDINATES));
+
+	if (reader && reader->isValid())
+	{
+		assert ( m_idx == reader->get<uint>("idx") );
+
+		if (!loadCoordinates(*reader))
+		{
+			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load coordinates.");
+			return false;
+		}
+	}
+	else
+	{
+		LOG(MSG_ERROR, "Failed to create static layer on space. Reason: parcing MAP message with coordinates failed");
+		return false;
+	}
+
 	m_staticLayerLoaded = true;
 	LOG(MSG_NORMAL, "Static space layer created. Points: %d. Lines: %d", m_points.size(), m_lines.size());
 	return true;
@@ -96,11 +115,6 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 		LOG(MSG_ERROR, "Failed to create dynamic layer on  space. Reason: parcing MAP message failed");
 	}
 
-}
-
-void Space::draw(RendererDX9& renderer) const
-{
-	
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)
@@ -191,6 +205,33 @@ bool Space::loadPosts(const JSONQueryReader& reader)
 			post.type = value.get<uint>("type");
 			post.name = value.get<std::string>("name");
 			m_posts.insert(std::make_pair(post.idx, post));
+		}
+		return true;
+	}
+
+	return false;
+}
+
+bool Space::loadCoordinates(const JSONQueryReader& reader)
+{
+	auto values = reader.getArray("coordinate");
+	if (values.size() > 0)
+	{
+		assert( values.size() == m_points.size() );
+		for (const auto& value : values)
+		{
+			Coords pos;
+			pos.x = value.get<uint>("x");
+			pos.y = value.get<uint>("y");
+			uint idx = value.get<uint>("idx");
+			auto res = m_points.find(idx);
+			if (res == m_points.end())
+			{
+				LOG(MSG_ERROR, "Inconsistent coordinates. Cannot find post with id = %d!", idx);
+				return false;
+			}
+
+			res->second.pos = pos;
 		}
 		return true;
 	}

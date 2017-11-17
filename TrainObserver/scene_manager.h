@@ -17,8 +17,9 @@ public:
 	virtual void tick(float deltaTime) override;
 
 private:
-	std::unique_ptr<class SkyBox> m_skybox;
-	std::unique_ptr<Space> m_space;
+	std::unique_ptr<class SkyBox>			m_skybox;
+	std::unique_ptr<Space>					m_space;
+	std::unique_ptr<class SpaceRenderer>	m_renderer;
 
 
 

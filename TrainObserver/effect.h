@@ -8,7 +8,13 @@
 class IEffectProperty
 {
 public:
-	virtual bool setProperty(LPD3DXEFFECT pEffect) const = 0;
+	IEffectProperty(const std::string& name);
+
+	virtual bool applyProperty(LPD3DXEFFECT pEffect) const = 0;
+	const std::string& name() const { return m_name;  }
+
+protected:
+	std::string	m_name;
 };
 
 
@@ -25,10 +31,12 @@ public:
 	static Effect* create(LPDIRECT3DDEVICE9 pDevice, const std::string& path);
 
 	template<class T>
-	void addProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value);
+	void setProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value);
 
 private:
 	Effect();
+
+	inline void setProp(IEffectProperty* newProp);
 
 	bool setProperties();
 private:
@@ -53,21 +61,27 @@ public:
 	SimpleEffectProperty(const char* name);
 	SimpleEffectProperty(const char* name, const T& value);
 
-	virtual bool setProperty(LPD3DXEFFECT pEffect) const;
+	bool applyProperty(LPD3DXEFFECT pEffect) const;
+	bool setValue(const T& value);
 protected:
 	T			m_value;
-	std::string	m_name;
 };
 
 template<typename T>
+bool SimpleEffectProperty<T>::setValue(const T& value)
+{
+	m_value = value;
+}
+
+template<typename T>
 SimpleEffectProperty<T>::SimpleEffectProperty(const char* name) :
-	m_name(name)
+	IEffectProperty(name)
 {
 }
 
 template<typename T>
 SimpleEffectProperty<T>::SimpleEffectProperty(const char* name, const T& value) :
-	m_name(name),
+	IEffectProperty(name),
 	m_value(value)
 {
 }
@@ -80,8 +94,9 @@ public:
 };
 
 template<class T>
-void Effect::addProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value)
+void Effect::setProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value)
 {
-	m_properties.emplace_back(new SimpleEffectProperty<T>(name, value));
+	setProp(new SimpleEffectProperty<T>(name, value));
 }
+
 

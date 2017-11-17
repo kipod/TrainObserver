@@ -10,7 +10,8 @@ typedef struct HINSTANCE__ *HINSTANCE;
 enum SpaceLayer : uint
 {
 	STATIC = 0,
-	DYNAMIC = 1
+	DYNAMIC = 1,
+	COORDINATES = 10
 };
 
 enum Action : uint

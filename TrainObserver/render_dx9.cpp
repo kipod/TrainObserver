@@ -1,6 +1,7 @@
 #include "render_dx9.h"
 #include <d3dx9.h>
 #include "math\Vector3.h"
+#include "effect_manager.h"
 
 namespace
 {
@@ -150,9 +151,22 @@ void RendererDX9::addRenderItem(IRenderable* obj)
 	m_renderQueue.emplace_back(obj);
 }
 
-RenderSystemDX9::RenderSystemDX9()
+RenderSystemDX9& RenderSystemDX9::instance()
 {
+	assert(s_pInstance != nullptr);
 
+	return *s_pInstance;
+}
+
+RenderSystemDX9::RenderSystemDX9():
+	m_effectManager(new EffectManager())
+{
+	s_pInstance = this;
+}
+
+RenderSystemDX9::~RenderSystemDX9()
+{
+	s_pInstance = nullptr;
 }
 
 HRESULT RenderSystemDX9::init(HWND hwnd)
@@ -330,7 +344,14 @@ HRESULT RenderSystemDX9::loadMesh(LPD3DXMESH& mesh, const TCHAR* path)
 	return hr;
 }
 
+RenderSystemDX9* RenderSystemDX9::s_pInstance = nullptr;
+
 RendererDX9& RenderSystemDX9::renderer()
 {
 	return *m_renderer.get();
+}
+
+EffectManager& RenderSystemDX9::effectManager()
+{
+	return *m_effectManager.get();
 }

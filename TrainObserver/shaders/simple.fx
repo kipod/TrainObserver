@@ -55,7 +55,7 @@ PS_INPUT vs(VS_INPUT i)
      matrix wvp = mul(World, ViewProjection);
      o.position = mul(i.position, wvp);
      o.height = mul(i.position, World).y;
-	 o.z = o.position.z * g_farPlane.y;
+	 o.z = o.position.z * 0.001f;// * g_farPlane.y;
 
 	 float4 AmbientMtrl = float4(0.8,1,0.8,1);
 	 vector DiffuseMtrl = float4(1,1,1,1);

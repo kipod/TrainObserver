@@ -21,7 +21,7 @@ namespace graph
 
 		inline const Matrix operator +(Matrix& m);
 		inline const Matrix operator -(Matrix& m);
-		inline const Matrix operator *(Matrix& m);
+		inline const Matrix operator *(const Matrix& m) const;
 		inline Vector3 operator *(Vector3& v);
 		inline const Matrix operator *(const float t);
 		inline void operator *=(const float t);

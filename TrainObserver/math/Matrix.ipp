@@ -44,7 +44,7 @@ inline const Matrix Matrix::operator-( Matrix& mat )
 	return t;
 }
 
-inline const Matrix Matrix::operator*( Matrix& mat )
+inline const Matrix Matrix::operator*( const Matrix& mat ) const
 {
 	Matrix t;
 	for (size_t i = 0; i < 3; i++)

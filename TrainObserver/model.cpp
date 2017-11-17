@@ -8,6 +8,7 @@
 
 Model::Model()
 {
+	m_transform.id();
 	m_transform.SetTranslation(graph::Vector3(0, 0, 0));
 }
 
@@ -25,6 +26,8 @@ void Model::draw(RendererDX9& renderer)
 	}
 
 	auto pDevice = renderer.device();
+
+	setProperties(pDevice);
 
 	pDevice->SetFVF(m_geometry->fvf());	
 	pDevice->SetStreamSource(0, m_geometry->vb(), 0, m_geometry->vertexSize());
@@ -65,4 +68,6 @@ void Model::setTransform(const graph::Matrix& transform)
 void Model::setProperties(LPDIRECT3DDEVICE9 device)
 {
 	m_effect->setProperty(device, "World", m_transform);
+	graph::Matrix m = RenderSystemDX9::instance().renderer().camera().view() * RenderSystemDX9::instance().renderer().camera().projection();
+	m_effect->setProperty(device, "ViewProjection", m);
 }

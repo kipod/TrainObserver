@@ -15,7 +15,7 @@ namespace
 RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice, const D3DPRESENT_PARAMETERS& d3dpp):
 	m_pD3DDevice(pDevice)
 {
-	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(102.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
 }
 
 
@@ -74,8 +74,8 @@ void RendererDX9::onMouseMove(int x, int y, int delta_x, int delta_y, bool bLeft
 		D3DXMATRIX matRotation;
 
 		// Rotate "camera"
-		D3DXMatrixRotationAxis(&matXRotation, &m_camera.up(), float(delta_x) * 0.005f);
-		D3DXMatrixRotationAxis(&matYRotation, &(m_camera.up() * m_camera.look()), float(delta_y) * 0.005f);
+		D3DXMatrixRotationAxis(&matXRotation, &m_camera.up(), float(delta_x) * 0.002f);
+		D3DXMatrixRotationAxis(&matYRotation, &(m_camera.up() * m_camera.look()), float(delta_y) * 0.002f);
 		D3DXMatrixMultiply(&matRotation, &matXRotation, &matYRotation);
 
 		Vector3 look;
@@ -109,26 +109,39 @@ void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 	// Left
 	if (keys['A'] & 0x80)
 	{
-		pos += -right * deltaTime * 10.f;
+		pos += -right * deltaTime * 1.f;
 	}
 
 	// Right
 	if (keys['D'] & 0x80)
 	{
-		pos += right * deltaTime * 10.f;
+		pos += right * deltaTime * 1.f;
 	}
 
 	// Up
 	if (keys['W'] & 0x80)
 	{
-		pos += m_camera.look() * deltaTime * 10.f;
+		pos += m_camera.look() * deltaTime * 1.f;
 	}
 
 	// Down
 	if (keys['S'] & 0x80)
 	{
-		pos += -m_camera.look() * deltaTime * 10.f;
+		pos += -m_camera.look() * deltaTime * 1.f;
 	}
+
+	// Down
+	if (keys['E'] & 0x80)
+	{
+		pos += graph::Vector3(0.0f, deltaTime, 0.0f);
+	}
+
+	// Up
+	if (keys['E'] & 0x80)
+	{
+		pos -= graph::Vector3(0.0f, deltaTime, 0.0f);
+	}
+
 
 	m_camera.pos(pos);
 

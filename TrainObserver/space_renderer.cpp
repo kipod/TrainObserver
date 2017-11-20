@@ -22,7 +22,7 @@ SpaceRenderer::SpaceRenderer():
 	m_sun(new SunLight)
 {
 	m_sun->color = graph::Vector3(1.0f, 0.9f, 0.5f); // light yellow 
-	m_sun->dir = graph::Vector3(2.0f, -1.0f, 0.5f);
+	m_sun->dir = graph::Vector3(0.2f, -1.0f, 0.3f);
 	m_sun->dir.Normalize();
 	m_sun->scale = 10.0f;
 	m_sun->power = 10.0f;
@@ -54,18 +54,20 @@ void SpaceRenderer::setupStaticScene()
 	auto device = RenderSystemDX9::instance().renderer().device();
 	pGeometry->create(device, graph::Vector3(10, 20, 30));
 	Effect* pEffect = RenderSystemDX9::instance().effectManager().get("shaders/simple.fx");
+	if (pEffect)
+	{
+		pEffect->setValue(device, "g_sunLight", *m_sun.get());
+		pEffect->setTexture(device, "diffuseTex", "maps/terrain.dds");
+		pEffect->setTexture(device, "normalTex", "maps/terrain_normal.jpg");
+		Model* newModel = new Model();
 
-	pEffect->setValue(device, "g_sunLight", *m_sun.get());
-	pEffect->setTexture(device, "diffuseTex", "maps/terrain.jpg");
-	pEffect->setTexture(device, "normalTex", "maps/terrain_normal.jpg");
+		newModel->setup(pGeometry, pEffect);
 
-	Model* newModel = new Model();
+		Matrix m; m.id();
+		//m.Scale(10.0f);
+		//newModel->setTransform(m);
 
-	newModel->setup(pGeometry, pEffect);
+		m_staticMeshes.emplace_back(newModel);
+	}
 
-	Matrix m; m.id();
-	//m.Scale(10.0f);
-	//newModel->setTransform(m);
-
-	m_staticMeshes.emplace_back(newModel);
 }

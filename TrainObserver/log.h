@@ -1,5 +1,6 @@
 #pragma once
 #include "log.h"
+#include "defs.hpp"
 
 enum OutputImportance
 {
@@ -44,6 +45,15 @@ public:
 	ConsoleLog();
 
 	virtual void logMsg(OutputImportance importance, const char* msg) override;
+};
+
+class WindowLog : public LogInterface
+{
+public:
+	WindowLog(HWND parent);
+	virtual void logMsg(OutputImportance importance, const char* msg) override;
+private:
+	HWND m_parent;
 };
 
 #define LOG(priority, msg, ...) Logger::log(priority, msg, ##__VA_ARGS__);

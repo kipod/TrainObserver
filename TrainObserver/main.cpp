@@ -25,7 +25,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	LPSTR     lpCmdLine,
 	int       nCmdShow)
 {
-	initLog(new ConsoleLog());
 	AppManager app;
 	uint result = 0;
 	if (app.initialize(hInstance, nCmdShow, 1600, 1100))

@@ -2,6 +2,8 @@
 #include "vertex_formats.h"
 #include <vector>
 
+typedef XYZNUVTB Vertex;
+
 XYZNUV g_vertices[24] = 
 {
 	// down quad
@@ -13,26 +15,26 @@ XYZNUV g_vertices[24] =
 	// back quad
 	{ graph::Vector3(-0.5f, -0.5f,  -0.5f), graph::Vector3(0.0f, -1.0f,	0.0f), 0.0f, 0.0f },	//0		4
 	{ graph::Vector3(0.5f,	-0.5f,	-0.5f), graph::Vector3(0.0f, -1.0f,	0.0f), 0.0f, 1.0f },	//3		5
-	{ graph::Vector3(-0.5f, -0.5f,  0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 1.0f },	//4		6
-	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 0.0f },	//7		7
+	{ graph::Vector3(-0.5f, -0.5f,  0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 0.0f },	//4		6
+	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 1.0f },	//7		7
 
 	// front quad
 	{ graph::Vector3(0.5f,	 0.5f,	-0.5f), graph::Vector3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f },	//2		8
-	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f },	//5		9
-	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(0.0f, 1.0f, 0.0f), 1.0f, 1.0f },	//6		10
+	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(0.0f, 1.0f, 0.0f), 1.0f, 1.0f },	//5		9
+	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f },	//6		10
 	{ graph::Vector3(-0.5f,  0.5f,  -0.5f),	graph::Vector3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f },	//1		11
 
 	// right quad
 	{ graph::Vector3(0.5f,	-0.5f,	-0.5f), graph::Vector3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f },	//3		12
-	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f },	//6		13
-	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 1.0f, 1.0f },	//7		14
+	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 1.0f, 1.0f },	//6		13
+	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f },	//7		14
 	{ graph::Vector3(0.5f,	 0.5f,	-0.5f), graph::Vector3(1.0f, 0.0f, 0.0f), 1.0f, 0.0f },	//2		15
 
 	// left quad
 	{ graph::Vector3(-0.5f, -0.5f,  -0.5f), graph::Vector3(-1.0f, 0.0f, 0.0f), 0.0f, 0.0f },	//0		16
 	{ graph::Vector3(-0.5f,  0.5f,  -0.5f), graph::Vector3(-1.0f, 0.0f, 0.0f), 0.0f, 1.0f },	//1		17
-	{ graph::Vector3(-0.5f, -0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 1.0f },		//4		18
-	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 0.0f },	//5		19
+	{ graph::Vector3(-0.5f, -0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 0.0f },	//4		18
+	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 1.0f },	//5		19
 
 	// up quad
 	{ graph::Vector3(-0.5f, -0.5f,  0.5f), graph::Vector3(0.0f,	0.0f, 1.0f), 0.0f, 0.0f },	//4		20
@@ -114,13 +116,35 @@ Box::~Box()
 
 }
 
-void fillVertices(std::vector<XYZNUV>& vertices, std::vector<unsigned short>& indices)
+void XYZNUVtoXYZNUVTB(const XYZNUV& in, XYZNUVTB& out)
+{
+	out.pos = in.pos;
+	out.normal = in.normal;
+	out.u = in.u;
+	out.v = in.v;
+
+	static graph::Vector3 up1(0, 0, 1);
+	static graph::Vector3 up2(0, 1, 0);
+
+	auto& up = up1;
+	if ((in.normal - up1).LengthSquared() < 0.01f)
+	{
+		up = up2;
+	}
+
+	out.tangent = in.normal * up;
+	out.binormal = in.normal * out.tangent;
+}
+
+void fillVertices(std::vector<Vertex>& vertices, std::vector<unsigned short>& indices)
 {
 	vertices.reserve(24);
 	for (auto& v : g_vertices)
 	{
 		v.normal.Normalize();
-		vertices.emplace_back(v);
+		XYZNUVTB vtx;
+		XYZNUVtoXYZNUVTB(v, vtx);
+		vertices.emplace_back(vtx);
 	}
 
 	indices.reserve(36);
@@ -132,14 +156,14 @@ void fillVertices(std::vector<XYZNUV>& vertices, std::vector<unsigned short>& in
 
 bool Box::create(LPDIRECT3DDEVICE9 pDevice, const graph::Vector3& size)
 {
-	static std::vector<XYZNUV> vertices;
+	static std::vector<Vertex> vertices;
 	static std::vector<unsigned short> indices;
 	if (vertices.empty() && indices.empty())
 	{
 		fillVertices(vertices, indices);
 	}
 
-	if (Geometry::create<XYZNUV, unsigned short>(pDevice, vertices, indices))
+	if (Geometry::create<Vertex, unsigned short>(pDevice, vertices, indices))
 	{
 		m_size = size;
 		return true;

@@ -1,5 +1,6 @@
 #include "log.h"
 #include <stdio.h>
+#include <windows.h>
 
 
 ConsoleLog::ConsoleLog()
@@ -43,9 +44,9 @@ void Logger::log(OutputImportance importance, const char* msg, ...)
 	if (s_pInstance && s_pInstance->m_pImpl)
 	{
 		va_list argList;
-		char buffer[260];
+		char buffer[2000];
 		__crt_va_start(argList, msg);
-		int result = vsprintf_s(buffer, 260, msg, argList);
+		int result = vsprintf_s(buffer, 2000, msg, argList);
 		__crt_va_end(argList);
 
 		s_pInstance->m_pImpl->logMsg(importance, buffer);
@@ -66,3 +67,17 @@ void initLog(LogInterface* pInterface)
 }
 
 #endif
+
+WindowLog::WindowLog(HWND parent):
+	m_parent(parent)
+{
+
+}
+
+void WindowLog::logMsg(OutputImportance importance, const char* msg)
+{
+	if (importance > MSG_WARNING)
+	{
+		MessageBox(m_parent, msg, "Error!", MB_OK | MB_APPLMODAL | MB_ICONASTERISK);
+	}
+}

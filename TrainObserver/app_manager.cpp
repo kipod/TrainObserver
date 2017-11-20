@@ -31,6 +31,8 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 		return false;
 	}
 
+	initLog(new WindowLog(m_windowManager->hwnd()));
+
 	if ( FAILED( m_renderSystem->init(m_windowManager->hwnd()) ) )
 	{
 		LOG(MSG_ERROR, "Failed to initialize render system");

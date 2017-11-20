@@ -13,7 +13,6 @@
 .vs/TrainObserver/v15/.suo
 *.db-shm
 *.user
-*.filters
 *.ib_pdb_index
 *.iobj
 *.exe

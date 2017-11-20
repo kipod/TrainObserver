@@ -29,7 +29,8 @@ void Model::draw(RendererDX9& renderer)
 
 	setProperties(pDevice);
 
-	pDevice->SetFVF(m_geometry->fvf());	
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	pDevice->SetFVF(m_geometry->fvf());
 	pDevice->SetStreamSource(0, m_geometry->vb(), 0, m_geometry->vertexSize());
 	pDevice->SetIndices(m_geometry->ib());
 
@@ -67,7 +68,7 @@ void Model::setTransform(const graph::Matrix& transform)
 
 void Model::setProperties(LPDIRECT3DDEVICE9 device)
 {
-	m_effect->setProperty(device, "World", m_transform);
-	graph::Matrix m = RenderSystemDX9::instance().renderer().camera().view() * RenderSystemDX9::instance().renderer().camera().projection();
-	m_effect->setProperty(device, "ViewProjection", m);
+	m_effect->setMatrix(device, "World", m_transform);
+	const auto& m = RenderSystemDX9::instance().renderer().camera().viewProjection();
+	m_effect->setMatrix(device, "ViewProjection", m);
 }

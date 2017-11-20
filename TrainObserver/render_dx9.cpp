@@ -2,10 +2,11 @@
 #include <d3dx9.h>
 #include "math\Vector3.h"
 #include "effect_manager.h"
+#include "texture_manager.h"
 
 namespace
 {
-	const float FAR_PLANE = 1000.0f;
+	const float FAR_PLANE = 1000000.0f;
 
 	const graph::Vector3	g_vecRight(1.0f, 0.0f, 0.0f);
 	const graph::Vector3	g_vecUp(0.0f, 1.0f, 0.0f);    // Up Vector
@@ -35,8 +36,6 @@ void RendererDX9::draw()
 		D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
 
 	m_pD3DDevice->BeginScene();
-
-
 
 	for (auto& object : m_renderQueue)
 	{
@@ -96,25 +95,27 @@ void RendererDX9::onMouseWheel(int nMouseWheelDelta)
 
 void RendererDX9::tick(float deltaTime)
 {
-	m_pD3DDevice->SetTransform(D3DTS_VIEW, &m_camera.view());
-	m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &m_camera.projection());
-
 	draw();
 }
 
 void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 {
 	Vector3 pos = m_camera.pos();
+
+	Vector3 right;
+	D3DXVec3Cross(&right, &m_camera.up(), &m_camera.look());
+
+
 	// Left
 	if (keys['A'] & 0x80)
 	{
-		pos += -g_vecRight * deltaTime * 10.f;
+		pos += -right * deltaTime * 10.f;
 	}
 
 	// Right
 	if (keys['D'] & 0x80)
 	{
-		pos += g_vecRight * deltaTime * 10.f;
+		pos += right * deltaTime * 10.f;
 	}
 
 	// Up
@@ -159,7 +160,8 @@ RenderSystemDX9& RenderSystemDX9::instance()
 }
 
 RenderSystemDX9::RenderSystemDX9():
-	m_effectManager(new EffectManager())
+	m_effectManager(new EffectManager()),
+	m_textureManager(new TextureManager())
 {
 	s_pInstance = this;
 }
@@ -354,4 +356,9 @@ RendererDX9& RenderSystemDX9::renderer()
 EffectManager& RenderSystemDX9::effectManager()
 {
 	return *m_effectManager.get();
+}
+
+TextureManager& RenderSystemDX9::textureManager()
+{
+	return *m_textureManager.get();
 }

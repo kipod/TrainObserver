@@ -3,6 +3,7 @@
 #include <d3dx9tex.h>
 #include "render_dx9.h"
 #include "vertex_formats.h"
+#include "texture_manager.h"
 
 // 24 vertices = 6 faces (cube) * 4 vertices per face
 //
@@ -106,8 +107,7 @@ bool SkyBox::create(RendererDX9& renderer, const char* textures[6])
 	hRet = S_OK;
 	for (int i = 0; i < 6; ++i)
 	{
-		LPDIRECT3DTEXTURE9 pTexture = nullptr;
-		hRet &= D3DXCreateTextureFromFile(pDevice, textures[i], &pTexture);
+		LPDIRECT3DTEXTURE9 pTexture = RenderSystemDX9::instance().textureManager().get(textures[i]);
 		if (!FAILED(hRet))
 		{
 			m_tiles.emplace_back(pTexture);
@@ -130,6 +130,9 @@ bool SkyBox::create(RendererDX9& renderer, const char* textures[6])
 void SkyBox::draw(RendererDX9& renderer)
 {
 	auto pDevice = renderer.device();
+
+	pDevice->SetTransform(D3DTS_VIEW, &renderer.camera().view());
+	pDevice->SetTransform(D3DTS_PROJECTION, &renderer.camera().projection());
 
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, false);

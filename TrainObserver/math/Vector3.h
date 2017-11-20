@@ -94,9 +94,6 @@ namespace graph
 
 		const float LengthSquared() const;
 		void Normalize();
-
-		void AddRef();
-		void Release();
 	};
 
 

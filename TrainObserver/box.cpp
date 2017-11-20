@@ -2,41 +2,65 @@
 #include "vertex_formats.h"
 #include <vector>
 
-XYZUV g_vertices[8] = 
+XYZNUV g_vertices[24] = 
 {
 	// down quad
-	{ graph::Vector3(-0.5f, -0.5f,  -0.5f),  0.0f, 0.0f },
-	{ graph::Vector3(-0.5f,  0.5f,  -0.5f),  0.0f, 1.0f },
-	{ graph::Vector3( 0.5f,	 0.5f,	-0.5f),  1.0f, 1.0f },
-	{ graph::Vector3( 0.5f,	-0.5f,	-0.5f),  1.0f, 0.0f },
+	{ graph::Vector3(-0.5f, -0.5f,  -0.5f), graph::Vector3(0.0f, 0.0f, -1.0f), 0.0f, 0.0f },	//0		0
+	{ graph::Vector3(-0.5f,  0.5f,  -0.5f), graph::Vector3(0.0f, 0.0f, -1.0f), 0.0f, 1.0f },	//1		1
+	{ graph::Vector3(0.5f,	 0.5f,	-0.5f), graph::Vector3(0.0f, 0.0f, -1.0f), 1.0f, 1.0f },	//2		2
+	{ graph::Vector3(0.5f,	-0.5f,	-0.5f), graph::Vector3(0.0f, 0.0f, -1.0f), 1.0f, 0.0f },	//3		3
+
+	// back quad
+	{ graph::Vector3(-0.5f, -0.5f,  -0.5f), graph::Vector3(0.0f, -1.0f,	0.0f), 0.0f, 0.0f },	//0		4
+	{ graph::Vector3(0.5f,	-0.5f,	-0.5f), graph::Vector3(0.0f, -1.0f,	0.0f), 0.0f, 1.0f },	//3		5
+	{ graph::Vector3(-0.5f, -0.5f,  0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 1.0f },	//4		6
+	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(0.0f, -1.0f,	0.0f), 1.0f, 0.0f },	//7		7
+
+	// front quad
+	{ graph::Vector3(0.5f,	 0.5f,	-0.5f), graph::Vector3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f },	//2		8
+	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(0.0f, 1.0f, 0.0f), 0.0f, 1.0f },	//5		9
+	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(0.0f, 1.0f, 0.0f), 1.0f, 1.0f },	//6		10
+	{ graph::Vector3(-0.5f,  0.5f,  -0.5f),	graph::Vector3(0.0f, 1.0f, 0.0f), 1.0f, 0.0f },	//1		11
+
+	// right quad
+	{ graph::Vector3(0.5f,	-0.5f,	-0.5f), graph::Vector3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f },	//3		12
+	{ graph::Vector3(0.5f,	 0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 0.0f, 1.0f },	//6		13
+	{ graph::Vector3(0.5f,	-0.5f,	0.5f),	graph::Vector3(1.0f, 0.0f, 0.0f), 1.0f, 1.0f },	//7		14
+	{ graph::Vector3(0.5f,	 0.5f,	-0.5f), graph::Vector3(1.0f, 0.0f, 0.0f), 1.0f, 0.0f },	//2		15
+
+	// left quad
+	{ graph::Vector3(-0.5f, -0.5f,  -0.5f), graph::Vector3(-1.0f, 0.0f, 0.0f), 0.0f, 0.0f },	//0		16
+	{ graph::Vector3(-0.5f,  0.5f,  -0.5f), graph::Vector3(-1.0f, 0.0f, 0.0f), 0.0f, 1.0f },	//1		17
+	{ graph::Vector3(-0.5f, -0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 1.0f },		//4		18
+	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  graph::Vector3(-1.0f, 0.0f, 0.0f), 1.0f, 0.0f },	//5		19
 
 	// up quad
-	{ graph::Vector3(-0.5f, -0.5f,  0.5f),  0.0f, 0.0f },
-	{ graph::Vector3(-0.5f,  0.5f,  0.5f),  0.0f, 1.0f },
-	{ graph::Vector3( 0.5f,	 0.5f,	0.5f),  1.0f, 1.0f },
-	{ graph::Vector3( 0.5f,	-0.5f,	0.5f),  1.0f, 0.0f },
+	{ graph::Vector3(-0.5f, -0.5f,  0.5f), graph::Vector3(0.0f,	0.0f, 1.0f), 0.0f, 0.0f },	//4		20
+	{ graph::Vector3(-0.5f,  0.5f,  0.5f), graph::Vector3(0.0f,	0.0f, 1.0f), 0.0f, 1.0f },	//5		21
+	{ graph::Vector3(0.5f,	 0.5f,	0.5f), graph::Vector3(0.0f,	0.0f, 1.0f), 1.0f, 1.0f },	//6		22
+	{ graph::Vector3(0.5f,	-0.5f,	0.5f), graph::Vector3(0.0f,	0.0f, 1.0f), 1.0f, 0.0f },	//7		23
 };
 
 unsigned short g_indices[36] = 
 {
 	//bottom
-	0,3,1,
-	1,3,2,
+	0,1,3,
+	1,2,3,
 	//back
-	0,3,4,
-	4,3,7,
+	4,5,6,
+	6,5,7,
 	//front
-	2,5,6,
-	2,1,5,
+	8,9,10,
+	8,11,9,
 	//right
-	3,6,7,
-	3,2,6,
+	12,13,14,
+	12,15,13,
 	//left
-	1,0,5,
-	0,4,5,
+	17,16,19,
+	16,18,19,
 	//up
-	4,7,5,
-	7,6,5
+	20,23,21,
+	23,22,21
 };
 
 
@@ -90,11 +114,12 @@ Box::~Box()
 
 }
 
-void fillVertices(std::vector<XYZUV>& vertices, std::vector<unsigned short>& indices)
+void fillVertices(std::vector<XYZNUV>& vertices, std::vector<unsigned short>& indices)
 {
-	vertices.reserve(8);
+	vertices.reserve(24);
 	for (auto& v : g_vertices)
 	{
+		v.normal.Normalize();
 		vertices.emplace_back(v);
 	}
 
@@ -107,14 +132,14 @@ void fillVertices(std::vector<XYZUV>& vertices, std::vector<unsigned short>& ind
 
 bool Box::create(LPDIRECT3DDEVICE9 pDevice, const graph::Vector3& size)
 {
-	static std::vector<XYZUV> vertices;
+	static std::vector<XYZNUV> vertices;
 	static std::vector<unsigned short> indices;
 	if (vertices.empty() && indices.empty())
 	{
 		fillVertices(vertices, indices);
 	}
 
-	if (Geometry::create<XYZUV, unsigned short>(pDevice, vertices, indices))
+	if (Geometry::create<XYZNUV, unsigned short>(pDevice, vertices, indices))
 	{
 		m_size = size;
 		return true;

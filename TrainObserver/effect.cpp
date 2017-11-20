@@ -3,6 +3,8 @@
 #include "log.h"
 #include "math\Vector4.h"
 #include "math\Matrix.h"
+#include "texture_manager.h"
+#include "render_dx9.h"
 
 
 namespace
@@ -43,6 +45,87 @@ namespace
 
 		return S_OK;
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	template<class T>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const T& value)
+	{
+		return SUCCEEDED(pEffect->SetValue(name, &value, sizeof(value)));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const bool& value)
+	{
+		return SUCCEEDED(pEffect->SetBool(name, value));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const int& value)
+	{
+		return SUCCEEDED(pEffect->SetInt(name, value));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const float& value)
+	{
+		return SUCCEEDED(pEffect->SetFloat(name, value));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const graph::Vector4& value)
+	{
+		return SUCCEEDED(pEffect->SetVector(name, &value));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const graph::Matrix& value)
+	{
+		return SUCCEEDED(pEffect->SetMatrix(name, &value));
+	}
+
+	template<>
+	bool applyEffectProperty(LPD3DXEFFECT pEffect, const char* name, const LPDIRECT3DTEXTURE9& value)
+	{
+		return SUCCEEDED(pEffect->SetTexture(name, value));
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////
+
+	template<class T>
+	class SimpleEffectProperty : public IEffectProperty
+	{
+
+	public:
+		SimpleEffectProperty(const char* name);
+		SimpleEffectProperty(const char* name, const T& value);
+
+		virtual bool applyProperty(LPD3DXEFFECT pEffect) const override
+		{
+			return applyEffectProperty(pEffect, m_name.c_str(), m_value);
+		}
+
+		bool setValue(const T& value)
+		{
+			m_value = value;
+		}
+	protected:
+		T			m_value;
+	};
+
+	template<typename T>
+	SimpleEffectProperty<T>::SimpleEffectProperty(const char* name) :
+		IEffectProperty(name)
+	{
+	}
+
+	template<typename T>
+	SimpleEffectProperty<T>::SimpleEffectProperty(const char* name, const T& value) :
+		IEffectProperty(name),
+		m_value(value)
+	{
+	}
 }
 
 
@@ -82,8 +165,8 @@ bool Effect::begin()
 	if (m_effect && m_technique)
 	{
 		m_hasBegun = true;
-		setProperties();
 		m_effect->SetTechnique(m_technique);
+		setProperties();
 		return SUCCEEDED(m_effect->Begin(&m_nPasses, 0));
 	}
 	return false;
@@ -140,13 +223,46 @@ Effect* Effect::create(LPDIRECT3DDEVICE9 pDevice, const std::string& path)
 }
 
 
-using PChar = char*;
-
-template<>
-void Effect::setProperty<PChar>(LPDIRECT3DDEVICE9 pDevice, const char* name, const PChar& value)
+void Effect::setInt(LPDIRECT3DDEVICE9 pDevice, const char* name, int value)
 {
-	setProp(new TextureEffectProperty(pDevice, name, value));
+	setProp(new SimpleEffectProperty<int>(name, value));
 }
+
+void Effect::setBool(LPDIRECT3DDEVICE9 pDevice, const char* name, bool value)
+{
+	setProp(new SimpleEffectProperty<bool>(name, value));
+}
+
+void Effect::setFloat(LPDIRECT3DDEVICE9 pDevice, const char* name, float value)
+{
+	setProp(new SimpleEffectProperty<float>(name, value));
+}
+
+void Effect::setVector(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXVECTOR4& value)
+{
+	setProp(new SimpleEffectProperty<D3DXVECTOR4>(name, value));
+}
+
+void Effect::setMatrix(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXMATRIX& value)
+{
+	setProp(new SimpleEffectProperty<D3DXMATRIX>(name, value));
+}
+
+void Effect::setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const LPDIRECT3DTEXTURE9& value)
+{
+	setProp(new SimpleEffectProperty<LPDIRECT3DTEXTURE9>(name, value));
+}
+
+void Effect::setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path)
+{
+	Texture* pTex = RenderSystemDX9::instance().textureManager().get(path);
+	if (pTex)
+	{
+		setProp(new SimpleEffectProperty<LPDIRECT3DTEXTURE9>(name, pTex));
+	}
+}
+
+using PChar = char*;
 
 void Effect::setProp(IEffectProperty* newProp)
 {
@@ -162,35 +278,16 @@ void Effect::setProp(IEffectProperty* newProp)
 	m_properties.emplace_back(newProp);
 }
 
-bool SimpleEffectProperty<bool>::applyProperty(LPD3DXEFFECT pEffect) const
-{
-	return SUCCEEDED(pEffect->SetBool(m_name.c_str(), m_value));
-}
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 
-bool SimpleEffectProperty<int>::applyProperty(LPD3DXEFFECT pEffect) const
+class TextureEffectProperty : public SimpleEffectProperty<LPDIRECT3DTEXTURE9>
 {
-	return SUCCEEDED(pEffect->SetInt(m_name.c_str(), m_value));
-}
+public:
+	TextureEffectProperty(const char* name, const LPDIRECT3DTEXTURE9& value);
+	TextureEffectProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path);
+};
 
-bool SimpleEffectProperty<float>::applyProperty(LPD3DXEFFECT pEffect) const
-{
-	return SUCCEEDED(pEffect->SetFloat(m_name.c_str(), m_value));
-}
-
-bool SimpleEffectProperty<graph::Vector4>::applyProperty(LPD3DXEFFECT pEffect) const
-{
-	return SUCCEEDED(pEffect->SetVector(m_name.c_str(), &m_value));
-}
-
-bool SimpleEffectProperty<graph::Matrix>::applyProperty(LPD3DXEFFECT pEffect) const
-{
-	return SUCCEEDED(pEffect->SetMatrix(m_name.c_str(), &m_value));
-}
-
-bool SimpleEffectProperty<LPDIRECT3DTEXTURE9>::applyProperty(LPD3DXEFFECT pEffect) const
-{
-	return SUCCEEDED(pEffect->SetTexture(m_name.c_str(), m_value));
-}
 
 TextureEffectProperty::TextureEffectProperty(const char* name, const LPDIRECT3DTEXTURE9& value):
 	SimpleEffectProperty<LPDIRECT3DTEXTURE9>(name, value)
@@ -210,3 +307,4 @@ IEffectProperty::IEffectProperty(const std::string& name):
 {
 
 }
+

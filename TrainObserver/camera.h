@@ -42,6 +42,7 @@ public:
 
 	const Matrix& projection() const;
 	const Matrix& view() const;
+	const Matrix& viewProjection() const;
 
 	const Vector3& up() const;
 	const Vector3& look() const;
@@ -66,5 +67,7 @@ private:
 	Matrix	m_invView;
 	Matrix	m_proj;
 	Matrix	m_invProj;
+
+	Matrix	m_viewProjection;
 };
 

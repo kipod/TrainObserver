@@ -147,6 +147,7 @@
     <ClCompile Include="skybox.cpp" />
     <ClCompile Include="space.cpp" />
     <ClCompile Include="space_renderer.cpp" />
+    <ClCompile Include="texture_manager.cpp" />
     <ClCompile Include="window_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +175,7 @@
     <ClInclude Include="skybox.h" />
     <ClInclude Include="space.h" />
     <ClInclude Include="space_renderer.h" />
+    <ClInclude Include="texture_manager.h" />
     <ClInclude Include="vertex_formats.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>

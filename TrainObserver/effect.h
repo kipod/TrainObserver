@@ -30,9 +30,16 @@ public:
 
 	static Effect* create(LPDIRECT3DDEVICE9 pDevice, const std::string& path);
 
-	template<class T>
-	void setProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value);
+	void setInt(LPDIRECT3DDEVICE9 pDevice, const char* name, int value);
+	void setBool(LPDIRECT3DDEVICE9 pDevice, const char* name, bool value);
+	void setFloat(LPDIRECT3DDEVICE9 pDevice, const char* name, float value);
+	void setVector(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXVECTOR4& value);
+	void setMatrix(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXMATRIX& value); 
+	void setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const LPDIRECT3DTEXTURE9& value);
+	void setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path);
 
+	template<class T>
+	void setValue(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value);
 private:
 	Effect();
 
@@ -53,50 +60,27 @@ public:
 };
 
 
-template<typename T>
-class SimpleEffectProperty : public IEffectProperty
-{
-
-public:
-	SimpleEffectProperty(const char* name);
-	SimpleEffectProperty(const char* name, const T& value);
-
-	bool applyProperty(LPD3DXEFFECT pEffect) const;
-	bool setValue(const T& value);
-protected:
-	T			m_value;
-};
-
-template<typename T>
-bool SimpleEffectProperty<T>::setValue(const T& value)
-{
-	m_value = value;
-}
-
-template<typename T>
-SimpleEffectProperty<T>::SimpleEffectProperty(const char* name) :
-	IEffectProperty(name)
-{
-}
-
-template<typename T>
-SimpleEffectProperty<T>::SimpleEffectProperty(const char* name, const T& value) :
-	IEffectProperty(name),
-	m_value(value)
-{
-}
-
-class TextureEffectProperty : public SimpleEffectProperty<LPDIRECT3DTEXTURE9>
+template<class T>
+class ValueProperty : public IEffectProperty
 {
 public:
-	TextureEffectProperty(const char* name, const LPDIRECT3DTEXTURE9& value);
-	TextureEffectProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path);
+	ValueProperty(const char* name, const T& value):
+		IEffectProperty(name),
+		m_value(value)
+	{
+	}
+
+	virtual bool applyProperty(LPD3DXEFFECT pEffect) const override
+	{
+		return SUCCEEDED(pEffect->SetValue(m_name.c_str(), &m_value, sizeof(m_value)));
+	}
+private:
+	T m_value;
 };
+
 
 template<class T>
-void Effect::setProperty(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value)
+void Effect::setValue(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value)
 {
-	setProp(new SimpleEffectProperty<T>(name, value));
+	setProp(new ValueProperty<T>(name, value));
 }
-
-

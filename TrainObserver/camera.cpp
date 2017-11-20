@@ -2,8 +2,8 @@
 
 Camera::Camera() :
 	m_nearPlane(0.1f),
-	m_farPlane(100.f),
-	m_fov(2.0f),
+	m_farPlane(10000.f),
+	m_fov(D3DXToRadian(102.0f)),
 	m_aspectRatio(1.333f),
 	m_viewHeight(100)
 {
@@ -22,8 +22,8 @@ void Camera::init(float nearPlane, float farPlane, float fov, float aspectRatio)
 	m_aspectRatio = aspectRatio;
 
 	// Setup View Matrix Values
-	lookAt(Vector3(0.0f, 0.0f, 0.0f),
-		Vector3(0.0f, 0.0f, -20.0f),
+	lookAt(Vector3(10.0f, 10.0f, 10.0f),
+		Vector3(0.0f, 0.0f, 0.0f),
 		Vector3(0.0f, 1.0f, 0.0f));
 	updateProjection();
 }
@@ -96,11 +96,13 @@ void Camera::lookAt(const Vector3& eye, const Vector3& at, const Vector3& up)
 {
 	m_pos = eye;
 	m_look = at - eye;
+	m_look.Normalize();
 	m_up = up;
 
 	// Setup View Matrix Values
-	D3DXMatrixLookAtLH(&m_view, &m_pos, &m_look, &m_up);
+	D3DXMatrixLookAtLH(&m_view, &m_pos, &at, &m_up);
 	D3DXMatrixInverse(&m_invView, NULL, &m_view);
+	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
 }
 
 /**
@@ -133,6 +135,11 @@ const graph::Matrix& Camera::view() const
 	return m_view;
 }
 
+const graph::Matrix& Camera::viewProjection() const
+{
+	return m_viewProjection;
+}
+
 const graph::Vector3& Camera::up() const
 {
 	return m_up;
@@ -145,7 +152,7 @@ const graph::Vector3& Camera::look() const
 
 void Camera::look(const Vector3& look)
 {
-	D3DXVec3Normalize(&m_look, &look);
+	D3DXVec3Normalize(&m_look,&look);
 	Vector3 right;
 	D3DXVec3Cross(&right, &m_up, &m_look);
 	right.y = 0;
@@ -155,6 +162,7 @@ void Camera::look(const Vector3& look)
 
 	D3DXMatrixLookAtLH(&m_view, &m_pos, &(m_pos + m_look), &m_up);
 	D3DXMatrixInverse(&m_invView, NULL, &m_view);
+	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
 }
 
 const graph::Vector3& Camera::pos() const
@@ -167,11 +175,14 @@ void Camera::pos(const Vector3& pos)
 	m_pos = pos;
 	D3DXMatrixLookAtLH(&m_view, &m_pos, &(m_pos + m_look), &m_up);
 	D3DXMatrixInverse(&m_invView, NULL, &m_view);
+	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
 }
 
 void Camera::updateProjection()
 {
 	D3DXMatrixPerspectiveFovLH(&m_proj, m_fov, m_aspectRatio, m_nearPlane, m_farPlane);
 	D3DXMatrixInverse(&m_invProj, NULL, &m_proj);
+
+	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
 }
 

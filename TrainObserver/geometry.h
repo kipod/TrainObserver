@@ -45,7 +45,7 @@ bool Geometry::create(LPDIRECT3DDEVICE9 pDevice, const std::vector<VertexType>& 
 		sizeInBytes, 
 		0, 
 		VertexType::fvf(),
-		D3DPOOL_DEFAULT, 
+		D3DPOOL_MANAGED, 
 		&m_vb, 
 		NULL);
 	
@@ -57,7 +57,7 @@ bool Geometry::create(LPDIRECT3DDEVICE9 pDevice, const std::vector<VertexType>& 
 
 	// Create our vertex buffer
 	hRet = pDevice->CreateIndexBuffer(
-		indices.size() * sizeof(uint), 
+		indices.size() * sizeof(IndexType), 
 		0, 
 		sizeof(IndexType) == 2 ? D3DFMT_INDEX16 : D3DFMT_INDEX32,
 		D3DPOOL_MANAGED, 

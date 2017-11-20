@@ -15,20 +15,21 @@ const vector AmbientLightIntensity = {0.3f, 0.3f, 0.3f, 1.0f};
 texture diffuseTex;
 texture normalTex;
 
-sampler diffuseSml				= SAMPLER(diffuseTex, WRAP)
-sampler normalSml				= SAMPLER(normalTex, WRAP)
+sampler diffuseSml				= SAMPLER(diffuseTex, CLAMP)
+sampler normalSml				= SAMPLER(normalTex, CLAMP)
 
 
 struct VS_INPUT
 {
 	float4 position : POSITION;
-	//float4 normal   : NORMAL;
+	float4 normal   : NORMAL;
 	float2 tc		: TEXCOORD;
 };
 
 struct PS_INPUT
 {
 	float4 position : POSITION;
+	float4 normal   : NORMAL;
 	float4 diffuse	: COLOR;
 	float2 tc		: TEXCOORD0;
 	float height	: TEXCOORD1;
@@ -38,7 +39,7 @@ struct PS_INPUT
 struct PS_OUT
 {
 	float4 color	: COLOR0;
-	float4 z		: COLOR1;
+	//float4 z		: COLOR1;
 };
 
 PS_INPUT vs(VS_INPUT i)
@@ -54,24 +55,23 @@ PS_INPUT vs(VS_INPUT i)
      //
      matrix wvp = mul(World, ViewProjection);
      o.position = mul(i.position, wvp);
-     o.height = mul(i.position, World).y;
-	 o.z = o.position.z * 0.001f;// * g_farPlane.y;
+    // o.height = mul(i.position, World).y;
+	// o.z = o.position.z * 0.001f;// * g_farPlane.y;
 
-	 float4 AmbientMtrl = float4(0.8,1,0.8,1);
-	 vector DiffuseMtrl = float4(1,1,1,1);
+	// float4 AmbientMtrl = float4(0.8,1,0.8,1);
+	// vector DiffuseMtrl = float4(1,1,1,1);
 
      //
      // ѕреобразуем вектор освещени€ и нормаль в пространство вида.
      // ѕрисваиваем компоненте w значение 0, поскольку мы преобразуем
      // векторы, а не точки.
      //
-     //float4 normal = 0;
-     //normal     = mul(i.normal,   World);
+     o.normal = mul(i.normal,   World);
 
      //
      // ¬ычисл€ем косинус угла между вектором света и нормалью
      //
-     //float s = dot(-g_sunLight.dir, normal);
+    // float s = dot(-g_sunLight.dir, o.normal);
 
      //
      // ¬спомните, что если угол между нормалью поверхности
@@ -80,8 +80,8 @@ PS_INPUT vs(VS_INPUT i)
      // 90 градусов, мы присваиваем s ноль, сообща€ тем самым,
      // что поверхность не освещена.
      //
-     //if(s < 0.0f)
-     //     s = 0.0f;
+    // if(s < 0.0f)
+      //    s = 0.0f;
 
      //
      // ќтраженный фоновый свет вычисл€етс€ путем покомпонентного
@@ -98,30 +98,32 @@ PS_INPUT vs(VS_INPUT i)
      // —умма фоновой и рассеиваемой компонент дает нам
      // итоговый цвет вершины.
      //
-     o.diffuse = (AmbientMtrl * AmbientLightIntensity);// +
-                         // (s * (DiffuseLightIntensity * DiffuseMtrl));
+     //o.diffuse = (AmbientMtrl * AmbientLightIntensity);// +
+                          //(s * (DiffuseLightIntensity * DiffuseMtrl));
 
      return o;
 }
 
-PS_OUT ps(PS_INPUT i) : COLOR
+PS_OUT ps(PS_INPUT i)
 {
 	PS_OUT o = (PS_OUT)0;
+	//o.color = float4(1,1,1,1);// saturate(i.diffuse * diffuse);
+	//o.z = float4(i.z,0,0,0 );
 	//if(i.height <= waterHeight)
 	//	discard;
 		
+	//float4 diffuse = float4(1, 1, 1, 1);
 	float4 diffuse = tex2D(diffuseSml, i.tc);
-	diffuse *= tex2D(diffuseSml, -i.tc*0.3f);
+	//diffuse *= tex2D(diffuseSml, -i.tc*0.3f);
 	
-	float4 normal = mul(tex2D(normalSml, i.tc*0.13f) * 
-						tex2D(normalSml, -i.tc*0.623f), World);
-	normalize(normal);
-	float s = dot(-g_sunLight.dir, normal.xyz);
-	//diffuse *= s;
-	
-	o.color = float4(1,1,1,1);// saturate(i.diffuse * diffuse);
-	o.z = float4(i.z,0,0,0 );
+	float4 normal = mul(tex2D(normalSml, i.tc), World);
+	//					tex2D(normalSml, -i.tc*0.623f), World);
+	//normalize(normal);
+	float s = saturate(dot(-g_sunLight.dir, normal.xyz));
+	diffuse *= s;
+	o.color = diffuse;
 	return o;
+	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -131,19 +133,13 @@ Technique Default_VS_1_1
 {
     pass p0
     {
-		Ambient				= float4(1.0f, 1.0f, 1.0f, 1.0f);
-		Lighting			= true;
-		SpecularEnable		= true;
-		DitherEnable		= true;
 		FillMode			= solid;
-		ShadeMode			= gouraud;
-		ZEnable				= true;
-		ZWriteEnable		= true;
-		ZFUNC				= LESSEQUAL;
-		COLORWRITEENABLE1	= 0xFFFFFFFF;
+		//ZEnable				= false;
+//		ZWriteEnable		= true;
+//		ZFUNC				= LESSEQUAL;
+		//COLORWRITEENABLE	= 0xFFFFFFFF;
 		
 		VertexShader = compile vs_3_0 vs();
 		PixelShader = compile ps_3_0 ps();
-    
  	}
 }

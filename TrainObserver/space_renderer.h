@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 class SpaceRenderer
 {
 public:
@@ -11,7 +12,8 @@ public:
 
 
 private:
-	std::vector<class IRenderable*> m_staticMeshes;
-	std::vector<IRenderable*> m_dynamicMeshes;
+	std::unique_ptr<struct SunLight>	m_sun;
+	std::vector<class IRenderable*>		m_staticMeshes;
+	std::vector<IRenderable*>			m_dynamicMeshes;
 };
 

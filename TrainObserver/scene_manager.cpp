@@ -4,6 +4,9 @@
 #include "space_renderer.h"
 
 
+
+
+
 SceneManager::SceneManager():
 	m_renderer(new SpaceRenderer())
 {
@@ -45,7 +48,7 @@ Space& SceneManager::space()
 
 void SceneManager::draw(RendererDX9& renderer)
 {
-	//m_skybox->draw(renderer);
+	m_skybox->draw(renderer);
 	m_renderer->draw(renderer);
 }
 

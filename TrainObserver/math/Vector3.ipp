@@ -133,6 +133,11 @@ inline const float Vector3::LengthSquared() const
 #endif
 }
 
+inline const float Vector3::length() const
+{
+	return sqrtf(LengthSquared());
+}
+
 inline void Vector3::Normalize()
 {
 #if EXT_MATH

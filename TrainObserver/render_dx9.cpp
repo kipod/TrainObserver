@@ -35,7 +35,7 @@ namespace
 RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice, const D3DPRESENT_PARAMETERS& d3dpp):
 	m_pD3DDevice(pDevice)
 {
-	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+	m_camera.init(0.01f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
 
 	RenderSystemDX9::instance().globalEffectProperties().addProperty(PER_FRAME, new CameraViewProjectionEffectProperty(m_camera));
 }
@@ -127,41 +127,53 @@ void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 	Vector3 right;
 	D3DXVec3Cross(&right, &m_camera.up(), &m_camera.look());
 
+	float multiplier = 1.0f;
+
+	if (keys[VK_LSHIFT] & 0x80)
+	{
+		multiplier = 10.0f;
+	}
+	if (keys[VK_LCONTROL] & 0x80)
+	{
+		multiplier = 0.1f;
+	}
+
+	
 
 	// Left
 	if (keys['A'] & 0x80)
 	{
-		pos += -right * deltaTime * 1.f;
+		pos += -right * deltaTime * multiplier;
 	}
 
 	// Right
 	if (keys['D'] & 0x80)
 	{
-		pos += right * deltaTime * 1.f;
+		pos += right * deltaTime * multiplier;
 	}
 
 	// Up
 	if (keys['W'] & 0x80)
 	{
-		pos += m_camera.look() * deltaTime * 1.f;
+		pos += m_camera.look() * deltaTime * multiplier;
 	}
 
 	// Down
 	if (keys['S'] & 0x80)
 	{
-		pos += -m_camera.look() * deltaTime * 1.f;
+		pos += -m_camera.look() * deltaTime * multiplier;
 	}
 
 	// Down
 	if (keys['E'] & 0x80)
 	{
-		pos += graph::Vector3(0.0f, deltaTime, 0.0f);
+		pos += graph::Vector3(0.0f, deltaTime*multiplier, 0.0f);
 	}
 
 	// Up
 	if (keys['Q'] & 0x80)
 	{
-		pos -= graph::Vector3(0.0f, deltaTime, 0.0f);
+		pos -= graph::Vector3(0.0f, deltaTime*multiplier, 0.0f);
 	}
 
 

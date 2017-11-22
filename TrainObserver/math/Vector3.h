@@ -93,6 +93,7 @@ namespace graph
 		void rotateRandomly(float angle);
 
 		const float LengthSquared() const;
+		const float length() const;
 		void Normalize();
 	};
 

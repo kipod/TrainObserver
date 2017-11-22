@@ -71,6 +71,35 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 	m_dynamicMeshes.clear();
 }
 
+void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
+{
+	auto& rs = RenderSystemDX9::instance();
+	Model* newModel = new Model();
+	Geometry* railGeometry = rs.geometryManager().get(RAIL_PATH);
+	Effect* pEffect = rs.effectManager().get(SHADER_PATH);
+	newModel->setup(railGeometry, pEffect);
+
+	Vector3 dir(from - to);
+	float length = dir.length();
+	dir /= length;
+	Vector3 center((from + to)* 0.5f);
+	Matrix tr; tr.id();
+
+	float angle = dir.z >= 0.0f ? acosf(dir.x) : -acosf(dir.x);
+
+	tr.RotateY(angle + PI*0.5f);
+	tr.SetTranslation(center);
+	tr.Scale(length + 0.004f);
+	newModel->setTransform(tr);
+
+	m_staticMeshes.emplace_back(newModel);
+}
+
+void SpaceRenderer::createCity(const Vector3& pos)
+{
+
+}
+
 void SpaceRenderer::setupStaticScene()
 {
 	auto& rs = RenderSystemDX9::instance();
@@ -97,10 +126,8 @@ void SpaceRenderer::setupStaticScene()
 	m_staticMeshes.emplace_back(newModel);
 
 	//RAIL
-	newModel = new Model();
-	Geometry* railGeometry = rs.geometryManager().get(RAIL_PATH);
-	newModel->setup(railGeometry, pEffect);
-	m_staticMeshes.emplace_back(newModel);
+	createRailModel(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.25f, 0.0f, 0.25f));
+	createRailModel(Vector3(0.25f, 0.0f, 0.25f), Vector3(0.5f, 0.0f, 0.5f));
 
 
 }

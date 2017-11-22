@@ -7,6 +7,7 @@
 
 const std::string RAIL_PATH = "meshes/rail/rail.obj";
 const std::string SHADER_PATH = "shaders/simple.fx";
+const float RAIL_CONNECTION_OFFSET = 0.004f;
 
 struct SunLight
 {
@@ -87,9 +88,9 @@ void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 
 	float angle = dir.z >= 0.0f ? acosf(dir.x) : -acosf(dir.x);
 
-	tr.RotateY(angle + PI*0.5f);
+	tr.RotateY(angle + PI*0.5f); // rotate pi/2 because model is pre-rotated horizontally;
 	tr.SetTranslation(center);
-	tr.Scale(length + 0.004f);
+	tr.Scale(length + RAIL_CONNECTION_OFFSET);
 	newModel->setTransform(tr);
 
 	m_staticMeshes.emplace_back(newModel);

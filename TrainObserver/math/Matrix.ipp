@@ -276,6 +276,13 @@ inline void graph::Matrix::Scale( float a )
 	*this *= a;
 }
 
+inline void graph::Matrix::Scale( float x, float y, float z )
+{
+	(*this)[0] *= x;
+	(*this)[1] *= y;
+	(*this)[2] *= z;
+}
+
 inline void graph::Matrix::SetTranslation(const Vector3& v)
 {
 	_41 = v.x;

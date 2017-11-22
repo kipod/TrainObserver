@@ -125,7 +125,7 @@ void AppManager::finalize()
 
 bool AppManager::loadStaticSpace()
 {
-	return m_sceneManager->space().initStaticLayer(*m_connectionManager);
+	return m_sceneManager->initStaticScene(*m_connectionManager);
 }
 
 void AppManager::tick(float deltaTime)

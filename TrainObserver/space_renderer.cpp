@@ -101,7 +101,7 @@ void SpaceRenderer::createCity(const Vector3& pos)
 
 }
 
-void SpaceRenderer::setupStaticScene()
+void SpaceRenderer::setupStaticScene(uint x, uint y)
 {
 	auto& rs = RenderSystemDX9::instance();
 	auto device = rs.renderer().device();
@@ -121,8 +121,10 @@ void SpaceRenderer::setupStaticScene()
 	newModel->effectProperties().setTexture("diffuseTex", "maps/terrain.dds");
 	newModel->effectProperties().setTexture("normalTex", "maps/terrain_normal.jpg");
 
+
 	Matrix transform; transform.id();
 	transform.SetTranslation(graph::Vector3(0.0f, -1.0f, 0.0f));
+	transform.Scale(float(x), 1.0f, float(y));
 	newModel->setTransform(transform);
 	m_staticMeshes.emplace_back(newModel);
 

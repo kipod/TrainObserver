@@ -76,7 +76,7 @@ public:
 	bool initStaticLayer(const ConnectionManager& manager);
 	void updateDynamicLayer(const ConnectionManager& manager);
 
-
+	void addStaticSceneToRender(class SpaceRenderer& renderer);
 
 private:
 	bool loadLines(const JSONQueryReader& reader);

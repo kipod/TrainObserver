@@ -3,6 +3,7 @@
 #include "connection_manager.h"
 #include "log.h"
 #include "render_dx9.h"
+#include "space_renderer.h"
 
 
 
@@ -115,6 +116,11 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 		LOG(MSG_ERROR, "Failed to create dynamic layer on  space. Reason: parcing MAP message failed");
 	}
 
+}
+
+void Space::addStaticSceneToRender(SpaceRenderer& renderer)
+{
+	renderer.setupStaticScene(m_size.x, m_size.y);
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)
@@ -233,6 +239,12 @@ bool Space::loadCoordinates(const JSONQueryReader& reader)
 
 			res->second.pos = pos;
 		}
+
+		auto size = reader.getArray("size");
+		assert(size.size() == 2);
+		m_size.x = size[0].get<uint>();
+		m_size.y = size[1].get<uint>();
+
 		return true;
 	}
 

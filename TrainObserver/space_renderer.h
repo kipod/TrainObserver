@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "defs.hpp"
 
 namespace graph
 {
@@ -14,7 +15,7 @@ public:
 	~SpaceRenderer();
 
 	void draw(class RendererDX9& renderer);
-	void setupStaticScene();
+	void setupStaticScene(uint x, uint y);
 
 	void createRailModel(const graph::Vector3& from, const graph::Vector3& to);
 	void createCity(const graph::Vector3& pos);

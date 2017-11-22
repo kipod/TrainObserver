@@ -16,6 +16,8 @@ public:
 	virtual void draw(RendererDX9& renderer) override;
 	virtual void tick(float deltaTime) override;
 
+	bool initStaticScene(class ConnectionManager& connection);
+
 private:
 	std::unique_ptr<class SkyBox>			m_skybox;
 	std::unique_ptr<Space>					m_space;

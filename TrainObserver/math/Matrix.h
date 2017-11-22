@@ -33,6 +33,7 @@ namespace graph
 		inline void RotateY(float a);
 		inline void RotateZ(float a);
 		inline void Scale(float a);
+		inline void Scale(float x, float y, float z);
 		inline void SetTranslation(const Vector3& v);
 		inline void SetTranslation(float x, float y, float z);
 		inline const Vector3& applyToOrigin() const;

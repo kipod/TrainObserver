@@ -83,9 +83,9 @@ Technique Default_VS_1_1
     pass p0
     {
 		FillMode			= solid;
-		//ZEnable				= false;
-//		ZWriteEnable		= true;
-//		ZFUNC				= LESSEQUAL;
+		ZEnable				= true;
+		ZWriteEnable		= true;
+		ZFUNC				= LESSEQUAL;
 		//COLORWRITEENABLE	= 0xFFFFFFFF;
 		
 		VertexShader = compile vs_3_0 vs();

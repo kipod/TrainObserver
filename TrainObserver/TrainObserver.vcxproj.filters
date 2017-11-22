@@ -29,6 +29,9 @@
     <Filter Include="render\shaders">
       <UniqueIdentifier>{0f021691-da3b-4b2e-8717-164007d785eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fileformats">
+      <UniqueIdentifier>{a77dd152-bc92-4967-a07c-26ce1c333eec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="math\Matrix.cpp">
@@ -88,10 +91,16 @@
     <ClCompile Include="app_manager.cpp">
       <Filter>logic</Filter>
     </ClCompile>
-    <ClCompile Include="effect_manager.cpp">
+    <ClCompile Include="texture_manager.cpp">
       <Filter>render_core</Filter>
     </ClCompile>
-    <ClCompile Include="texture_manager.cpp">
+    <ClCompile Include="fileformats\tiny_obj_loader.cc">
+      <Filter>fileformats</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry_utils.cpp">
+      <Filter>render\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_manager.cpp">
       <Filter>render_core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -171,10 +180,19 @@
     <ClInclude Include="space_renderer.h">
       <Filter>logic</Filter>
     </ClInclude>
-    <ClInclude Include="effect_manager.h">
+    <ClInclude Include="texture_manager.h">
       <Filter>render_core</Filter>
     </ClInclude>
-    <ClInclude Include="texture_manager.h">
+    <ClInclude Include="fileformats\tiny_obj_loader.h">
+      <Filter>fileformats</Filter>
+    </ClInclude>
+    <ClInclude Include="file_loader.h">
+      <Filter>fileformats</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry_utils.h">
+      <Filter>render\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_manager.h">
       <Filter>render_core</Filter>
     </ClInclude>
   </ItemGroup>

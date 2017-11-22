@@ -1,6 +1,5 @@
 
 *.tlog
-*.obj
 *.pdb
 *.idb
 *.ipch
@@ -18,3 +17,5 @@
 *.exe
 *.lib
 *.enc
+*Debug/
+*Release/

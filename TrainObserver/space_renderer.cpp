@@ -3,7 +3,10 @@
 #include "model.h"
 #include "box.h"
 #include "render_dx9.h"
-#include "effect_manager.h"
+#include "resource_manager.h"
+
+const std::string RAIL_PATH = "meshes/rail/rail.obj";
+const std::string SHADER_PATH = "shaders/simple.fx";
 
 struct SunLight
 {
@@ -18,6 +21,24 @@ struct SunLight
 	}
 };
 
+class SunEffectProperty : public IEffectProperty
+{
+
+public:
+	SunEffectProperty(const SunLight& sun) :
+		IEffectProperty("g_sunLight"),
+		m_sun(sun) {}
+
+	virtual bool applyProperty(LPD3DXEFFECT pEffect) const override
+	{
+		return SUCCEEDED(pEffect->SetValue(m_name.c_str(), &m_sun, sizeof(SunLight)));
+	}
+
+private:
+	const SunLight& m_sun;
+
+};
+
 SpaceRenderer::SpaceRenderer():
 	m_sun(new SunLight)
 {
@@ -26,6 +47,8 @@ SpaceRenderer::SpaceRenderer():
 	m_sun->dir.Normalize();
 	m_sun->scale = 10.0f;
 	m_sun->power = 10.0f;
+
+	RenderSystemDX9::instance().globalEffectProperties().addProperty(GLOBAL, new SunEffectProperty(*m_sun.get()));
 }
 
 
@@ -50,24 +73,34 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 
 void SpaceRenderer::setupStaticScene()
 {
-	Box* pGeometry = new Box();
-	auto device = RenderSystemDX9::instance().renderer().device();
-	pGeometry->create(device, graph::Vector3(10, 20, 30));
-	Effect* pEffect = RenderSystemDX9::instance().effectManager().get("shaders/simple.fx");
-	if (pEffect)
+	auto& rs = RenderSystemDX9::instance();
+	auto device = rs.renderer().device();
+
+	Effect* pEffect = rs.effectManager().get(SHADER_PATH);
+	if (!pEffect)
 	{
-		pEffect->setValue(device, "g_sunLight", *m_sun.get());
-		pEffect->setTexture(device, "diffuseTex", "maps/terrain.dds");
-		pEffect->setTexture(device, "normalTex", "maps/terrain_normal.jpg");
-		Model* newModel = new Model();
-
-		newModel->setup(pGeometry, pEffect);
-
-		Matrix m; m.id();
-		//m.Scale(10.0f);
-		//newModel->setTransform(m);
-
-		m_staticMeshes.emplace_back(newModel);
+		LOG(MSG_ERROR, "Cannot load shader %s", SHADER_PATH);
+		return;
 	}
+
+	// TERRAIN
+	Model* newModel = new Model();
+	Box* pTerrain = new Box();
+	pTerrain->create(device);
+	newModel->setup(pTerrain, pEffect);
+	newModel->effectProperties().setTexture("diffuseTex", "maps/terrain.dds");
+	newModel->effectProperties().setTexture("normalTex", "maps/terrain_normal.jpg");
+
+	Matrix transform; transform.id();
+	transform.SetTranslation(graph::Vector3(0.0f, -1.0f, 0.0f));
+	newModel->setTransform(transform);
+	m_staticMeshes.emplace_back(newModel);
+
+	//RAIL
+	newModel = new Model();
+	Geometry* railGeometry = rs.geometryManager().get(RAIL_PATH);
+	newModel->setup(railGeometry, pEffect);
+	m_staticMeshes.emplace_back(newModel);
+
 
 }

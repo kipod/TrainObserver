@@ -6,7 +6,8 @@
 
 
 
-Model::Model()
+Model::Model():
+	m_effectProperties(new EffectProperties())
 {
 	m_transform.id();
 	m_transform.SetTranslation(graph::Vector3(0, 0, 0));
@@ -27,32 +28,9 @@ void Model::draw(RendererDX9& renderer)
 
 	auto pDevice = renderer.device();
 
-	setProperties(pDevice);
+	setProperties();
 
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	pDevice->SetFVF(m_geometry->fvf());
-	pDevice->SetStreamSource(0, m_geometry->vb(), 0, m_geometry->vertexSize());
-	pDevice->SetIndices(m_geometry->ib());
-
-	if (m_effect->begin())
-	{
-		for (UINT i = 0; i < m_effect->numPasses(); i++)
-		{
-			if (m_effect->beginPass(i))
-			{
-				pDevice->DrawIndexedPrimitive(
-					D3DPT_TRIANGLELIST, 
-					0, 
-					0, 
-					m_geometry->numVertices(),
-					0,
-					m_geometry->numTriangles());
-				m_effect->endPass();
-			}
-		}
-
-		m_effect->end();
-	}
+	m_geometry->draw(pDevice, *m_effect);
 }
 
 void Model::setup(Geometry* pGeometry, Effect* pEffect)
@@ -66,9 +44,13 @@ void Model::setTransform(const graph::Matrix& transform)
 	m_transform = transform;
 }
 
-void Model::setProperties(LPDIRECT3DDEVICE9 device)
+EffectProperties& Model::effectProperties()
 {
-	m_effect->setMatrix(device, "World", m_transform);
-	const auto& m = RenderSystemDX9::instance().renderer().camera().viewProjection();
-	m_effect->setMatrix(device, "ViewProjection", m);
+	return *m_effectProperties.get();
+}
+
+void Model::setProperties()
+{
+	m_effectProperties->setMatrix("World", m_transform);
+	m_effectProperties->applyProperties(m_effect);
 }

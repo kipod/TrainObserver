@@ -129,30 +129,20 @@ namespace
 }
 
 
-Effect::Effect()
+void Effect::applyGlobalProperties()
 {
+	RenderSystemDX9::instance().globalEffectProperties().applyProperties(this);
 }
 
-
-bool Effect::setProperties()
+Effect::Effect()
 {
-	bool result = false;
-	if (m_effect)
-	{
-		result = true;
-		for (auto& property : m_properties)
-		{
-			result &= property->applyProperty(m_effect);
-		}
-	}
-
-	return result;
 }
 
 uint Effect::numPasses() const
 {
 	return m_nPasses;
 }
+
 
 Effect::~Effect()
 {
@@ -166,7 +156,7 @@ bool Effect::begin()
 	{
 		m_hasBegun = true;
 		m_effect->SetTechnique(m_technique);
-		setProperties();
+		applyGlobalProperties();
 		return SUCCEEDED(m_effect->Begin(&m_nPasses, 0));
 	}
 	return false;
@@ -209,11 +199,11 @@ void Effect::endPass()
 	m_hasBegunPass = false;
 }
 
-Effect* Effect::create(LPDIRECT3DDEVICE9 pDevice, const std::string& path)
+Effect* Effect::create(const std::string& path)
 {
 	Effect* pEffect = new Effect();
 
-	if (SUCCEEDED(makeEffect(pDevice, pEffect->m_effect, pEffect->m_technique, path.c_str())))
+	if (SUCCEEDED(makeEffect(RenderSystemDX9::instance().renderer().device(), pEffect->m_effect, pEffect->m_technique, path.c_str())))
 	{
 		return pEffect;
 	}
@@ -223,37 +213,46 @@ Effect* Effect::create(LPDIRECT3DDEVICE9 pDevice, const std::string& path)
 }
 
 
-void Effect::setInt(LPDIRECT3DDEVICE9 pDevice, const char* name, int value)
+void Effect::flush()
+{
+	m_effect->CommitChanges();
+}
+
+EffectProperties::~EffectProperties()
+{
+}
+
+void EffectProperties::setInt(const char* name, int value)
 {
 	setProp(new SimpleEffectProperty<int>(name, value));
 }
 
-void Effect::setBool(LPDIRECT3DDEVICE9 pDevice, const char* name, bool value)
+void EffectProperties::setBool(const char* name, bool value)
 {
 	setProp(new SimpleEffectProperty<bool>(name, value));
 }
 
-void Effect::setFloat(LPDIRECT3DDEVICE9 pDevice, const char* name, float value)
+void EffectProperties::setFloat(const char* name, float value)
 {
 	setProp(new SimpleEffectProperty<float>(name, value));
 }
 
-void Effect::setVector(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXVECTOR4& value)
+void EffectProperties::setVector(const char* name, const D3DXVECTOR4& value)
 {
 	setProp(new SimpleEffectProperty<D3DXVECTOR4>(name, value));
 }
 
-void Effect::setMatrix(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXMATRIX& value)
+void EffectProperties::setMatrix(const char* name, const D3DXMATRIX& value)
 {
 	setProp(new SimpleEffectProperty<D3DXMATRIX>(name, value));
 }
 
-void Effect::setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const LPDIRECT3DTEXTURE9& value)
+void EffectProperties::setTexture(const char* name, const LPDIRECT3DTEXTURE9& value)
 {
 	setProp(new SimpleEffectProperty<LPDIRECT3DTEXTURE9>(name, value));
 }
 
-void Effect::setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path)
+void EffectProperties::setTexture(const char* name, const char* path)
 {
 	Texture* pTex = RenderSystemDX9::instance().textureManager().get(path);
 	if (pTex)
@@ -262,9 +261,36 @@ void Effect::setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const char*
 	}
 }
 
-using PChar = char*;
+void EffectProperties::addProperty(IEffectProperty* newProp)
+{
+	setProp(newProp);
+}
 
-void Effect::setProp(IEffectProperty* newProp)
+void EffectProperties::updateProperties()
+{
+	for (auto& property : m_properties)
+	{
+		property->update();
+	}
+}
+
+bool EffectProperties::applyProperties(Effect* pEffect) const
+{
+	bool result = false;
+	if (pEffect)
+	{
+		result = true;
+		for (auto& property : m_properties)
+		{
+			result &= property->applyProperty(pEffect->m_effect);
+		}
+	}
+
+	return result;
+}
+
+
+void EffectProperties::setProp(IEffectProperty* newProp)
 {
 	for (auto& prop : m_properties)
 	{
@@ -308,3 +334,20 @@ IEffectProperty::IEffectProperty(const std::string& name):
 
 }
 
+void EffectConstantManager::addProperty(EConstantType type, IEffectProperty* property)
+{
+	m_properties[type].addProperty(property);
+}
+
+void EffectConstantManager::update(EConstantType type)
+{
+	m_properties[type].updateProperties();
+}
+
+void EffectConstantManager::applyProperties(Effect* pEffect)
+{
+	for (uint i = 0; i < EFFECT_CONSTANT_TYPE_COUNT; ++i)
+	{
+		m_properties[i].applyProperties(pEffect);
+	}
+}

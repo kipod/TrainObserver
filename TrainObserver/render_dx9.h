@@ -6,10 +6,14 @@
 #include "math\Vector3.h"
 #include "window_manager.h"
 #include "camera.h"
+#include "resource_manager.h"
+#include "effect.h"
+#include "geometry.h"
 
 using namespace graph;
 
-
+typedef ResourceManager<Effect> EffectManager;
+typedef ResourceManager<Geometry> GeometryManager;
 
 class RendererDX9 : public IRenderer, public ITickable
 {
@@ -49,8 +53,10 @@ public:
 	virtual void fini() override;
 
 	RendererDX9& renderer();
-	class EffectManager& effectManager();
+	EffectManager& effectManager();
+	GeometryManager& geometryManager();
 	class TextureManager& textureManager();
+	class EffectConstantManager& globalEffectProperties();
 	HRESULT loadEffect(LPD3DXEFFECT& pEffect, D3DXHANDLE& hTechnique, const TCHAR* path);
 	HRESULT loadMesh(LPD3DXMESH& mesh, const TCHAR* path);
 
@@ -64,7 +70,9 @@ private:
 
 	std::unique_ptr<RendererDX9>			m_renderer;
 	std::unique_ptr<EffectManager>			m_effectManager;
+	std::unique_ptr<GeometryManager>		m_geometryManager;
 	std::unique_ptr<TextureManager>			m_textureManager;
+	std::unique_ptr<EffectConstantManager>	m_globalEffectProperties;
 	static RenderSystemDX9*					s_pInstance;
 };
 

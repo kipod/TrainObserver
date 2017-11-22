@@ -1,4 +1,5 @@
 #pragma once
+#include "defs.hpp"
 #include "math\Vector3.h"
 
 struct XYZUV

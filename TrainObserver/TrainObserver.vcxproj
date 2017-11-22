@@ -133,7 +133,9 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="connection_manager.cpp" />
     <ClCompile Include="effect.cpp" />
-    <ClCompile Include="effect_manager.cpp" />
+    <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="fileformats\tiny_obj_loader.cc" />
+    <ClCompile Include="geometry_utils.cpp" />
     <ClCompile Include="json_query_builder.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -157,7 +159,10 @@
     <ClInclude Include="connection_manager.h" />
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="effect.h" />
-    <ClInclude Include="effect_manager.h" />
+    <ClInclude Include="resource_manager.h" />
+    <ClInclude Include="fileformats\tiny_obj_loader.h" />
+    <ClInclude Include="file_loader.h" />
+    <ClInclude Include="geometry_utils.h" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="math\defs.h" />

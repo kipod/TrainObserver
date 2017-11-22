@@ -1,8 +1,10 @@
 #include "render_dx9.h"
 #include <d3dx9.h>
 #include "math\Vector3.h"
-#include "effect_manager.h"
+#include "resource_manager.h"
 #include "texture_manager.h"
+#include "effect.h"
+#include "camera.h"
 
 namespace
 {
@@ -10,12 +12,32 @@ namespace
 
 	const graph::Vector3	g_vecRight(1.0f, 0.0f, 0.0f);
 	const graph::Vector3	g_vecUp(0.0f, 1.0f, 0.0f);    // Up Vector
+
+
+	class CameraViewProjectionEffectProperty : public IEffectProperty
+	{
+
+	public:
+		CameraViewProjectionEffectProperty(const Camera& camera) :
+			IEffectProperty("ViewProjection"),
+			m_camera(camera)
+		{}
+
+		virtual bool applyProperty(LPD3DXEFFECT pEffect) const override
+		{
+			return SUCCEEDED(pEffect->SetMatrix(m_name.c_str(), &m_camera.viewProjection()));
+		}
+	private:
+		const Camera& m_camera;
+	};
 }
 
 RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice, const D3DPRESENT_PARAMETERS& d3dpp):
 	m_pD3DDevice(pDevice)
 {
 	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+
+	RenderSystemDX9::instance().globalEffectProperties().addProperty(PER_FRAME, new CameraViewProjectionEffectProperty(m_camera));
 }
 
 
@@ -137,7 +159,7 @@ void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 	}
 
 	// Up
-	if (keys['E'] & 0x80)
+	if (keys['Q'] & 0x80)
 	{
 		pos -= graph::Vector3(0.0f, deltaTime, 0.0f);
 	}
@@ -174,7 +196,9 @@ RenderSystemDX9& RenderSystemDX9::instance()
 
 RenderSystemDX9::RenderSystemDX9():
 	m_effectManager(new EffectManager()),
-	m_textureManager(new TextureManager())
+	m_geometryManager(new GeometryManager()),
+	m_textureManager(new TextureManager()),
+	m_globalEffectProperties(new EffectConstantManager())
 {
 	s_pInstance = this;
 }
@@ -371,7 +395,17 @@ EffectManager& RenderSystemDX9::effectManager()
 	return *m_effectManager.get();
 }
 
+GeometryManager& RenderSystemDX9::geometryManager()
+{
+	return *m_geometryManager.get();
+}
+
 TextureManager& RenderSystemDX9::textureManager()
 {
 	return *m_textureManager.get();
+}
+
+EffectConstantManager& RenderSystemDX9::globalEffectProperties()
+{
+	return *m_globalEffectProperties.get();
 }

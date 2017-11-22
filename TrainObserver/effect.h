@@ -1,22 +1,68 @@
 #pragma once
 #include <d3dx9effect.h>
 #include <vector>
-#include "defs.hpp"
 #include <memory>
+#include "defs.hpp"
 
 
 class IEffectProperty
 {
 public:
+	virtual ~IEffectProperty() {}
 	IEffectProperty(const std::string& name);
 
 	virtual bool applyProperty(LPD3DXEFFECT pEffect) const = 0;
+	virtual void update() {}
 	const std::string& name() const { return m_name;  }
 
 protected:
 	std::string	m_name;
 };
 
+class EffectProperties
+{
+public:
+	~EffectProperties();
+
+	void setInt(const char* name, int value);
+	void setBool(const char* name, bool value);
+	void setFloat(const char* name, float value);
+	void setVector(const char* name, const D3DXVECTOR4& value);
+	void setMatrix(const char* name, const D3DXMATRIX& value); 
+	void setTexture(const char* name, const LPDIRECT3DTEXTURE9& value);
+	void setTexture(const char* name, const char* path);
+
+	template<class T>
+	void setValue(const char* name, const T& value);
+
+	void addProperty(IEffectProperty*);
+	void updateProperties();
+
+	bool applyProperties(class Effect* pEffect) const;
+private:
+
+	inline void setProp(IEffectProperty* newProp);
+
+private:
+	std::vector< std::shared_ptr<IEffectProperty> > m_properties;
+};
+
+enum EConstantType
+{
+	GLOBAL,
+	PER_FRAME,
+	EFFECT_CONSTANT_TYPE_COUNT
+};
+
+class EffectConstantManager
+{
+public:
+	void addProperty(EConstantType type, IEffectProperty* property);
+	void update(EConstantType type);
+	void applyProperties(Effect* pEffect);
+private:
+	EffectProperties m_properties[EFFECT_CONSTANT_TYPE_COUNT];
+};
 
 class Effect
 {
@@ -27,36 +73,23 @@ public:
 	void end();
 	bool beginPass(uint i);
 	void endPass();
+	uint numPasses() const;
 
-	static Effect* create(LPDIRECT3DDEVICE9 pDevice, const std::string& path);
+	static Effect* create(const std::string& path);
 
-	void setInt(LPDIRECT3DDEVICE9 pDevice, const char* name, int value);
-	void setBool(LPDIRECT3DDEVICE9 pDevice, const char* name, bool value);
-	void setFloat(LPDIRECT3DDEVICE9 pDevice, const char* name, float value);
-	void setVector(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXVECTOR4& value);
-	void setMatrix(LPDIRECT3DDEVICE9 pDevice, const char* name, const D3DXMATRIX& value); 
-	void setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const LPDIRECT3DTEXTURE9& value);
-	void setTexture(LPDIRECT3DDEVICE9 pDevice, const char* name, const char* path);
-
-	template<class T>
-	void setValue(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value);
+	void flush();
 private:
+	void applyGlobalProperties();
 	Effect();
-
-	inline void setProp(IEffectProperty* newProp);
-
-	bool setProperties();
 private:
 	LPD3DXEFFECT	m_effect = nullptr;
 	D3DXHANDLE		m_technique = nullptr;
 	uint			m_nPasses;
-	
-	std::vector< std::unique_ptr<IEffectProperty> > m_properties;
 
 	bool			m_hasBegun = false;
 	bool			m_hasBegunPass = false;
-public:
-	uint numPasses() const;
+
+	friend class EffectProperties;
 };
 
 
@@ -80,7 +113,7 @@ private:
 
 
 template<class T>
-void Effect::setValue(LPDIRECT3DDEVICE9 pDevice, const char* name, const T& value)
+void EffectProperties::setValue(const char* name, const T& value)
 {
 	setProp(new ValueProperty<T>(name, value));
 }

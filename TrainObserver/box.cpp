@@ -1,6 +1,7 @@
 #include "box.h"
 #include "vertex_formats.h"
 #include <vector>
+#include "geometry_utils.h"
 
 typedef XYZNUVTB Vertex;
 
@@ -123,17 +124,7 @@ void XYZNUVtoXYZNUVTB(const XYZNUV& in, XYZNUVTB& out)
 	out.u = in.u;
 	out.v = in.v;
 
-	static graph::Vector3 up1(0, 0, 1);
-	static graph::Vector3 up2(0, 1, 0);
-
-	auto& up = up1;
-	if ((in.normal - up1).LengthSquared() < 0.01f)
-	{
-		up = up2;
-	}
-
-	out.tangent = in.normal * up;
-	out.binormal = in.normal * out.tangent;
+	generateTangentAndBinormal(out);
 }
 
 void fillVertices(std::vector<Vertex>& vertices, std::vector<unsigned short>& indices)
@@ -154,7 +145,7 @@ void fillVertices(std::vector<Vertex>& vertices, std::vector<unsigned short>& in
 	}
 }
 
-bool Box::create(LPDIRECT3DDEVICE9 pDevice, const graph::Vector3& size)
+bool Box::create(LPDIRECT3DDEVICE9 pDevice)
 {
 	static std::vector<Vertex> vertices;
 	static std::vector<unsigned short> indices;
@@ -163,9 +154,8 @@ bool Box::create(LPDIRECT3DDEVICE9 pDevice, const graph::Vector3& size)
 		fillVertices(vertices, indices);
 	}
 
-	if (Geometry::create<Vertex, unsigned short>(pDevice, vertices, indices))
+	if (Geometry::create(pDevice, vertices, true, nullptr, &indices))
 	{
-		m_size = size;
 		return true;
 	}
 

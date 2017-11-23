@@ -44,6 +44,9 @@ public:
 	const Matrix& view() const;
 	const Matrix& viewProjection() const;
 
+	void beginZBIASDraw(float bias);
+	void endZBIASDraw();
+
 	const Vector3& up() const;
 	const Vector3& look() const;
 	const Vector3& pos() const;

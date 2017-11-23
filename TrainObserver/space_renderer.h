@@ -24,4 +24,5 @@ private:
 	std::unique_ptr<struct SunLight>	m_sun;
 	std::vector<class IRenderable*>		m_staticMeshes;
 	std::vector<IRenderable*>			m_dynamicMeshes;
+	class Model*						m_terrain;
 };

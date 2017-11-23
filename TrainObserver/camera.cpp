@@ -140,6 +140,26 @@ const graph::Matrix& Camera::viewProjection() const
 	return m_viewProjection;
 }
 
+float savedNearPlane_, savedFarPlane_;
+
+
+void Camera::beginZBIASDraw(float bias)
+{
+	savedFarPlane_ = m_farPlane;
+	savedNearPlane_ = m_nearPlane;
+	m_nearPlane *= bias;
+	m_farPlane *= bias;
+
+	updateProjection();
+}
+
+void Camera::endZBIASDraw()
+{
+	m_nearPlane = savedNearPlane_;
+	m_farPlane = savedFarPlane_;
+	updateProjection();
+}
+
 const graph::Vector3& Camera::up() const
 {
 	return m_up;

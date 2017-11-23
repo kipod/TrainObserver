@@ -65,6 +65,11 @@ SpaceRenderer::~SpaceRenderer()
 
 void SpaceRenderer::draw(class RendererDX9& renderer)
 {
+	m_terrain->draw(renderer);
+
+	auto& camera = RenderSystemDX9::instance().renderer().camera();
+	camera.beginZBIASDraw(1.001f);
+
 	for (const auto obj : m_staticMeshes)
 	{
 		obj->draw(renderer);
@@ -74,6 +79,8 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 	{
 		obj->draw(renderer);
 	}
+
+	camera.endZBIASDraw();
 
 	m_dynamicMeshes.clear();
 }
@@ -166,13 +173,7 @@ void SpaceRenderer::setupStaticScene(uint x, uint y)
 
 	Matrix transform; transform.id();
 	transform.SetTranslation(graph::Vector3(float(x)*0.5f, -0.5f, float(y)*0.5f));
-	transform.Scale(float(x+20), 1.0f, float(y+20));
+	transform.Scale(float(x + 20), 1.0f, float(y + 20));
 	newModel->setTransform(transform);
-	m_staticMeshes.emplace_back(newModel);
-
-	//RAIL
-	//createRailModel(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.25f, 0.0f, 0.25f));
-	//createRailModel(Vector3(0.25f, 0.0f, 0.25f), Vector3(0.5f, 0.0f, 0.5f));
-
-
+	m_terrain = newModel;
 }

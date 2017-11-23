@@ -10,7 +10,7 @@
 
 namespace
 {
-	const float FAR_PLANE = 1000000.0f;
+	const float FAR_PLANE = 1000.0f;
 
 	const graph::Vector3	g_vecRight(1.0f, 0.0f, 0.0f);
 	const graph::Vector3	g_vecUp(0.0f, 1.0f, 0.0f);    // Up Vector
@@ -47,7 +47,7 @@ RendererDX9::~RendererDX9()
 
 void RendererDX9::init(const D3DPRESENT_PARAMETERS& d3dpp)
 {
-	m_camera.init(0.01f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
 	m_supersampler.reset(new Supersampler(m_pD3DDevice, d3dpp.BackBufferWidth, d3dpp.BackBufferHeight, D3DFMT_A8R8G8B8));
 }
 

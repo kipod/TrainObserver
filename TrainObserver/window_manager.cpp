@@ -26,11 +26,19 @@ int lastx = 0;
 int lasty = 0;
 void WindowManager::onMouseMove(int x, int y, bool bLeftButton)
 {
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		lastx = x;
+		lasty = y;
+		firstTime = false;
+	}
+
 	if (!s_pInstance)
 		return;
 
-	int delta_x = x - 92;
-	int delta_y = y - 69;
+	int delta_x = x - lastx;
+	int delta_y = y - lasty;
 	lastx = x;
 	lasty = y;
 

@@ -50,7 +50,6 @@ void RendererDX9::draw()
 	if (!m_pD3DDevice)
 		return;
 
-	SetCursorPos(100, 100);
 	ShowCursor(FALSE);
 
 	m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,

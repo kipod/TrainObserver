@@ -3,11 +3,11 @@
 
 
 
-class Box: public Geometry
+class Quad : public Geometry
 {
 public:
-	Box();
-	virtual ~Box();
+	Quad();
+	virtual ~Quad();
 
 	bool create(LPDIRECT3DDEVICE9 pDevice);
 };

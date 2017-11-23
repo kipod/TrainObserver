@@ -24,7 +24,7 @@ void Camera::init(float nearPlane, float farPlane, float fov, float aspectRatio)
 	// Setup View Matrix Values
 	lookAt(Vector3(170.0f, 140.0f, -20.0f),
 		Vector3(170.0f, 0.0f, 100.0f),
-		Vector3(0.0f, 1.0f, 1.0f));
+		Vector3(0.0f, 1.0f, 0.0f));
 	updateProjection();
 }
 

@@ -103,6 +103,15 @@
     <ClCompile Include="resource_manager.cpp">
       <Filter>render_core</Filter>
     </ClCompile>
+    <ClCompile Include="render_target.cpp">
+      <Filter>render_core</Filter>
+    </ClCompile>
+    <ClCompile Include="supersampler.cpp">
+      <Filter>render_core</Filter>
+    </ClCompile>
+    <ClCompile Include="quad.cpp">
+      <Filter>render\primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\ext_math.h">
@@ -195,6 +204,15 @@
     <ClInclude Include="resource_manager.h">
       <Filter>render_core</Filter>
     </ClInclude>
+    <ClInclude Include="render_target.h">
+      <Filter>render_core</Filter>
+    </ClInclude>
+    <ClInclude Include="supersampler.h">
+      <Filter>render_core</Filter>
+    </ClInclude>
+    <ClInclude Include="quad.h">
+      <Filter>render\primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="math\Vector3.ipp">
@@ -215,6 +233,9 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\normalmap.fx">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\bb_copy.fx">
       <Filter>render\shaders</Filter>
     </FxCompile>
   </ItemGroup>

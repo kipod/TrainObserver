@@ -166,7 +166,7 @@ void SpaceRenderer::setupStaticScene(uint x, uint y)
 
 	Matrix transform; transform.id();
 	transform.SetTranslation(graph::Vector3(float(x)*0.5f, -0.5f, float(y)*0.5f));
-	transform.Scale(float(x), 1.0f, float(y));
+	transform.Scale(float(x+20), 1.0f, float(y+20));
 	newModel->setTransform(transform);
 	m_staticMeshes.emplace_back(newModel);
 

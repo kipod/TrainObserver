@@ -14,9 +14,9 @@
 #include "skybox.h"
 #include "app_manager.h"
 
-#define PORT			2000              
-#define SERVER_ADDR     "127.0.0.1"     /* localhost */
-#define MAXBUF          1024
+const uint16_t PORT		= 2000;
+const char* SERVER_ADDR = "127.0.0.1";     /* localhost */
+const size_t MAXBUF		= 1024;
 
 #define USER_NAME		"Spectator"
 

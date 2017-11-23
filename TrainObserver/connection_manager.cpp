@@ -73,7 +73,7 @@ void ConnectionManager::reset()
 	}
 }
 
-bool ConnectionManager::connect(const char* servername, int portNumber)
+bool ConnectionManager::connect(const char* servername, uint16_t portNumber)
 {
 	if (!m_initialized)
 	{
@@ -244,7 +244,7 @@ bool ConnectionManager::createSocket()
 	return true;
 }
 
-bool ConnectionManager::initAddr(const char* servername, int portNumber)
+bool ConnectionManager::initAddr(const char* servername, uint16_t portNumber)
 {
 	/*---Initialize server address/port struct---*/
 	m_addr.reset(new sockaddr_in());

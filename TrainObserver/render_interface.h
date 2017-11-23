@@ -2,6 +2,7 @@
 #include "defs.hpp"
 //#include "window_manager.h"
 #include "camera.h"
+#include <memory>
 
 struct Rect
 {
@@ -51,7 +52,7 @@ public:
 	virtual void draw() = 0;
 
 protected:
-	Camera	m_camera;
+	Camera								m_camera;
 };
 
 class IRenderSystem

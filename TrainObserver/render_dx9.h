@@ -19,8 +19,10 @@ class RendererDX9 : public IRenderer, public ITickable
 {
 
 public:
-	RendererDX9(LPDIRECT3DDEVICE9 pDevice, const D3DPRESENT_PARAMETERS& d3dpp);
+	RendererDX9(LPDIRECT3DDEVICE9 pDevice);
 	~RendererDX9();
+
+	void init(const D3DPRESENT_PARAMETERS& d3dpp);
 
 	virtual void draw();
 
@@ -37,6 +39,7 @@ public:
 
 private:
 	LPDIRECT3DDEVICE9						m_pD3DDevice = nullptr;
+	std::unique_ptr<class Supersampler>		m_supersampler;
 
 	std::vector<IRenderable*>				m_renderQueue;
 };

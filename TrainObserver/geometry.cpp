@@ -243,6 +243,15 @@ Geometry::Geometry():
 
 Geometry::~Geometry()
 {
+	if (m_vb)
+		m_vb->Release();
+
+	if (m_ib)
+		m_ib->Release();
+
+	if (m_mesh)
+		m_mesh->Release();
+
 }
 
 Geometry* Geometry::create(const std::string& path, bool normalizeSize)

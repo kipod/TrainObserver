@@ -5,10 +5,12 @@
 #include "texture_manager.h"
 #include "effect.h"
 #include "camera.h"
+#include "render_target.h"
+#include "supersampler.h"
 
 namespace
 {
-	const float FAR_PLANE = 1000000.0f;
+	const float FAR_PLANE = 1000.0f;
 
 	const graph::Vector3	g_vecRight(1.0f, 0.0f, 0.0f);
 	const graph::Vector3	g_vecUp(0.0f, 1.0f, 0.0f);    // Up Vector
@@ -32,17 +34,21 @@ namespace
 	};
 }
 
-RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice, const D3DPRESENT_PARAMETERS& d3dpp):
+RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice):
 	m_pD3DDevice(pDevice)
 {
-	m_camera.init(0.01f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
-
 	RenderSystemDX9::instance().globalEffectProperties().addProperty(PER_FRAME, new CameraViewProjectionEffectProperty(m_camera));
 }
 
 
 RendererDX9::~RendererDX9()
 {
+}
+
+void RendererDX9::init(const D3DPRESENT_PARAMETERS& d3dpp)
+{
+	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+	m_supersampler.reset(new Supersampler(m_pD3DDevice, d3dpp.BackBufferWidth, d3dpp.BackBufferHeight, D3DFMT_A8R8G8B8));
 }
 
 void RendererDX9::draw()
@@ -52,15 +58,20 @@ void RendererDX9::draw()
 
 	ShowCursor(FALSE);
 
-	m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-		D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
 
 	m_pD3DDevice->BeginScene();
+
+	m_supersampler->push();
+
+	m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+		D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
 
 	for (auto& object : m_renderQueue)
 	{
 		object->draw(*this);
 	}
+
+	m_supersampler->pop(m_pD3DDevice);
 
 	m_pD3DDevice->EndScene();
 
@@ -269,7 +280,8 @@ HRESULT RenderSystemDX9::init(HWND hwnd)
 		return hr;
 	}
 
-	m_renderer.reset(new RendererDX9(m_pD3DDevice, m_d3dpp));
+	m_renderer.reset(new RendererDX9(m_pD3DDevice));
+	m_renderer->init(m_d3dpp);
 
 	return S_OK;
 }

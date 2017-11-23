@@ -24,7 +24,7 @@ void Camera::init(float nearPlane, float farPlane, float fov, float aspectRatio)
 	// Setup View Matrix Values
 	lookAt(Vector3(170.0f, 140.0f, -20.0f),
 		Vector3(170.0f, 0.0f, 100.0f),
-		Vector3(0.0f, 1.0f, 1.0f));
+		Vector3(0.0f, 1.0f, 0.0f));
 	updateProjection();
 }
 
@@ -138,6 +138,26 @@ const graph::Matrix& Camera::view() const
 const graph::Matrix& Camera::viewProjection() const
 {
 	return m_viewProjection;
+}
+
+float savedNearPlane_, savedFarPlane_;
+
+
+void Camera::beginZBIASDraw(float bias)
+{
+	savedFarPlane_ = m_farPlane;
+	savedNearPlane_ = m_nearPlane;
+	m_nearPlane *= bias;
+	m_farPlane *= bias;
+
+	updateProjection();
+}
+
+void Camera::endZBIASDraw()
+{
+	m_nearPlane = savedNearPlane_;
+	m_farPlane = savedFarPlane_;
+	updateProjection();
 }
 
 const graph::Vector3& Camera::up() const

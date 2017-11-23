@@ -27,6 +27,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 	AppManager app;
 	uint result = 0;
+
 	if (app.initialize(hInstance, nCmdShow, 1600, 1100))
 	{
 		if (app.connect(SERVER_ADDR, PORT, USER_NAME) && app.loadStaticSpace())

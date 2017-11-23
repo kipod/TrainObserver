@@ -53,12 +53,12 @@ struct VS_INPUT
 struct PS_INPUT
 {
 	float4 position : POSITION;
-	half3 normal   : NORMAL;
+	float3 normal   : NORMAL;
 	float4 diffuse	: COLOR;
 	float2 tc		: TEXCOORD0;
 #ifdef NORMALMAPPING
-	half3 tangent	: TEXCOORD1;
-	half3 binormal	: TEXCOORD2;
+	float3 tangent	: TEXCOORD1;
+	float3 binormal	: TEXCOORD2;
 #endif
 };
 
@@ -92,10 +92,10 @@ PS_OUT ps(PS_INPUT i)
 
 #ifdef NORMALMAPPING
 	float4 nn = mul(tex2D(normalSml, i.tc), World);
-	half3x3 TBN = half3x3(i.tangent, i.binormal, i.normal);
-	half3  normal = normalize(mul(nn.xyz, TBN));
+	float3x3 TBN = half3x3(i.tangent, i.binormal, i.normal);
+	float3  normal = normalize(mul(nn.xyz, TBN));
 #else
-	half3  normal = i.normal.xyz;
+	float3  normal = i.normal.xyz;
 #endif
 	float s = saturate(dot(-g_sunLight.dir, normal)) + 0.3f;
 	diffuse *= s;

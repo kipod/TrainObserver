@@ -6,14 +6,33 @@
 #include "math\Vector3.h"
 #include "vertex_formats.h"
 #include "geometry_utils.h"
+#include <thread>
+#include <atomic>
+
+struct TextureLoadData
+{
+	std::string path;
+	std::string paramName;
+};
+
+struct PrimitiveGroupLoadData
+{
+	uint vertexOffset = 0;
+	uint indexOffset = 0;
+	uint nTriangles = 0;
+
+	std::vector<TextureLoadData> textureData;
+};
+
+struct GeometryLoadData
+{
+	std::vector<XYZNUVTB>				vertices;
+	std::vector<PrimitiveGroupLoadData> primitiveGroups;
+	bool								normalizeSize = true;
+};
 
 namespace
 {
-	struct ObjMeshData
-	{
-		std::vector<XYZNUVTB>		vertices;
-		std::vector<PrimitiveGroup> primitiveGroups;
-	};
 
 	void generateNormal(XYZNUVTB& v0, XYZNUVTB& v1, XYZNUVTB& v2)
 	{
@@ -27,7 +46,7 @@ namespace
 	}
 
 
-	bool loadObj(LPDIRECT3DDEVICE9 pDevice, const std::string& path, ObjMeshData& outData)
+	bool loadObj(LPDIRECT3DDEVICE9 pDevice, const std::string& path, GeometryLoadData& outData)
 	{
 		std::string err;
 		
@@ -59,10 +78,12 @@ namespace
 
 			bool hasUV = !attrib.texcoords.empty();
 			bool hasNormal = !attrib.normals.empty();
-
+			outData.primitiveGroups.resize(shapes.size());
+			uint i = 0;
 			for (const auto shape : shapes)
 			{
-				PrimitiveGroup primitiveGroup;
+				PrimitiveGroupLoadData& primitiveGroup = outData.primitiveGroups[i++];
+
 				primitiveGroup.nTriangles = shape.mesh.indices.size() / 3;
 				primitiveGroup.vertexOffset = outData.vertices.size();
 				int matId = shape.mesh.material_ids[0];
@@ -81,7 +102,10 @@ namespace
 
 						if (exists)
 						{
-							primitiveGroup.properties.setTexture("diffuseTex", diffTex.c_str());
+							primitiveGroup.textureData.emplace_back();
+							auto& texData = primitiveGroup.textureData.back();
+							texData.paramName = "diffuseTex"; 
+							texData.path = diffTex.c_str();
 						}
 					}
 				}
@@ -117,7 +141,6 @@ namespace
 					}
 				}
 
-				outData.primitiveGroups.emplace_back(primitiveGroup);
 			}
 
 			if (!hasNormal)
@@ -143,7 +166,6 @@ namespace
 			LOG(MSG_ERROR, "Failed to parse .obj");
 			return false;
 		}
-
 
 		return true;
 	}
@@ -225,37 +247,48 @@ Geometry::~Geometry()
 
 Geometry* Geometry::create(const std::string& path, bool normalizeSize)
 {
-	auto pDevice = RenderSystemDX9::instance().renderer().device();
-	Geometry* pGeom = nullptr;
+	Geometry* pGeom = new Geometry();
+	pGeom->m_status = EResouceStatus::OK;
 
 	switch (getType(path.c_str()))
 	{
 	case X:
 	{
+		auto pDevice = RenderSystemDX9::instance().renderer().device();
 		auto mesh = loadMesh(pDevice, path.c_str());
 		if (mesh != nullptr)
 		{
-			pGeom = new Geometry();
 			pGeom->m_mesh = mesh;
+		}
+		else
+		{
+			pGeom->m_status = EResouceStatus::INVALID;
 		}
 		break;
 	}
 	case OBJ:
 	{
-		ObjMeshData meshData;
-		if (loadObj(pDevice, path, meshData))
+		pGeom->m_loadingData.reset(new GeometryLoadData());
+		pGeom->m_loadingData->normalizeSize = normalizeSize;
+		pGeom->m_status = EResouceStatus::LOADING;		
+		std::thread([=]
 		{
-			pGeom = new Geometry();
-			if (!pGeom->create<XYZNUVTB, uint>(pDevice, meshData.vertices, normalizeSize, &meshData.primitiveGroups))
+			auto pDevice = RenderSystemDX9::instance().renderer().device();
+			if (loadObj(pDevice, path, *pGeom->m_loadingData))
 			{
-				delete pGeom;
-				pGeom = nullptr;
+				pGeom->m_status = EResouceStatus::LOADED;
 			}
-		}
+			else
+			{
+				pGeom->m_status = EResouceStatus::INVALID;
+			}
+		}).detach();
+
 		break;
 	}
 	case UNSUPPORTED:
 	default:
+		pGeom->m_status = EResouceStatus::INVALID;
 		break;
 	}
 
@@ -264,6 +297,19 @@ Geometry* Geometry::create(const std::string& path, bool normalizeSize)
 
 void Geometry::draw(LPDIRECT3DDEVICE9 pDevice, Effect& effect)
 {
+	if (m_status == EResouceStatus::LOADED)
+	{
+		if (!createD3DResources())
+		{
+			m_status = EResouceStatus::INVALID;
+		}
+	}
+
+	if (m_status != EResouceStatus::OK)
+	{
+		return;
+	}
+
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
 	if (m_mesh)
@@ -329,5 +375,41 @@ void Geometry::draw(LPDIRECT3DDEVICE9 pDevice, Effect& effect)
 		}
 	}
 
+}
+
+bool Geometry::createD3DResources()
+{
+	if (m_loadingData)
+	{
+		auto device = RenderSystemDX9::instance().renderer().device();
+		m_primitiveGroups.resize(m_loadingData->primitiveGroups.size());
+
+		for (uint i = 0; i < m_loadingData->primitiveGroups.size(); ++i)
+		{
+			const auto& data = m_loadingData->primitiveGroups[i];
+			auto& prim = m_primitiveGroups[i];
+
+			prim.indexOffset = data.indexOffset;
+			prim.nTriangles = data.nTriangles;
+			prim.vertexOffset = data.vertexOffset;
+			
+			for (const auto& texData : data.textureData)
+			{
+				prim.properties.setTexture(texData.paramName.c_str(), texData.path.c_str());
+			}
+		}
+
+		if (!create<XYZNUVTB, uint>(device, m_loadingData->vertices, m_loadingData->normalizeSize))
+		{
+			m_status = EResouceStatus::INVALID;
+		}
+		else
+		{
+			m_status = EResouceStatus::OK;
+		}
+		m_loadingData.reset();
+	}
+
+	return m_status == EResouceStatus::OK;
 }
 

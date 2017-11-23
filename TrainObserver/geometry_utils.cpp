@@ -21,4 +21,7 @@ void generateTangentAndBinormal(XYZNUVTB& v)
 
 	v.tangent = v.normal * up;
 	v.binormal = v.normal * v.tangent;
+
+	v.tangent.Normalize();
+	v.binormal.Normalize();
 }

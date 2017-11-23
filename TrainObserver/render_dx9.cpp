@@ -53,7 +53,6 @@ void RendererDX9::draw()
 	SetCursorPos(100, 100);
 	ShowCursor(FALSE);
 
-	// Clear the background
 	m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
 		D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
 
@@ -64,54 +63,32 @@ void RendererDX9::draw()
 		object->draw(*this);
 	}
 
-	//RenderReflection();
-
-	//if (g_pBBCopyRT->push(RT_Z))
-	//{
-	//	g_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-	//		D3DCOLOR_COLORVALUE(1.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
-	//	RenderSky(false);
-	//	RenderMesh(false);
-	//	g_pBBCopyRT->pop();
-	//}
-
-	// -------------------------------------------------------------       
 	m_pD3DDevice->EndScene();
 
-	// Present the scene to the front buffer
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
 
 void RendererDX9::onMouseMove(int x, int y, int delta_x, int delta_y, bool bLeftButton)
 {
-	//if (bLeftButton)
-	//{
-	//	g_fYaw += 60.0f * float(-delta_x) * 0.01f;
-	//	g_fPitch += 60.0f * float(-delta_y) * 0.01f;
-	//}
-	//else
-	{
-		D3DXMATRIX matXRotation;
-		D3DXMATRIX matYRotation;
-		D3DXMATRIX matRotation;
+	D3DXMATRIX matXRotation;
+	D3DXMATRIX matYRotation;
+	D3DXMATRIX matRotation;
 
-		// Rotate "camera"
-		D3DXMatrixRotationAxis(&matXRotation, &m_camera.up(), float(delta_x) * 0.002f);
-		D3DXMatrixRotationAxis(&matYRotation, &(m_camera.up() * m_camera.look()), float(delta_y) * 0.002f);
-		D3DXMatrixMultiply(&matRotation, &matXRotation, &matYRotation);
+	// Rotate "camera"
+	D3DXMatrixRotationAxis(&matXRotation, &m_camera.up(), float(delta_x) * 0.002f);
+	D3DXMatrixRotationAxis(&matYRotation, &(m_camera.up() * m_camera.look()), float(delta_y) * 0.002f);
+	D3DXMatrixMultiply(&matRotation, &matXRotation, &matYRotation);
 
-		Vector3 look;
-		D3DXVec3TransformNormal(&look, &m_camera.look(), &matRotation);
+	Vector3 look;
+	D3DXVec3TransformNormal(&look, &m_camera.look(), &matRotation);
 
-		m_camera.look(look);
-	}
+	m_camera.look(look);
 }
 
 float fovDelta = 1.0f;
 void RendererDX9::onMouseWheel(int nMouseWheelDelta)
 {
 	fovDelta *= (1.0f - float(nMouseWheelDelta)*0.0002f);
-	// Set up a projection matrix
 	m_camera.fov(D3DXToRadian(102.0f*fovDelta));
 }
 
@@ -131,14 +108,12 @@ void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 
 	if (keys[VK_LSHIFT] & 0x80)
 	{
-		multiplier = 10.0f;
+		multiplier = 30.0f;
 	}
 	if (keys[VK_LCONTROL] & 0x80)
 	{
 		multiplier = 0.1f;
 	}
-
-	
 
 	// Left
 	if (keys['A'] & 0x80)
@@ -223,6 +198,11 @@ RenderSystemDX9::~RenderSystemDX9()
 HRESULT RenderSystemDX9::init(HWND hwnd)
 {
 	HRESULT hr;
+	//if (FAILED(hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_SPEED_OVER_MEMORY)))
+	//{
+	//	return hr;
+	//}
+
 
 	// Create a direct 3D interface object
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -271,10 +251,6 @@ HRESULT RenderSystemDX9::init(HWND hwnd)
 	else
 		dwBehaviorFlags |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 
-	//
-	// Everything checks out - create a simple, windowed device.
-	//
-
 	memset(&m_d3dpp, 0, sizeof(m_d3dpp));
 
 	m_d3dpp.BackBufferFormat = d3ddm.Format;
@@ -296,17 +272,6 @@ HRESULT RenderSystemDX9::init(HWND hwnd)
 
 	m_renderer.reset(new RendererDX9(m_pD3DDevice, m_d3dpp));
 
-
-
-
-	//MakeEffect(g_pMeshEffect, g_hMeshTechnique, _T("shaders/teapot.fx"));
-	//MakeEffect(g_pWaterEffect, g_hWaterTechnique, _T("shaders/water.fx"));
-	//MakeEffect(g_pBottomEffect, g_hBottomTechnique, _T("shaders/normalmap_specmap.fx"));
-
-
-
-	//SetupCfg();
-
 	return S_OK;
 }
 
@@ -323,76 +288,8 @@ void RenderSystemDX9::fini()
 		m_pD3D->Release();
 		m_pD3D = nullptr;
 	}
-}
 
-HRESULT RenderSystemDX9::loadEffect(LPD3DXEFFECT& pEffect, D3DXHANDLE& hTechnique, const TCHAR* path)
-{
-	HRESULT hr;
-	ID3DXBuffer* errorBuffer = NULL;
-
-	//Load the effect file
-	if (FAILED(hr = D3DXCreateEffectFromFile(
-		m_pD3DDevice,
-		path,
-		NULL,
-		NULL,
-		0,
-		NULL,
-		&pEffect,
-		&errorBuffer)))
-	{
-		// Выводим сообщения об ошибках
-		if (errorBuffer)
-		{
-#ifdef UNICODE
-			WCHAR buffer[10000];
-			memset(buffer, 0, 10000);
-			MultiByteToWideChar(CP_ACP, 0, (char*)errorBuffer->GetBufferPointer(), -1, buffer, 10000);
-			::MessageBox(0, buffer, 0, 0);
-#else
-			::MessageBox(0, (char*)errorBuffer->GetBufferPointer(), 0, 0);
-#endif
-			errorBuffer->Release();
-		}
-		return hr;
-	}
-
-	// Find the best technique
-	pEffect->FindNextValidTechnique(NULL, &hTechnique);
-
-	return S_OK;
-}
-
-HRESULT RenderSystemDX9::loadMesh(LPD3DXMESH& mesh, const TCHAR* path)
-{
-	// Create the teapot mesh
-	HRESULT hr = D3DXLoadMeshFromX(path, D3DXMESH_SYSTEMMEM, m_pD3DDevice, NULL, NULL, NULL, NULL, &mesh);
-
-	if (SUCCEEDED(hr))
-	{
-		//D3DXCreateTeapot(g_pD3DDevice, &g_pMesh, NULL);
-		DWORD fvf = mesh->GetFVF();
-		// Флаг D3DFVF_NORMAL указан в формате вершин сетки?
-		if (!(fvf & D3DFVF_NORMAL))
-		{
-			// Нет, клонируем сетку и добавляем флаг D3DFVF_NORMAL
-			// к ее формату вершин:
-			ID3DXMesh* pTempMesh = 0;
-			mesh->CloneMeshFVF(
-				D3DXMESH_MANAGED,
-				fvf | D3DFVF_NORMAL, // добавляем флаг
-				m_pD3DDevice,
-				&pTempMesh);
-
-			// Вычисляем нормали:
-			D3DXComputeNormals(pTempMesh, 0);
-
-			mesh->Release();  // удаляем старую сетку
-			mesh = pTempMesh; // сохраняем новую сетку с нормалями
-		}
-	}
-
-	return hr;
+	//CoUninitialize();
 }
 
 RenderSystemDX9* RenderSystemDX9::s_pInstance = nullptr;

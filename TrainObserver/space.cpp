@@ -87,6 +87,8 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 		return false;
 	}
 
+	postCreateStaticLayer();
+
 	m_staticLayerLoaded = true;
 	LOG(MSG_NORMAL, "Static space layer created. Points: %d. Lines: %d", m_points.size(), m_lines.size());
 	return true;
@@ -118,9 +120,29 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 
 }
 
+Vector3 coordToVector3(const Coords& c)
+{
+	return Vector3(float(c.x), 0.0f, float(c.y));
+}
+
 void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 {
 	renderer.setupStaticScene(m_size.x, m_size.y);
+
+	for (const auto& p : m_lines)
+	{
+		const Line& line = p.second;
+
+		renderer.createRailModel(coordToVector3(line.pt_1->pos), coordToVector3(line.pt_2->pos));
+	}
+
+	for (const auto& p : m_points)
+	{
+		const City& city = p.second;
+
+		renderer.createCity(coordToVector3(city.pos));
+	}
+
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)
@@ -249,4 +271,26 @@ bool Space::loadCoordinates(const JSONQueryReader& reader)
 	}
 
 	return false;
+}
+
+void Space::postCreateStaticLayer()
+{
+	for (auto& p : m_lines)
+	{
+		Line& line = p.second;
+		auto it1 = m_points.find(line.pid_1);
+		auto it2 = m_points.find(line.pid_2);
+
+		if (it1 == m_points.end() || it2 == m_points.end())
+		{
+			LOG(MSG_ERROR, "Incorrect lines vs points connection!");
+			return;
+		}
+
+		line.pt_1 = &it1->second;
+		line.pt_1->lines.emplace_back(&line);
+		
+		line.pt_2 = &it2->second;
+		line.pt_2->lines.emplace_back(&line);
+	}
 }

@@ -84,6 +84,7 @@ private:
 	bool loadTrains(const JSONQueryReader& reader);
 	bool loadPosts(const JSONQueryReader& reader);
 	bool loadCoordinates(const JSONQueryReader& reader);
+	void postCreateStaticLayer();
 private:
 	uint			m_idx;
 	std::string		m_name;

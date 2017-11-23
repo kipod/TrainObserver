@@ -57,8 +57,6 @@ public:
 	GeometryManager& geometryManager();
 	class TextureManager& textureManager();
 	class EffectConstantManager& globalEffectProperties();
-	HRESULT loadEffect(LPD3DXEFFECT& pEffect, D3DXHANDLE& hTechnique, const TCHAR* path);
-	HRESULT loadMesh(LPD3DXMESH& mesh, const TCHAR* path);
 
 	static RenderSystemDX9& instance();
 

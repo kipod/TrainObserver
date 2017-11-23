@@ -211,7 +211,10 @@
     <FxCompile Include="shaders\common.fxh">
       <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="shaders\simple.fx">
+    <FxCompile Include="shaders\lightonly.fx">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\normalmap.fx">
       <Filter>render\shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -154,7 +154,7 @@ bool Box::create(LPDIRECT3DDEVICE9 pDevice)
 		fillVertices(vertices, indices);
 	}
 
-	if (Geometry::create(pDevice, vertices, true, nullptr, &indices))
+	if (Geometry::create(pDevice, vertices, false, &indices))
 	{
 		return true;
 	}

@@ -14,6 +14,14 @@ struct PrimitiveGroup
 
 typedef std::vector<PrimitiveGroup> PrimitiveGroups;
 
+enum EResouceStatus
+{
+	OK,
+	LOADING,
+	LOADED,
+	INVALID
+};
+
 class Geometry
 {
 public:
@@ -25,7 +33,6 @@ public:
 		LPDIRECT3DDEVICE9 pDevice, 
 		std::vector<VertexType>& vertices,
 		bool normalizeSize = true,
-		const PrimitiveGroups* primitiveGroups = nullptr,
 		const std::vector<IndexType>* indices = nullptr	);
 
 	static Geometry* create(const std::string& path, bool normalizeSize = true);
@@ -35,6 +42,7 @@ public:
 private:
 	template<class VertexType>
 	void normalize(std::vector<VertexType>& vertices);
+	bool createD3DResources(); // can be called only from mainthread!
 
 private:
 	LPDIRECT3DVERTEXBUFFER9			m_vb;
@@ -45,7 +53,11 @@ private:
 	uint							m_nVertices;
 	PrimitiveGroups					m_primitiveGroups;
 
+	EResouceStatus					m_status;
+
 	LPD3DXMESH						m_mesh;
+
+	std::unique_ptr<struct GeometryLoadData>	m_loadingData;
 
 };
 
@@ -54,7 +66,6 @@ bool Geometry::create(
 	LPDIRECT3DDEVICE9 pDevice, 
 	std::vector<VertexType>& vertices,
 	bool normalizeSize,
-	const PrimitiveGroups* primitiveGroups,
 	const std::vector<IndexType>* indices )
 {
 	HRESULT hRet;
@@ -66,11 +77,7 @@ bool Geometry::create(
 
 	m_nTriangles = indices ? indices->size() / 3 : 0;
 
-	if (primitiveGroups)
-	{
-		m_primitiveGroups = *primitiveGroups;
-	}
-	else
+	if (m_primitiveGroups.empty())
 	{
 		PrimitiveGroup primGroup;
 		primGroup.indexOffset = 0;

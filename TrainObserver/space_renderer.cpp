@@ -4,10 +4,16 @@
 #include "box.h"
 #include "render_dx9.h"
 #include "resource_manager.h"
+#include <fstream>
 
 const std::string RAIL_PATH = "meshes/rail/rail.obj";
-const std::string SHADER_PATH = "shaders/simple.fx";
-const float RAIL_CONNECTION_OFFSET = 0.004f;
+const std::string CITY_PATH = "meshes/cities/";
+const uint CITY_COUNT = 5;
+
+const std::string SHADER_LIGHTONLY_PATH = "shaders/lightonly.fx";
+const std::string SHADER_NORMALMAP_PATH = "shaders/normalmap.fx";
+const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
+const float RAIL_SCALE = 30.0f;
 
 struct SunLight
 {
@@ -74,31 +80,67 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 
 void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 {
-	auto& rs = RenderSystemDX9::instance();
-	Model* newModel = new Model();
-	Geometry* railGeometry = rs.geometryManager().get(RAIL_PATH);
-	Effect* pEffect = rs.effectManager().get(SHADER_PATH);
-	newModel->setup(railGeometry, pEffect);
-
-	Vector3 dir(from - to);
+	Vector3 dir(to - from);
 	float length = dir.length();
 	dir /= length;
-	Vector3 center((from + to)* 0.5f);
-	Matrix tr; tr.id();
-
 	float angle = dir.z >= 0.0f ? acosf(dir.x) : -acosf(dir.x);
 
-	tr.RotateY(angle + PI*0.5f); // rotate pi/2 because model is pre-rotated horizontally;
-	tr.SetTranslation(center);
-	tr.Scale(length + RAIL_CONNECTION_OFFSET);
-	newModel->setTransform(tr);
+	uint numTiles = uint(ceilf(length / RAIL_SCALE));
+	float tileLength = length / numTiles;
 
-	m_staticMeshes.emplace_back(newModel);
+	auto& rs = RenderSystemDX9::instance();
+	Geometry* railGeometry = rs.geometryManager().get(RAIL_PATH);
+	Effect* pLightonlyEffect = rs.effectManager().get(SHADER_LIGHTONLY_PATH);
+
+	Matrix tr; tr.id();
+	tr.RotateY(angle + PI*0.5f); // rotate pi/2 because model is pre-rotated horizontally;
+	tr.Scale(tileLength);
+	Vector3 tileDelta(dir * (tileLength * RAIL_CONNECTION_OFFSET));
+	Vector3 center(from + tileDelta * 0.5f);
+	for (uint i = 1; i <= numTiles; ++i)
+	{
+		Model* newModel = new Model();
+		newModel->setup(railGeometry, pLightonlyEffect);
+
+		tr.SetTranslation(center);
+		center += tileDelta;
+		newModel->setTransform(tr);
+		m_staticMeshes.emplace_back(newModel);
+	}
 }
 
 void SpaceRenderer::createCity(const Vector3& pos)
 {
+	//return;
+	char buf[3];
+	static int cityIdx = 0;
+	_itoa_s(cityIdx+1, buf, 10);
+	std::string dir = CITY_PATH + buf + "/";
+	std::string cityPath = dir + "city.obj";
+	cityIdx = (cityIdx + 1) % CITY_COUNT;
 
+	auto& rs = RenderSystemDX9::instance();
+	Model* newModel = new Model();
+	Geometry* cityGeometry = rs.geometryManager().get(cityPath);
+	Effect* pLightonlyEffect = rs.effectManager().get(SHADER_LIGHTONLY_PATH);
+	newModel->setup(cityGeometry, pLightonlyEffect);
+	
+	std::string transformPath = dir + "transform.txt";
+	std::ifstream fs(transformPath);
+	
+	float yOffset = 0.0f;
+	float scale = 30.0f;
+	if (!fs.fail())
+	{
+		fs >> yOffset;
+		fs >> scale;
+	}
+
+	Matrix tr; tr.id();
+	tr.Scale(scale);
+	tr.SetTranslation(Vector3(pos.x, yOffset + pos.y, pos.z));
+	newModel->setTransform(tr);
+	m_staticMeshes.emplace_back(newModel);
 }
 
 void SpaceRenderer::setupStaticScene(uint x, uint y)
@@ -106,10 +148,10 @@ void SpaceRenderer::setupStaticScene(uint x, uint y)
 	auto& rs = RenderSystemDX9::instance();
 	auto device = rs.renderer().device();
 
-	Effect* pEffect = rs.effectManager().get(SHADER_PATH);
+	Effect* pEffect = rs.effectManager().get(SHADER_NORMALMAP_PATH);
 	if (!pEffect)
 	{
-		LOG(MSG_ERROR, "Cannot load shader %s", SHADER_PATH);
+		LOG(MSG_ERROR, "Cannot load shader %s", SHADER_NORMALMAP_PATH);
 		return;
 	}
 
@@ -123,14 +165,14 @@ void SpaceRenderer::setupStaticScene(uint x, uint y)
 
 
 	Matrix transform; transform.id();
-	transform.SetTranslation(graph::Vector3(0.0f, -1.0f, 0.0f));
+	transform.SetTranslation(graph::Vector3(float(x)*0.5f, -0.5f, float(y)*0.5f));
 	transform.Scale(float(x), 1.0f, float(y));
 	newModel->setTransform(transform);
 	m_staticMeshes.emplace_back(newModel);
 
 	//RAIL
-	createRailModel(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.25f, 0.0f, 0.25f));
-	createRailModel(Vector3(0.25f, 0.0f, 0.25f), Vector3(0.5f, 0.0f, 0.5f));
+	//createRailModel(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.25f, 0.0f, 0.25f));
+	//createRailModel(Vector3(0.25f, 0.0f, 0.25f), Vector3(0.5f, 0.0f, 0.5f));
 
 
 }

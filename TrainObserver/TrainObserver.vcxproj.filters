@@ -17,6 +17,9 @@
     <Filter Include="app">
       <UniqueIdentifier>{8481fa20-e79c-4493-b007-ae11f6ca3c28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{fa2ab05e-6c5b-4a32-9688-1dfab07227af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="connection_manager.cpp">
@@ -81,11 +84,11 @@
     <ClInclude Include="window_manager.h">
       <Filter>app</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\log_interface.h">
-      <Filter>app</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\message_interface.h">
-      <Filter>app</Filter>
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\log_interface.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

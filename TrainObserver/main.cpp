@@ -1,34 +1,47 @@
-#include "log_interface.h"
+#include "stdafx.h"
+
+#include "log.h"
 #include "app_manager.h"
-#include <windows.h>
+#include "connection_dlg.h"
 
-#define PORT			2000              
-#define SERVER_ADDR     "127.0.0.1"     /* localhost */
-#define USER_NAME		"Spectator"
+const size_t MAXBUF = 1024;
 
-int WINAPI WinMain(HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR     lpCmdLine,
-	int       nCmdShow)
+CAppModule _Module;
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	AppManager app;
+	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	ATLASSERT(SUCCEEDED(hRes));
+
+	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
+	::DefWindowProc(NULL, 0, 0, 0L);
+
+	AtlInitCommonControls(ICC_BAR_CLASSES); // add flags to support other controls
+
+	hRes = _Module.Init(NULL, hInstance);
+	ATLASSERT(SUCCEEDED(hRes));
+	ConnectionDialog dlg;
 	uint result = 0;
-
-	if (app.initialize(hInstance, nCmdShow, 1600, 1100))
+	if (IDOK == dlg.DoModal())
 	{
-		if (app.connect(SERVER_ADDR, PORT, USER_NAME) && app.loadStaticSpace())
+		AppManager app;
+		if (app.initialize(hInstance, nCmdShow, 1600, 1100))
 		{
-			result = app.mainLoop();
-
-			app.disconnect();
+			if (app.connect(dlg.serverAddr(), dlg.port(), dlg.userName()) && app.loadStaticSpace())
+			{
+				result = app.mainLoop();
+				app.disconnect();
+			}
 		}
-	}
-	else
-	{
-		LOG(MSG_ERROR, "Failed to init app");
+		else
+		{
+			LOG(MSG_ERROR, "Failed to init app");
+		}
+		app.finalize();
 	}
 
-	app.finalize();
+	_Module.Term();
+	::CoUninitialize();
 
 	return result;
 }

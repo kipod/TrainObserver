@@ -8,20 +8,22 @@ class ConnectionManager
 {
 public:
 	ConnectionManager();
-	~ConnectionManager();
+	virtual ~ConnectionManager();
+	ConnectionManager(const ConnectionManager&) = delete;
+	ConnectionManager(ConnectionManager&&) = delete;
 
 
 	bool init();
 	void reset();
 
-	bool connect(const char* servername, int portNumber);
+	bool connect(const char* servername, uint16_t portNumber);
 	bool sendMessage(Action actionCode, const std::string* message) const;
 	Result receiveMessage(std::string& message) const;
 
 private:
 	void closeSocket();
 	bool createSocket();
-	bool initAddr(const char* servername, int portNumber);
+	bool initAddr(const char* servername, uint16_t portNumber);
 	bool send(const void* buf, int nbytes) const;
 	int receive(char* buf, uint length) const;
 

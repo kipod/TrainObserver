@@ -52,6 +52,7 @@
     <ClCompile Include="window_manager.cpp">
       <Filter>app</Filter>
     </ClCompile>
+    <ClCompile Include="connection_dlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connection_manager.h">
@@ -90,5 +91,10 @@
     <ClInclude Include="..\common\log_interface.h">
       <Filter>common</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TrainObserver.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -62,7 +62,7 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	return true;
 }
 
-bool AppManager::connect(const char* servername, int portNumber, const char* username)
+bool AppManager::connect(const char* servername, uint16_t portNumber, const char* username)
 {
 	if(m_connected)
 	{

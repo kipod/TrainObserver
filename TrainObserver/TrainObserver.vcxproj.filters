@@ -91,13 +91,10 @@
     <ClInclude Include="..\common\log_interface.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>app</Filter>
-    </ClInclude>
-    <ClInclude Include="connection_dlg.h" />
-    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TrainObserver.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

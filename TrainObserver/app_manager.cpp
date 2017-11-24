@@ -9,12 +9,12 @@
 
 
 
-AppManager::AppManager():
-	m_sceneManager(new SceneManager()),
-	m_windowManager(new WindowManager()),
-	m_renderSystem(new RenderSystemDX9()),
-	m_connectionManager(new ConnectionManager()),
-	m_connected(false)
+AppManager::AppManager()
+	: m_sceneManager(new SceneManager())
+	, m_windowManager(new WindowManager())
+	, m_renderSystem(new RenderSystemDX9())
+	, m_connectionManager(new ConnectionManager())
+	, m_connected(false)
 {
 }
 
@@ -25,7 +25,7 @@ AppManager::~AppManager()
 
 bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint height)
 {
-	if ( FAILED( m_windowManager->create(hInstance, nCmdShow, width, height) ) )
+	if (FAILED(m_windowManager->create(hInstance, nCmdShow, width, height)))
 	{
 		LOG(MSG_ERROR, "Failed to initialize window manager");
 		return false;
@@ -33,14 +33,14 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 
 	initLog(new WindowLog(m_windowManager->hwnd()));
 
-	if ( FAILED( m_renderSystem->init(m_windowManager->hwnd()) ) )
+	if (FAILED(m_renderSystem->init(m_windowManager->hwnd())))
 	{
 		LOG(MSG_ERROR, "Failed to initialize render system");
 		return false;
 	}
 
 
-	if ( FAILED( m_connectionManager->init() ) )
+	if (FAILED(m_connectionManager->init()))
 	{
 		LOG(MSG_ERROR, "Failed to initialize connection manager");
 		return false;
@@ -53,10 +53,10 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	}
 
 	m_windowManager->addInputListener(&m_renderSystem->renderer());
-	
+
 	m_windowManager->addTickListener(this);
 	m_windowManager->addTickListener(&m_renderSystem->renderer());
-	//m_windowManager->addTickListener(m_sceneManager.get());	
+	// m_windowManager->addTickListener(m_sceneManager.get());
 
 
 	return true;
@@ -64,7 +64,7 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 
 bool AppManager::connect(const char* servername, uint16_t portNumber, const char* username)
 {
-	if(m_connected)
+	if (m_connected)
 	{
 		disconnect();
 	}

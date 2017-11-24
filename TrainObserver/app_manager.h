@@ -3,13 +3,11 @@
 #include "defs.hpp"
 #include "message_interface.h"
 
-
-
-class AppManager: public ITickable
+class AppManager : public ITickable
 {
 public:
 	AppManager();
-	~AppManager();
+	virtual ~AppManager();
 
 	bool initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint height);
 	bool connect(const char* servername, uint16_t portNumber, const char* username);
@@ -21,11 +19,10 @@ public:
 	virtual void tick(float deltaTime) override;
 
 private:
-	std::unique_ptr<class WindowManager>		m_windowManager;
-	std::unique_ptr<class RenderSystemDX9>		m_renderSystem;
-	std::unique_ptr<class ConnectionManager>	m_connectionManager;
-	std::unique_ptr<class SceneManager>			m_sceneManager;
+	std::unique_ptr<class WindowManager>	 m_windowManager;
+	std::unique_ptr<class RenderSystemDX9>   m_renderSystem;
+	std::unique_ptr<class ConnectionManager> m_connectionManager;
+	std::unique_ptr<class SceneManager>		 m_sceneManager;
 
 	bool m_connected;
 };
-

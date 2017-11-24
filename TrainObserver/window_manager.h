@@ -15,7 +15,7 @@ public:
 	uint	mainLoop();
 
 
-	static void	onMouseMove(int x, int y, bool bLeftButton);
+	static void	onMouseMove(int x, int y, int delta_x, int delta_y, bool bLeftButton);
 	static void	onMouseWheel(int nMouseWheelDelta);
 
 	void addInputListener(class IInputListener* pListener);

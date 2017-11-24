@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "message_interface.h"
 #include "render_interface.h"
 
 

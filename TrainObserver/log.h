@@ -1,43 +1,28 @@
 #pragma once
-#include "log.h"
 #include "defs.hpp"
+#include "common/log_interface.h"
 
-enum OutputImportance
-{
-	MSG_NORMAL,
-	MSG_WARNING,
-	MSG_ERROR
-};
+
+
+#if ENABLE_LOG
 
 class LogInterface
 {
 public:
+	virtual ~LogInterface();
+
+	static void	init(LogInterface* pImpl);
+	static void log(OutputImportance importance, const char* msg);
 	virtual void logMsg(OutputImportance importance, const char* msg) = 0;
+
+protected:
+	LogInterface() {};
+
+private:
+	static LogInterface* s_pInstance;
 };
 
 void initLog(LogInterface* pInterface);
-
-
-#define ENABLE_LOG 1
-
-#if ENABLE_LOG
-
-class Logger
-{
-public:
-	~Logger();
-
-	static void	init(LogInterface* pImpl);
-	static void log(OutputImportance importance, const char* msg, ...);
-
-private:
-	Logger(LogInterface * pImpl);
-private:
-	static Logger*		s_pInstance;
-	LogInterface*		m_pImpl;
-};
-
-
 
 class ConsoleLog : public LogInterface
 {
@@ -55,11 +40,5 @@ public:
 private:
 	HWND m_parent;
 };
-
-#define LOG(priority, msg, ...) Logger::log(priority, msg, ##__VA_ARGS__);
-
-#else
-
-#define LOG(priority, msg, ...)
 
 #endif

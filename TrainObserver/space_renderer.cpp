@@ -1,24 +1,25 @@
 #include "space_renderer.h"
-#include "render_interface.h"
 #include "model.h"
 #include "box.h"
 #include "render_dx9.h"
 #include "resource_manager.h"
 #include <fstream>
 
-const std::string RAIL_PATH = "meshes/rail/rail.obj";
-const std::string CITY_PATH = "meshes/cities/";
-const uint CITY_COUNT = 5;
+const std::string RAIL_PATH = "content/meshes/rail/rail.obj";
+const std::string CITY_PATH = "content/meshes/cities/";
+const std::string SHADER_LIGHTONLY_PATH = "content/shaders/lightonly.fx";
+const std::string SHADER_NORMALMAP_PATH = "content/shaders/normalmap.fx";
+const std::string TERRAIN_DIFFUSE_TEXTURE_PATH = "content/maps/terrain.dds";
+const std::string TERRAIN_NORMAL_TEXTURE_PATH = "content/maps/terrain_normal.jpg";
 
-const std::string SHADER_LIGHTONLY_PATH = "shaders/lightonly.fx";
-const std::string SHADER_NORMALMAP_PATH = "shaders/normalmap.fx";
+const uint CITY_COUNT = 5;
 const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
 const float RAIL_SCALE = 30.0f;
 
 struct SunLight
 {
-	graph::Vector3 dir;
-	graph::Vector3 color;
+	Vector3 dir;
+	Vector3 color;
 	float  scale;
 	float  power;
 
@@ -49,8 +50,8 @@ private:
 SpaceRenderer::SpaceRenderer():
 	m_sun(new SunLight)
 {
-	m_sun->color = graph::Vector3(1.0f, 0.9f, 0.5f); // light yellow 
-	m_sun->dir = graph::Vector3(0.2f, -1.0f, 0.3f);
+	m_sun->color = Vector3(1.0f, 0.9f, 0.5f); // light yellow 
+	m_sun->dir = Vector3(0.2f, -1.0f, 0.3f);
 	m_sun->dir.Normalize();
 	m_sun->scale = 10.0f;
 	m_sun->power = 10.0f;
@@ -167,12 +168,12 @@ void SpaceRenderer::setupStaticScene(uint x, uint y)
 	Box* pTerrain = new Box();
 	pTerrain->create(device);
 	newModel->setup(pTerrain, pEffect);
-	newModel->effectProperties().setTexture("diffuseTex", "maps/terrain.dds");
-	newModel->effectProperties().setTexture("normalTex", "maps/terrain_normal.jpg");
+	newModel->effectProperties().setTexture("diffuseTex", TERRAIN_DIFFUSE_TEXTURE_PATH.c_str());
+	newModel->effectProperties().setTexture("normalTex", TERRAIN_NORMAL_TEXTURE_PATH.c_str());
 
 
 	Matrix transform; transform.id();
-	transform.SetTranslation(graph::Vector3(float(x)*0.5f, -0.5f, float(y)*0.5f));
+	transform.SetTranslation(Vector3(float(x)*0.5f, -0.5f, float(y)*0.5f));
 	transform.Scale(float(x + 20), 1.0f, float(y + 20));
 	newModel->setTransform(transform);
 	m_terrain = newModel;

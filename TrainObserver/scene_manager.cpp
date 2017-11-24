@@ -17,12 +17,12 @@ SceneManager::~SceneManager()
 bool SceneManager::init(RendererDX9& renderer)
 {
 	const char* skyTextures[] = { 
-		"maps/SkyBox_Front.jpg",
-		"maps/SkyBox_Back.jpg",
-		"maps/SkyBox_Left.jpg",
-		"maps/SkyBox_Right.jpg",
-		"maps/SkyBox_Top.jpg",
-		"maps/SkyBox_Bottom.jpg" };
+		"content/maps/SkyBox_Front.jpg",
+		"content/maps/SkyBox_Back.jpg",
+		"content/maps/SkyBox_Left.jpg",
+		"content/maps/SkyBox_Right.jpg",
+		"content/maps/SkyBox_Top.jpg",
+		"content/maps/SkyBox_Bottom.jpg" };
 
 	bool result = true;
 

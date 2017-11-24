@@ -1,4 +1,4 @@
-
+*.aps
 *.tlog
 *.pdb
 *.idb
@@ -19,3 +19,4 @@
 *.enc
 *Debug/
 *Release/
+.vs/

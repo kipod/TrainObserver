@@ -1,7 +1,34 @@
 #include "log.h"
+
+#if ENABLE_LOG
+
 #include <stdio.h>
 #include <windows.h>
 
+LogInterface::~LogInterface()
+{
+	s_pInstance = nullptr;
+}
+
+LogInterface* LogInterface::s_pInstance = nullptr;
+
+void LogInterface::init(LogInterface* pImpl)
+{
+	s_pInstance = pImpl;
+}
+
+void LogInterface::log(OutputImportance importance, const char* msg)
+{
+	if (s_pInstance)
+	{
+		s_pInstance->logMsg(importance, msg);
+	}
+}
+
+void initLog(LogInterface* pInterface)
+{
+	LogInterface::init(pInterface);
+}
 
 ConsoleLog::ConsoleLog()
 {
@@ -23,51 +50,6 @@ void ConsoleLog::logMsg(OutputImportance importance, const char* msg)
 	}
 }
 
-Logger::Logger(LogInterface* pImpl) : m_pImpl(pImpl)
-{
-}
-
-Logger::~Logger()
-{
-	s_pInstance = nullptr;
-}
-
-Logger* Logger::s_pInstance = nullptr;
-
-void Logger::init(LogInterface* pImpl)
-{
-	s_pInstance = new Logger(pImpl);
-}
-
-void Logger::log(OutputImportance importance, const char* msg, ...)
-{
-	if (s_pInstance && s_pInstance->m_pImpl)
-	{
-		va_list argList;
-		char buffer[2000];
-		__crt_va_start(argList, msg);
-		int result = vsprintf_s(buffer, 2000, msg, argList);
-		__crt_va_end(argList);
-
-		s_pInstance->m_pImpl->logMsg(importance, buffer);
-	}
-}
-
-#if ENABLE_LOG
-
-void initLog(LogInterface* pInterface)
-{
-	Logger::init(pInterface);
-}
-
-#else
-
-void initLog(LogInterface* pInterface)
-{
-}
-
-#endif
-
 WindowLog::WindowLog(HWND parent):
 	m_parent(parent)
 {
@@ -81,3 +63,16 @@ void WindowLog::logMsg(OutputImportance importance, const char* msg)
 		MessageBox(m_parent, msg, "Error!", MB_OK | MB_APPLMODAL | MB_ICONASTERISK);
 	}
 }
+
+void log(OutputImportance priority, const char* msg, ...)
+{
+	va_list argList;
+	char buffer[2000];
+	__crt_va_start(argList, msg);
+	int result = vsprintf_s(buffer, 2000, msg, argList);
+	__crt_va_end(argList);
+
+	LogInterface::log(priority, buffer);
+}
+
+#endif

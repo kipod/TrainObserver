@@ -1,5 +1,6 @@
-#include "log.h"
+#include "log_interface.h"
 #include "app_manager.h"
+#include <windows.h>
 
 #define PORT			2000              
 #define SERVER_ADDR     "127.0.0.1"     /* localhost */

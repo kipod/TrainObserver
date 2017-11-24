@@ -2,11 +2,11 @@
 #include "space.h"
 #include "json_query_builder.h"
 #include "connection_manager.h"
-#include "log.h"
+#include "log_interface.h"
 #include "space_renderer.h"
-#include "math\Vector3.h"
+#include "math\vector3.h"
 
-using Vector3 = graph::Vector3;
+using Vector3 = Vector3;
 
 Space::Space():
 	m_staticLayerLoaded(false)

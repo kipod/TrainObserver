@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="effect.cpp" />
+    <ClCompile Include="render_dx9.cpp" />
+    <ClCompile Include="render_target.cpp" />
+    <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="supersampler.cpp" />
+    <ClCompile Include="texture_manager.cpp" />
+    <ClCompile Include="box.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry_utils.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="quad.cpp">
+      <Filter>primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="file_formats\tiny_obj_loader.cpp">
+      <Filter>file formats</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\effect.h" />
+    <ClInclude Include="include\render_dx9.h" />
+    <ClInclude Include="include\render_interface.h" />
+    <ClInclude Include="include\render_target.h" />
+    <ClInclude Include="include\resource_manager.h" />
+    <ClInclude Include="include\supersampler.h" />
+    <ClInclude Include="include\texture_manager.h" />
+    <ClInclude Include="include\box.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geometry.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geometry_utils.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\quad.h">
+      <Filter>primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vertex_formats.h" />
+    <ClInclude Include="file_formats\tiny_obj_loader.h">
+      <Filter>file formats</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{1731cbb0-817b-4995-abe6-a1c0fc761614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="primitives">
+      <UniqueIdentifier>{c178b54d-f1dc-4509-b2eb-955ef6029714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file formats">
+      <UniqueIdentifier>{aad8e9ad-ef35-4822-abfe-7b6c45433500}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\TrainObserver\shaders\lightonly.fx">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\TrainObserver\shaders\normalmap.fx">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\TrainObserver\shaders\common.fxh">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\TrainObserver\shaders\bb_copy.fx">
+      <Filter>shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

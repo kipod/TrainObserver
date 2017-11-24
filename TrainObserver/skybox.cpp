@@ -1,5 +1,5 @@
 #include "skybox.h"
-#include "log.h"
+#include "log_interface.h"
 #include "render_dx9.h"
 #include "vertex_formats.h"
 #include "texture_manager.h"
@@ -20,40 +20,40 @@
 XYZUV g_SkyboxMesh[24] =
 {
 	// Front quad, NOTE: All quads face inward
-	{ graph::Vector3(-10.0f, -10.0f,  10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(-10.0f,  10.0f,  10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(10.0f, -10.0f,  10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(10.0f,  10.0f,  10.0f),  1.0f, 0.0f },
+	{ Vector3(-10.0f, -10.0f,  10.0f),  0.0f, 1.0f },
+	{ Vector3(-10.0f,  10.0f,  10.0f),  0.0f, 0.0f },
+	{ Vector3(10.0f, -10.0f,  10.0f),  1.0f, 1.0f },
+	{ Vector3(10.0f,  10.0f,  10.0f),  1.0f, 0.0f },
 
 	// Back quad
-	{ graph::Vector3(10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(-10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(-10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
+	{ Vector3(10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
+	{ Vector3(10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
+	{ Vector3(-10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
+	{ Vector3(-10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
 
 	// Left quad
-	{ graph::Vector3(-10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(-10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(-10.0f, -10.0f,  10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(-10.0f,  10.0f,  10.0f),  1.0f, 0.0f },
+	{ Vector3(-10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
+	{ Vector3(-10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
+	{ Vector3(-10.0f, -10.0f,  10.0f),  1.0f, 1.0f },
+	{ Vector3(-10.0f,  10.0f,  10.0f),  1.0f, 0.0f },
 
 	// Right quad
-	{ graph::Vector3(10.0f, -10.0f,  10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(10.0f,  10.0f,  10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
+	{ Vector3(10.0f, -10.0f,  10.0f),  0.0f, 1.0f },
+	{ Vector3(10.0f,  10.0f,  10.0f),  0.0f, 0.0f },
+	{ Vector3(10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
+	{ Vector3(10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
 
 	// Top quad
-	{ graph::Vector3(-10.0f,  10.0f,  10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(-10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(10.0f,  10.0f,  10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
+	{ Vector3(-10.0f,  10.0f,  10.0f),  0.0f, 1.0f },
+	{ Vector3(-10.0f,  10.0f, -10.0f),  0.0f, 0.0f },
+	{ Vector3(10.0f,  10.0f,  10.0f),  1.0f, 1.0f },
+	{ Vector3(10.0f,  10.0f, -10.0f),  1.0f, 0.0f },
 
 	// Bottom quad
-	{ graph::Vector3(-10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
-	{ graph::Vector3(-10.0f, -10.0f,  10.0f),  0.0f, 0.0f },
-	{ graph::Vector3(10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
-	{ graph::Vector3(10.0f, -10.0f,  10.0f),  1.0f, 0.0f }
+	{ Vector3(-10.0f, -10.0f, -10.0f),  0.0f, 1.0f },
+	{ Vector3(-10.0f, -10.0f,  10.0f),  0.0f, 0.0f },
+	{ Vector3(10.0f, -10.0f, -10.0f),  1.0f, 1.0f },
+	{ Vector3(10.0f, -10.0f,  10.0f),  1.0f, 0.0f }
 };
 
 

@@ -1,8 +1,8 @@
 #include "window_manager.h"
 #include <windows.h>
 #include <tchar.h>
-#include "math\Matrix.h"
-#include "render_interface.h"
+#include "math\matrix.h"
+#include "message_interface.h"
 
 struct WindowImpl
 {

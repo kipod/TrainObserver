@@ -1,5 +1,5 @@
 #include "connection_manager.h"
-#include "log.h"
+#include "log_interface.h"
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>

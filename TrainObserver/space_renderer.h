@@ -3,11 +3,6 @@
 #include <memory>
 #include "defs.hpp"
 
-namespace graph
-{
-	struct Vector3;
-}
-
 class SpaceRenderer
 {
 public:
@@ -17,8 +12,8 @@ public:
 	void draw(class RendererDX9& renderer);
 	void setupStaticScene(uint x, uint y);
 
-	void createRailModel(const graph::Vector3& from, const graph::Vector3& to);
-	void createCity(const graph::Vector3& pos);
+	void createRailModel(const struct Vector3& from, const Vector3& to);
+	void createCity(const Vector3& pos);
 
 private:
 	std::unique_ptr<struct SunLight>	m_sun;

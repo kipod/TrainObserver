@@ -6,12 +6,12 @@
 
 struct WindowImpl
 {
-	WNDCLASSEX	winClass;
-	HWND		hwnd;
+	WNDCLASSEX winClass;
+	HWND	   hwnd;
 };
 
-WindowManager::WindowManager():
-	m_impl(new WindowImpl())
+WindowManager::WindowManager()
+	: m_impl(new WindowImpl())
 {
 	s_pInstance = this;
 }
@@ -22,8 +22,8 @@ WindowManager::~WindowManager()
 	s_pInstance = nullptr;
 }
 
-int lastx = 0;
-int lasty = 0;
+int  lastx = 0;
+int  lasty = 0;
 void WindowManager::onMouseMove(int x, int y, bool bLeftButton)
 {
 	static bool firstTime = true;
@@ -79,16 +79,10 @@ HWND WindowManager::hwnd() const
 // Name: WindowProc()
 // Desc: The window's message handler
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK WindowProc(HWND   hWnd,
-	UINT   msg,
-	WPARAM wParam,
-	LPARAM lParam)
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	int xPos = (short)LOWORD(lParam);
-	int yPos = (short)HIWORD(lParam);
-	int nMouseWheelDelta = (short)HIWORD(wParam);
-	int nMouseButtonState = LOWORD(wParam);
-	bool bLeftButton = ((nMouseButtonState & MK_LBUTTON) != 0);
+	static bool bMouseCaptired = false;
+	static bool bIgnoreMouseMove = false;
 
 	switch (msg)
 	{
@@ -99,24 +93,66 @@ LRESULT CALLBACK WindowProc(HWND   hWnd,
 		case VK_ESCAPE:
 			PostQuitMessage(0);
 			break;
-
 		}
 	}
 	break;
-
 	case WM_CLOSE:
 	{
 		PostQuitMessage(0);
 	}
-
+	break;
 	case WM_MOUSEMOVE:
 	{
-		WindowManager::onMouseMove(xPos, yPos, bLeftButton);
+		if (bMouseCaptired && !bIgnoreMouseMove)
+		{
+			int  xPos = LOWORD(lParam);
+			int  yPos = HIWORD(lParam);
+			int  nMouseButtonState = LOWORD(wParam);
+			bool bLeftButton = ((nMouseButtonState & MK_LBUTTON) != 0);
+			WindowManager::onMouseMove(xPos, yPos, bLeftButton);
+
+			RECT rect;
+			::GetClientRect(hWnd, &rect);
+			POINT min = { rect.left, rect.top };
+			//::ClientToScreen(hWnd, &min);
+			POINT max = { rect.right, rect.bottom };
+			//::ClientToScreen(hWnd, &max);
+			if ((xPos <= min.x) || (yPos <= min.y) || (xPos >= max.x) || (yPos >= max.y))
+			{
+				POINT pt = { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+				::ClientToScreen(hWnd, &pt);
+				::SetCursorPos(pt.x, pt.y);
+				bIgnoreMouseMove = true;
+			}
+		}
+		else
+		{
+			if (bIgnoreMouseMove) bIgnoreMouseMove = false;
+		}
 	}
 	break;
 	case WM_MOUSEWHEEL:
 	{
+		int nMouseWheelDelta = (short)HIWORD(wParam);
 		WindowManager::onMouseWheel(nMouseWheelDelta);
+	}
+	break;
+	case WM_ACTIVATE:
+	{
+		switch (wParam)
+		{
+		case WA_CLICKACTIVE:
+		case WA_ACTIVE:
+			::SetCapture(hWnd);
+			bMouseCaptired = true;
+			::ShowCursor(FALSE);
+			break;
+		case WA_INACTIVE:
+			::ReleaseCapture();
+			bMouseCaptired = false;
+			::ShowCursor(TRUE);
+			break;
+		}
 	}
 	break;
 	case WM_DESTROY:
@@ -124,12 +160,10 @@ LRESULT CALLBACK WindowProc(HWND   hWnd,
 		PostQuitMessage(0);
 	}
 	break;
-
 	default:
 	{
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
-	break;
 	}
 
 	return 0;
@@ -143,9 +177,9 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 	m_impl->winClass.style = CS_HREDRAW | CS_VREDRAW;
 	m_impl->winClass.lpfnWndProc = WindowProc;
 	m_impl->winClass.hInstance = hInstance;
-	m_impl->winClass.hIcon = LoadIcon(hInstance, (LPCTSTR)_T("icon.png"));
-	m_impl->winClass.hIconSm = LoadIcon(hInstance, (LPCTSTR)_T("icon.png"));
-	m_impl->winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	m_impl->winClass.hIcon = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
+	m_impl->winClass.hIconSm = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
+	m_impl->winClass.hCursor = ::LoadCursor(hInstance, IDC_CROSS);
 	m_impl->winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	m_impl->winClass.lpszMenuName = NULL;
 	m_impl->winClass.cbClsExtra = 0;
@@ -154,10 +188,19 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 	if (!RegisterClassEx(&m_impl->winClass))
 		return E_FAIL;
 
-	m_impl->hwnd = CreateWindowEx(NULL, _T("MY_WINDOWS_CLASS"),
+	m_impl->hwnd = CreateWindowEx(
+		NULL,
+		_T("MY_WINDOWS_CLASS"),
 		_T("Direct3D 9c"),
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		0, 0, width, height, NULL, NULL, hInstance, NULL);
+		0,
+		0,
+		width,
+		height,
+		NULL,
+		NULL,
+		hInstance,
+		NULL);
 
 	if (m_impl->hwnd == NULL)
 		return E_FAIL;
@@ -170,12 +213,12 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 
 void WindowManager::destroy()
 {
-	UnregisterClass(_T("MY_WINDOWS_CLASS"), m_impl->winClass.hInstance);
+	::UnregisterClass(_T("MY_WINDOWS_CLASS"), m_impl->winClass.hInstance);
 }
 
 uint WindowManager::mainLoop()
 {
-	MSG        uMsg;
+	MSG uMsg;
 	memset(&uMsg, 0, sizeof(uMsg));
 	double curTime;
 	m_lastTime = timeGetTime();

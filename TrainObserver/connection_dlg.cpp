@@ -6,10 +6,10 @@
 
 #ifdef DEBUG
 const uint16_t PORT = 2000;
-const char* SERVER_ADDR = "127.0.0.1";     /* localhost */
+const char*	SERVER_ADDR = "127.0.0.1"; /* localhost */
 #else
 const uint16_t PORT = 443;
-const char* SERVER_ADDR = "wgforge-srv.wargaming.net";     /* official server */
+const char*	SERVER_ADDR = "wgforge-srv.wargaming.net"; /* official server */
 #endif // DEBUG
 
 const char* USER_NAME = "Spectator";
@@ -19,7 +19,6 @@ ConnectionDialog::ConnectionDialog()
 	, m_port(PORT)
 	, m_userName(USER_NAME)
 {
-	
 }
 
 ConnectionDialog::~ConnectionDialog()
@@ -90,7 +89,7 @@ void ConnectionDialog::updateSuccessConnections()
 	m_setSuccessConnections.push_back(std::pair<std::string, uint16_t>("127.0.0.1", 2000));
 	m_setSuccessConnections.push_back(std::pair<std::string, uint16_t>("wgforge-srv.wargaming.net", 443));
 	m_cmbSuccessConn.ResetContent();
-	for (ConnectionData& conn: m_setSuccessConnections)
+	for (ConnectionData& conn : m_setSuccessConnections)
 	{
 		WTL::CString str;
 		str.Format(TEXT("%s:%d"), conn.first.c_str(), conn.second);
@@ -108,15 +107,15 @@ void ConnectionDialog::updateDataFields()
 	int idx = m_cmbSuccessConn.GetCurSel();
 	if (idx != CB_ERR)
 	{
-		auto* conn = reinterpret_cast<ConnectionData *>(m_cmbSuccessConn.GetItemData(idx));
+		auto* conn = reinterpret_cast<ConnectionData*>(m_cmbSuccessConn.GetItemData(idx));
 		m_serverAddr = conn->first;
 		m_port = conn->second;
 		CEdit edit;
 		edit.Attach(GetDlgItem(IDC_EDIT_CONNECT_ADDR));
 		WTL::CString str;
-// 		CComBSTR bstr;
-// 		edit.GetWindowText(&bstr);
-// 		m_
+		// 		CComBSTR bstr;
+		// 		edit.GetWindowText(&bstr);
+		// 		m_
 		edit.SetWindowTextA(conn->first.c_str());
 		edit.Detach();
 		edit.Attach(GetDlgItem(IDC_EDIT_CONNECT_PORT));
@@ -125,7 +124,8 @@ void ConnectionDialog::updateDataFields()
 	}
 }
 
-LRESULT ConnectionDialog::OnCbnSelchangeComboSuccess(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ConnectionDialog::OnCbnSelchangeComboSuccess(
+	WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	updateDataFields();
 	return 0;

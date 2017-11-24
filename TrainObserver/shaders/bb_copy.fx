@@ -9,9 +9,9 @@ sampler diffuseSml =
 sampler_state
 {
 	Texture = bbTex;
-	MipFilter = LINEAR;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
+	MAGFILTER = ANISOTROPIC; 
+	MINFILTER = ANISOTROPIC; 
+	MIPFILTER = ANISOTROPIC; 
 	AddressU = Clamp;
 	AddressV = Clamp;
 };

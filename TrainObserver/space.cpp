@@ -1,11 +1,12 @@
+#include <assert.h>
 #include "space.h"
 #include "json_query_builder.h"
 #include "connection_manager.h"
 #include "log.h"
-#include "render_dx9.h"
 #include "space_renderer.h"
+#include "math\Vector3.h"
 
-
+using Vector3 = graph::Vector3;
 
 Space::Space():
 	m_staticLayerLoaded(false)

@@ -1,6 +1,5 @@
 #include "skybox.h"
 #include "log.h"
-#include <d3dx9tex.h>
 #include "render_dx9.h"
 #include "vertex_formats.h"
 #include "texture_manager.h"

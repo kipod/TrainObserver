@@ -11,9 +11,9 @@ public:
 	SkyBox();
 	~SkyBox();
 
-	bool create(RendererDX9& renderer, const char* textures[6]);
+	bool create(class RendererDX9& renderer, const char* textures[6]);
 
-	virtual void draw(class RendererDX9& renderer) override;
+	virtual void draw(RendererDX9& renderer) override;
 
 private:
 	std::vector<LPDIRECT3DTEXTURE9> m_tiles;

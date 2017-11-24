@@ -74,9 +74,10 @@ public:
 	~Space();
 
 	bool initStaticLayer(const ConnectionManager& manager);
-	void updateDynamicLayer(const ConnectionManager& manager);
+	bool updateDynamicLayer(const ConnectionManager& manager);
 
 	void addStaticSceneToRender(class SpaceRenderer& renderer);
+	void addDynamicSceneToRender(SpaceRenderer& renderer);
 
 private:
 	bool loadLines(const JSONQueryReader& reader);
@@ -96,5 +97,6 @@ private:
 	std::unordered_map<uint, Train> m_trains;
 	std::unordered_map<uint, Post>	m_posts;
 
+	std::unordered_map<uint, uint> m_trainIdToGraphicsId;
 };
 

@@ -130,5 +130,5 @@ bool AppManager::loadStaticSpace()
 
 void AppManager::tick(float deltaTime)
 {
-	m_sceneManager->space().updateDynamicLayer(*m_connectionManager);
+	m_sceneManager->initDynamicScene(*m_connectionManager);
 }

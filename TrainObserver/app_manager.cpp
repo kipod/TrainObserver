@@ -2,9 +2,9 @@
 #include "scene_manager.h"
 #include "window_manager.h"
 #include "connection_manager.h"
+#include "render_dx9.h"
 #include "log.h"
 #include "json_query_builder.h"
-#include <tchar.h>
 #include "space.h"
 
 

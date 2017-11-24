@@ -1,6 +1,5 @@
 #pragma once
 #include "defs.hpp"
-//#include "window_manager.h"
 #include "camera.h"
 #include <memory>
 

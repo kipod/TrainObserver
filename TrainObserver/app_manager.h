@@ -16,13 +16,9 @@ public:
 	uint mainLoop();
 	void disconnect();
 	void finalize();
-
 	bool loadStaticSpace();
 
-
 	virtual void tick(float deltaTime) override;
-
-private:
 
 private:
 	std::unique_ptr<class WindowManager>		m_windowManager;

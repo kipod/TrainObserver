@@ -4,9 +4,6 @@
 #include "space_renderer.h"
 
 
-
-
-
 SceneManager::SceneManager():
 	m_renderer(new SpaceRenderer())
 {

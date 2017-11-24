@@ -1,14 +1,14 @@
 #pragma once
-#include "render_interface.h"
 #include <memory>
 #include <d3dx9.h>
-#include "math\Matrix.h"
-#include "math\Vector3.h"
-#include "window_manager.h"
+
+#include "render_interface.h"
 #include "camera.h"
 #include "resource_manager.h"
 #include "effect.h"
 #include "geometry.h"
+#include "math\Matrix.h"
+#include "math\Vector3.h"
 
 using namespace graph;
 

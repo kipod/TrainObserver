@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "render_dx9.h"
+#include "render_interface.h"
 
 
 

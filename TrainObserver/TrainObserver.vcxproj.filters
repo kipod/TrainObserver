@@ -112,6 +112,7 @@
     <ClCompile Include="quad.cpp">
       <Filter>render\primitives</Filter>
     </ClCompile>
+    <ClCompile Include="connection_dlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\ext_math.h">
@@ -213,6 +214,14 @@
     <ClInclude Include="quad.h">
       <Filter>render\primitives</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="connection_dlg.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="math\Vector3.ipp">
@@ -239,5 +248,15 @@
     <FxCompile Include="shaders\bb_copy.fx">
       <Filter>render\shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TrainObserver.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TrainObserver.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

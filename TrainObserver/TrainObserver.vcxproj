@@ -151,6 +151,7 @@
     <ClCompile Include="app_manager.cpp" />
     <ClCompile Include="box.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="connection_dlg.cpp" />
     <ClCompile Include="connection_manager.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="supersampler.cpp" />
@@ -161,7 +162,11 @@
     <ClCompile Include="geometry_utils.cpp" />
     <ClCompile Include="json_query_builder.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.cpp">
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ShowIncludes>
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ShowIncludes>
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ShowIncludes>
+    </ClCompile>
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\RGB.cpp" />
     <ClCompile Include="math\Vector3.cpp" />
@@ -179,9 +184,12 @@
     <ClInclude Include="app_manager.h" />
     <ClInclude Include="box.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="connection_dlg.h" />
     <ClInclude Include="connection_manager.h" />
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="supersampler.h" />
     <ClInclude Include="quad.h" />
     <ClInclude Include="render_target.h" />
@@ -206,6 +214,7 @@
     <ClInclude Include="skybox.h" />
     <ClInclude Include="space.h" />
     <ClInclude Include="space_renderer.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="texture_manager.h" />
     <ClInclude Include="vertex_formats.h" />
     <ClInclude Include="window_manager.h" />
@@ -232,6 +241,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TrainObserver.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TrainObserver.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

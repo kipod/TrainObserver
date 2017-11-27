@@ -22,25 +22,25 @@ WindowManager::~WindowManager()
 	s_pInstance = nullptr;
 }
 
-int  lastx = 0;
-int  lasty = 0;
-void WindowManager::onMouseMove(int x, int y, bool bLeftButton)
+// int  lastx = 0;
+// int  lasty = 0;
+void WindowManager::onMouseMove(int x, int y, int delta_x, int delta_y, bool bLeftButton)
 {
-	static bool firstTime = true;
-	if (firstTime)
-	{
-		lastx = x;
-		lasty = y;
-		firstTime = false;
-	}
+// 	static bool firstTime = true;
+// 	if (firstTime)
+// 	{
+// 		lastx = x;
+// 		lasty = y;
+// 		firstTime = false;
+// 	}
 
 	if (!s_pInstance)
 		return;
 
-	int delta_x = x - lastx;
-	int delta_y = y - lasty;
-	lastx = x;
-	lasty = y;
+// 	int delta_x = x - lastx;
+// 	int delta_y = y - lasty;
+// 	lastx = x;
+// 	lasty = y;
 
 	for (auto& listener : s_pInstance->m_inputListeners)
 	{
@@ -81,8 +81,9 @@ HWND WindowManager::hwnd() const
 //-----------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static bool bMouseCaptired = false;
+	static bool bMouseCaptured = false;
 	static bool bIgnoreMouseMove = false;
+	static POINT initCursorPos = {0,0};
 
 	switch (msg)
 	{
@@ -103,27 +104,20 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_MOUSEMOVE:
 	{
-		if (bMouseCaptired && !bIgnoreMouseMove)
+		if (bMouseCaptured && !bIgnoreMouseMove)
 		{
-			int  xPos = LOWORD(lParam);
-			int  yPos = HIWORD(lParam);
+			POINT curCursorPos = { 0,0 };
+			::GetCursorPos(&curCursorPos);
 			int  nMouseButtonState = LOWORD(wParam);
 			bool bLeftButton = ((nMouseButtonState & MK_LBUTTON) != 0);
-			WindowManager::onMouseMove(xPos, yPos, bLeftButton);
-
-			RECT rect;
-			::GetClientRect(hWnd, &rect);
-			POINT min = { rect.left, rect.top };
-			//::ClientToScreen(hWnd, &min);
-			POINT max = { rect.right, rect.bottom };
-			//::ClientToScreen(hWnd, &max);
-			if ((xPos <= min.x) || (yPos <= min.y) || (xPos >= max.x) || (yPos >= max.y))
+			POINT delta = { curCursorPos.x - initCursorPos.x, curCursorPos.y - initCursorPos.y };
+			if (delta.x != 0 || delta.y != 0)
 			{
-				POINT pt = { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
-				::ClientToScreen(hWnd, &pt);
-				::SetCursorPos(pt.x, pt.y);
+				WindowManager::onMouseMove(curCursorPos.x, curCursorPos.y, delta.x, delta.y, bLeftButton);
+				::SetCursorPos(initCursorPos.x, initCursorPos.y);
 				bIgnoreMouseMove = true;
 			}
+			
 		}
 		else
 		{
@@ -144,12 +138,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WA_CLICKACTIVE:
 		case WA_ACTIVE:
 			::SetCapture(hWnd);
-			bMouseCaptired = true;
+			bMouseCaptured = true;
 			::ShowCursor(FALSE);
+			::GetCursorPos(&initCursorPos);
 			break;
 		case WA_INACTIVE:
 			::ReleaseCapture();
-			bMouseCaptired = false;
+			bMouseCaptured = false;
 			::ShowCursor(TRUE);
 			break;
 		}

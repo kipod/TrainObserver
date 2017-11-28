@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "app_manager.h"
 #include "scene_manager.h"
 #include "window_manager.h"
@@ -6,6 +7,7 @@
 #include "log.h"
 #include "json_query_builder.h"
 #include "space.h"
+#include "SelectGameDlg.h"
 
 
 
@@ -79,7 +81,7 @@ bool AppManager::connect(const char* servername, uint16_t portNumber, const char
 	JSONQueryWriter writer;
 	writer.add("name", username);
 
-	if (m_connectionManager->sendMessage(Action::LOGIN, &writer.str()))
+	if (m_connectionManager->sendMessage(Action::OBSERVER, &writer.str()))
 	{
 		std::string msg;
 		Result res = m_connectionManager->receiveMessage(msg);
@@ -87,6 +89,32 @@ bool AppManager::connect(const char* servername, uint16_t portNumber, const char
 		{
 			LOG(MSG_NORMAL, "Logged in to server as %s.", username);
 			m_connected = true;
+
+			JSONQueryReader data(msg);
+			std::map<uint32_t, std::string> games;
+			for (const auto& game : data.asArray())
+			{
+				std::string name = game.get<std::string>("name");
+				uint32_t idx = game.get<unsigned int>("idx");
+				games[idx] = name;
+			}
+
+			SelectGameDlg dlg(games);
+			if (IDOK == dlg.DoModal())
+			{
+				uint32_t idGame = dlg.getGameID();
+				JSONQueryWriter writer;
+				writer.add("idx", idGame);
+				if (m_connectionManager->sendMessage(Action::GAME, &writer.str()))
+				{
+					std::string msg;
+					Result res = m_connectionManager->receiveMessage(msg);
+					if (res == Result::OKEY)
+					{
+					}
+				}
+			}
+
 			return true;
 		}
 	}

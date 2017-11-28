@@ -20,6 +20,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{fa2ab05e-6c5b-4a32-9688-1dfab07227af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Diaolgs">
+      <UniqueIdentifier>{f2fb1dcf-9466-44ec-a9f1-c8918346dd51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="connection_manager.cpp">
@@ -52,7 +55,10 @@
     <ClCompile Include="window_manager.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="connection_dlg.cpp" />
+    <ClCompile Include="connection_dlg.cpp">
+      <Filter>Diaolgs</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectGameDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connection_manager.h">
@@ -91,10 +97,22 @@
     <ClInclude Include="..\common\log_interface.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="connection_dlg.h">
+      <Filter>Diaolgs</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h" />
+    <ClInclude Include="SelectGameDlg.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TrainObserver.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

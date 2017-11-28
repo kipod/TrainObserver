@@ -18,6 +18,7 @@ extern CAppModule _Module;
 #include <atlframe.h>
 #include <atlctrls.h>
 #include <atldlgs.h>
+#include <atlmisc.h>
 
 #ifdef _UNICODE
 #if defined _M_IX86

@@ -155,6 +155,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="scene_manager.cpp" />
+    <ClCompile Include="SelectGameDlg.cpp" />
     <ClCompile Include="skybox.cpp" />
     <ClCompile Include="space.cpp" />
     <ClCompile Include="space_renderer.cpp" />
@@ -164,18 +165,26 @@
     <ClInclude Include="..\common\log_interface.h" />
     <ClInclude Include="..\common\message_interface.h" />
     <ClInclude Include="app_manager.h" />
+    <ClInclude Include="connection_dlg.h" />
     <ClInclude Include="connection_manager.h" />
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="scene_manager.h" />
+    <ClInclude Include="SelectGameDlg.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="space.h" />
     <ClInclude Include="space_renderer.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TrainObserver.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -56,7 +56,7 @@ void RendererDX9::draw()
 	if (!m_pD3DDevice)
 		return;
 
-	ShowCursor(FALSE);
+	//ShowCursor(FALSE);
 
 
 	m_pD3DDevice->BeginScene();
@@ -116,7 +116,7 @@ void RendererDX9::processInput(float deltaTime, unsigned char keys[256])
 
 	float multiplier = 1.0f;
 
-	if (keys[VK_LSHIFT] & 0x80)
+	if (!(keys[VK_LSHIFT] & 0x80))
 	{
 		multiplier = 30.0f;
 	}

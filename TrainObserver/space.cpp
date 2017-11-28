@@ -18,7 +18,7 @@ Space::~Space()
 {
 }
 
-JSONQueryReader* getLayer(const ConnectionManager& manager, SpaceLayer layerId)
+std::shared_ptr<JSONQueryReader> getLayer(const ConnectionManager& manager, SpaceLayer layerId)
 {
 	JSONQueryWriter writer;
 	writer.add("layer", layerId); // STATIC layer
@@ -36,7 +36,7 @@ JSONQueryReader* getLayer(const ConnectionManager& manager, SpaceLayer layerId)
 		return nullptr;
 	}
 
-	return new JSONQueryReader(msg);
+	return std::make_shared<JSONQueryReader>(msg);
 }
 
 bool Space::initStaticLayer(const ConnectionManager& manager)
@@ -44,7 +44,7 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 	if (m_staticLayerLoaded)
 		return true;
 
-	std::unique_ptr<JSONQueryReader> reader(getLayer(manager, SpaceLayer::STATIC));
+	auto reader = getLayer(manager, SpaceLayer::STATIC);
 
 	if (reader && reader->isValid())
 	{
@@ -70,7 +70,7 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 	}
 
 	// read geometry coordinates of points
-	reader.reset(getLayer(manager, SpaceLayer::COORDINATES));
+	reader = getLayer(manager, SpaceLayer::COORDINATES);
 
 	if (reader && reader->isValid())
 	{
@@ -100,7 +100,7 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 	m_trains.clear();
 	m_posts.clear();
 
-	std::unique_ptr<JSONQueryReader> reader(getLayer(manager, SpaceLayer::DYNAMIC));
+	auto reader = getLayer(manager, SpaceLayer::DYNAMIC);
 
 	if (reader && reader->isValid())
 	{
@@ -148,7 +148,7 @@ void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 
 bool Space::loadLines(const JSONQueryReader& reader)
 {
-	auto values = reader.getArray("line");
+	auto values = reader.getValue("line").asArray();
 	if (values.size() > 0)
 	{
 		m_lines.reserve(values.size());
@@ -156,7 +156,7 @@ bool Space::loadLines(const JSONQueryReader& reader)
 		{
 			uint idx = value.get<uint>("idx");
 			uint length = value.get<uint>("length");
-			auto points = value.getArray("point");
+			auto points = value.getValue("point").asArray();
 			uint pid_1, pid_2;
 
 			if (points.size() == 2)
@@ -180,7 +180,7 @@ bool Space::loadLines(const JSONQueryReader& reader)
 
 bool Space::loadPoints(const JSONQueryReader& reader)
 {
-	auto values = reader.getArray("point");
+	auto values = reader.getValue("point").asArray();
 	if (values.size() > 0)
 	{
 		m_points.reserve(values.size());
@@ -198,7 +198,7 @@ bool Space::loadPoints(const JSONQueryReader& reader)
 
 bool Space::loadTrains(const JSONQueryReader& reader)
 {
-	auto values = reader.getArray("train");
+	auto values = reader.getValue("train").asArray();
 	if (values.size() > 0)
 	{
 		m_trains.reserve(values.size());
@@ -220,7 +220,7 @@ bool Space::loadTrains(const JSONQueryReader& reader)
 
 bool Space::loadPosts(const JSONQueryReader& reader)
 {
-	auto values = reader.getArray("post");
+	auto values = reader.getValue("post").asArray();
 	if (values.size() > 0)
 	{
 		m_trains.reserve(values.size());
@@ -243,7 +243,7 @@ bool Space::loadPosts(const JSONQueryReader& reader)
 
 bool Space::loadCoordinates(const JSONQueryReader& reader)
 {
-	auto values = reader.getArray("coordinate");
+	auto values = reader.getValue("coordinate").asArray();
 	if (values.size() > 0)
 	{
 		assert( values.size() == m_points.size() );
@@ -263,7 +263,7 @@ bool Space::loadCoordinates(const JSONQueryReader& reader)
 			res->second.pos = pos;
 		}
 
-		auto size = reader.getArray("size");
+		auto size = reader.getValue("size").asArray();
 		assert(size.size() == 2);
 		m_size.x = size[0].get<uint>();
 		m_size.y = size[1].get<uint>();

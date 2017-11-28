@@ -2,7 +2,6 @@
 #include "resource.h"
 
 #include "connection_dlg.h"
-#include <atlmisc.h>
 
 #ifdef DEBUG
 const uint16_t PORT = 2000;

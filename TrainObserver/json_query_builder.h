@@ -37,7 +37,8 @@ public:
 	template<typename T>
 	T get() const;
 
-	std::vector<JSONQueryReader> getArray(const char* name) const;
+	JSONQueryReader getValue(const char* name) const;
+	std::vector<JSONQueryReader> asArray() const;
 
 	bool isValid() const { return m_valid; }
 private:

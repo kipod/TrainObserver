@@ -53,9 +53,9 @@ SpaceRenderer::SpaceRenderer():
 	m_sun(new SunLight)
 {
 	m_sun->color = Vector3(1.0f, 0.9f, 0.5f); // light yellow 
-	m_sun->dir = Vector3(0.2f, -1.0f, 0.3f);
+	m_sun->dir = Vector3(0.5f, -0.15f, 0.85f);
 	m_sun->dir.Normalize();
-	m_sun->scale = 10.0f;
+	m_sun->scale = 1.0f;
 	m_sun->power = 10.0f;
 
 	RenderSystemDX9::instance().globalEffectProperties().addProperty(GLOBAL, new SunEffectProperty(*m_sun.get()));
@@ -121,7 +121,6 @@ void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 
 void SpaceRenderer::createCity(const Vector3& pos)
 {
-	return;
 	char buf[3];
 	static int cityIdx = 0;
 	_itoa_s(cityIdx+1, buf, 10);

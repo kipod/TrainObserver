@@ -33,6 +33,10 @@ Texture* TextureManager::get(const std::string& path)
 	{
 		m_textures.insert(std::make_pair(path, newTexture));
 	}
+	else
+	{
+		LOG(MSG_ERROR, "Cannot load texture %s", path.c_str());
+	}
 
 	return newTexture;
 }

@@ -31,8 +31,6 @@ bool SceneManager::init(RendererDX9& renderer)
 
 	m_space.reset(new Space());
 
-	renderer.addRenderItem(this);
-
 	return result;
 }
 

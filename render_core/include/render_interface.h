@@ -8,6 +8,12 @@ struct Rect
 	uint y;
 	uint width;
 	uint height;
+
+	Rect(uint _x, uint _y, uint w, uint h) :
+		x(_x), y(_y), width(w), height(h)
+	{
+	}
+
 };
 
 struct Point

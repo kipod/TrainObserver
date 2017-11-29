@@ -3,6 +3,8 @@
 #include <tchar.h>
 #include "math\matrix.h"
 #include "message_interface.h"
+#include "render_dx9.h"
+#include "ui_manager.h"
 
 struct WindowImpl
 {
@@ -84,6 +86,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool bMouseCaptured = false;
 	static bool bIgnoreMouseMove = false;
 	static POINT initCursorPos = {0,0};
+	static bool mouseDown = false;
+
+	bool bNoFurtherProcessing = false;
+	auto res = RenderSystemDX9::instance().uiManager().msgProc(hWnd, msg, wParam, lParam, &bNoFurtherProcessing);
+	if (bNoFurtherProcessing)
+	{
+		return res;
+	}
 
 	switch (msg)
 	{
@@ -102,9 +112,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 	}
 	break;
+	case WM_LBUTTONDOWN:
+	{
+		::GetCursorPos(&initCursorPos);
+		mouseDown = true;
+		ShowCursor(FALSE);
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		mouseDown = false;
+		ShowCursor(TRUE);
+		break;
+	}
 	case WM_MOUSEMOVE:
 	{
-		if (bMouseCaptured && !bIgnoreMouseMove)
+		if (mouseDown && bMouseCaptured && !bIgnoreMouseMove)
 		{
 			POINT curCursorPos = { 0,0 };
 			::GetCursorPos(&curCursorPos);
@@ -139,13 +162,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WA_ACTIVE:
 			::SetCapture(hWnd);
 			bMouseCaptured = true;
-			::ShowCursor(FALSE);
+			//::ShowCursor(FALSE);
 			::GetCursorPos(&initCursorPos);
 			break;
 		case WA_INACTIVE:
 			::ReleaseCapture();
 			bMouseCaptured = false;
-			::ShowCursor(TRUE);
+			//::ShowCursor(TRUE);
 			break;
 		}
 	}
@@ -174,7 +197,7 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 	m_impl->winClass.hInstance = hInstance;
 	m_impl->winClass.hIcon = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
 	m_impl->winClass.hIconSm = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
-	m_impl->winClass.hCursor = ::LoadCursor(hInstance, IDC_CROSS);
+	m_impl->winClass.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
 	m_impl->winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	m_impl->winClass.lpszMenuName = NULL;
 	m_impl->winClass.cbClsExtra = 0;
@@ -186,7 +209,7 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 	m_impl->hwnd = CreateWindowEx(
 		NULL,
 		_T("MY_WINDOWS_CLASS"),
-		_T("Direct3D 9c"),
+		_T("Train observer"),
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		0,
 		0,

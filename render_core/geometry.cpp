@@ -107,6 +107,10 @@ namespace
 							texData.paramName = "diffuseTex"; 
 							texData.path = diffTex.c_str();
 						}
+						else
+						{
+							LOG(MSG_ERROR, "Cannot find texture %s", diffTex.c_str());
+						}
 					}
 				}
 

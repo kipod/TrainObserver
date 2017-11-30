@@ -39,11 +39,20 @@ enum Result : uint
 	INCORRECT_RESPOND_FORMAT= 0xff000001
 };
 
+#pragma pack(push)
 struct ActionMessageHeader
 {
     Action actionCode;
     size_t dataLength;
 };
+
+struct ActionMessage
+{
+	ActionMessageHeader header;
+	char buffer[1];
+};
+
+#pragma pack(pop)
 //
 //struct ResposeMessage
 //{

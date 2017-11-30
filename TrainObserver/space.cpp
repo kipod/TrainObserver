@@ -18,19 +18,19 @@ Space::~Space()
 {
 }
 
-std::shared_ptr<JSONQueryReader> getLayer(const ConnectionManager& manager, SpaceLayer layerId)
+std::shared_ptr<JSONQueryReader> getLayer(const ConnectionManager& connect, SpaceLayer layerId)
 {
 	JSONQueryWriter writer;
 	writer.add("layer", layerId); // STATIC layer
 
-	if (!manager.sendMessage(Action::MAP, &writer.str()))
+	if (!connect.sendMessage(Action::MAP, &writer.str()))
 	{
 		LOG(MSG_ERROR, "Failed to create space. Reason: send MAP message failed");
 		return nullptr;
 	}
 
 	std::string msg;
-	if (manager.receiveMessage(msg) != Result::OKEY)
+	if (connect.receiveMessage(msg) != Result::OKEY)
 	{
 		LOG(MSG_ERROR, "Failed to create space. Reason: receive MAP message failed");
 		return nullptr;

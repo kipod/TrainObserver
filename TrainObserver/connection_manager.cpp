@@ -105,21 +105,20 @@ bool ConnectionManager::connect(const char* servername, uint16_t portNumber)
 
 bool ConnectionManager::sendMessage(Action actionCode, const std::string* message) const
 {
-	uint msgLength = message ? message->length() : 0;
+	size_t msgLength = message ? message->length() : 0;
 	if (msgLength > 0)
 	{
-		uint fullLength = msgLength + sizeof(ActionMessageHeader);
-		std::unique_ptr<char> buf(new char[fullLength + 1]);
-		ActionMessageHeader& header = (ActionMessageHeader&)*buf;
-		header.actionCode = actionCode;
-		header.dataLength = msgLength;
-
-		sprintf_s(buf.get() + sizeof(ActionMessageHeader), msgLength + 1, "%s", message->c_str());
-		return send(buf.get(), fullLength);
+		size_t fullLength = msgLength + sizeof(ActionMessageHeader);
+		auto* action = reinterpret_cast<ActionMessage *>(alloca(fullLength)); // stack allocation memory
+		action->header.actionCode = actionCode;
+		action->header.dataLength = msgLength;
+		::memcpy(action->buffer, message->c_str(), msgLength);
+		return send(action, fullLength);
 	}
 	else
 	{
-		return send(&actionCode, sizeof(int));
+		ActionMessageHeader header = { actionCode, 0 };
+		return send(&header, sizeof(header));
 	}
 }
 
@@ -171,7 +170,7 @@ Result ConnectionManager::receiveMessage(std::string& message) const
 	return result;	
 }
 
-bool ConnectionManager::send(const void* buf, int nbytes) const
+bool ConnectionManager::send(const void* buf, size_t nbytes) const
 {
 	if (!m_initialized)
 	{
@@ -185,13 +184,19 @@ bool ConnectionManager::send(const void* buf, int nbytes) const
 		return false;
 	}
 
-
-	int bytesSent = sendto(m_socket, (const char*)buf, nbytes, 0, (sockaddr*)m_addr.get(), sizeof(sockaddr_in));
-
-	if (bytesSent == SOCKET_ERROR)
-	{
-		LOG(MSG_WARNING, "send of message failed!");
+	size_t bytesSent = 0;
+	do {
+		int result = ::send(m_socket, (const char*)buf, (nbytes - bytesSent), 0);
+		if (result == SOCKET_ERROR)
+		{
+			LOG(MSG_ERROR, "send of message failed!");
+			break;
+		}
+		bytesSent += result;
 	}
+	while (bytesSent < nbytes);
+
+	
 
 	return bytesSent == nbytes;
 }

@@ -64,7 +64,7 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	return true;
 }
 
-bool AppManager::connect(const char* servername, uint16_t portNumber, const char* username)
+bool AppManager::connect(const char* servername, uint16_t portNumber)
 {
 	if (m_connected)
 	{
@@ -78,16 +78,13 @@ bool AppManager::connect(const char* servername, uint16_t portNumber, const char
 		return false;
 	}
 
-	JSONQueryWriter writer;
-	writer.add("name", username);
-
-	if (m_connectionManager->sendMessage(Action::OBSERVER, &writer.str()))
+	if (m_connectionManager->sendMessage(Action::OBSERVER))
 	{
 		std::string msg;
 		Result res = m_connectionManager->receiveMessage(msg);
 		if (res == Result::OKEY)
 		{
-			LOG(MSG_NORMAL, "Logged in to server as %s.", username);
+			LOG(MSG_NORMAL, "Logged in to server as Observer.");
 			m_connected = true;
 
 			JSONQueryReader data(msg);
@@ -109,13 +106,9 @@ bool AppManager::connect(const char* servername, uint16_t portNumber, const char
 				{
 					std::string msg;
 					Result res = m_connectionManager->receiveMessage(msg);
-					if (res == Result::OKEY)
-					{
-					}
+					return (res == Result::OKEY);
 				}
 			}
-
-			return true;
 		}
 	}
 

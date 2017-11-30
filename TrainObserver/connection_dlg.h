@@ -31,12 +31,10 @@ public:
 	LRESULT		OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	const char* serverAddr();
 	uint16_t	port();
-	const char* userName();
 
 private:
 	std::string m_serverAddr;
 	uint16_t	m_port;
-	std::string m_userName;
 
 	// 	enum class UPDATE_DATA_TYPE : size_t
 	// 	{

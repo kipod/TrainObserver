@@ -16,7 +16,6 @@ const char* USER_NAME = "Spectator";
 ConnectionDialog::ConnectionDialog()
 	: m_serverAddr(SERVER_ADDR)
 	, m_port(PORT)
-	, m_userName(USER_NAME)
 {
 }
 
@@ -28,10 +27,7 @@ LRESULT ConnectionDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 {
 	CenterWindow(GetParent());
 	m_cmbSuccessConn.Attach(GetDlgItem(IDC_COMBO_SUCCESS));
-	updateSuccessConnections();
-	CEdit edit;
-	edit.Attach(GetDlgItem(IDC_EDIT_CONNECT_USER_NAME));
-	edit.SetWindowTextA(m_userName.c_str());
+	updateSuccessConnections();	
 	return TRUE;
 }
 
@@ -55,14 +51,6 @@ LRESULT ConnectionDialog::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 			WTL::CString str(bstr);
 			m_port = uint16_t(_ttoi(str));
 		}
-		{
-			CEdit edit;
-			edit.Attach(GetDlgItem(IDC_EDIT_CONNECT_USER_NAME));
-			CComBSTR bstr;
-			edit.GetWindowText(&bstr);
-			WTL::CString str(bstr);
-			m_userName = str;
-		}
 	}
 	EndDialog(wID);
 	return 0;
@@ -76,11 +64,6 @@ const char* ConnectionDialog::serverAddr()
 uint16_t ConnectionDialog::port()
 {
 	return m_port;
-}
-
-const char* ConnectionDialog::userName()
-{
-	return m_userName.c_str();
 }
 
 void ConnectionDialog::updateSuccessConnections()

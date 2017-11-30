@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="effect.cpp" />
-    <ClCompile Include="render_dx9.cpp" />
     <ClCompile Include="render_target.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="supersampler.cpp" />
@@ -26,12 +25,19 @@
     <ClCompile Include="file_formats\tiny_obj_loader.cpp">
       <Filter>file formats</Filter>
     </ClCompile>
+    <ClCompile Include="ui_manager.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="render_dx9.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="ui.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\effect.h" />
-    <ClInclude Include="include\render_dx9.h" />
-    <ClInclude Include="include\render_interface.h" />
     <ClInclude Include="include\render_target.h" />
     <ClInclude Include="include\resource_manager.h" />
     <ClInclude Include="include\supersampler.h" />
@@ -55,6 +61,24 @@
     <ClInclude Include="file_formats\tiny_obj_loader.h">
       <Filter>file formats</Filter>
     </ClInclude>
+    <ClInclude Include="include\render_dx9.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render_interface.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="common_ui.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_resource.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui_manager.h">
+      <Filter>gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shaders">
@@ -66,19 +90,27 @@
     <Filter Include="file formats">
       <UniqueIdentifier>{aad8e9ad-ef35-4822-abfe-7b6c45433500}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{8920fe07-67db-4e7d-aa54-2b08dc025c8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4ee3523e-faca-4188-8c7a-852932c7f1c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\TrainObserver\shaders\lightonly.fx">
+    <FxCompile Include="..\TrainObserver\content\shaders\bb_copy.fx">
       <Filter>shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\TrainObserver\shaders\normalmap.fx">
+    <FxCompile Include="..\TrainObserver\content\shaders\lightonly.fx">
       <Filter>shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\TrainObserver\shaders\common.fxh">
+    <FxCompile Include="..\TrainObserver\content\shaders\normalmap.fx">
       <Filter>shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\TrainObserver\shaders\bb_copy.fx">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\TrainObserver\content\shaders\common.fxh">
       <Filter>shaders</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>

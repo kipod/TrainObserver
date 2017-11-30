@@ -7,8 +7,8 @@
 #include "log.h"
 #include "json_query_builder.h"
 #include "space.h"
+#include "ui_manager.h"
 #include "SelectGameDlg.h"
-
 
 
 AppManager::AppManager()
@@ -58,8 +58,11 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 
 	m_windowManager->addTickListener(this);
 	m_windowManager->addTickListener(&m_renderSystem->renderer());
-	// m_windowManager->addTickListener(m_sceneManager.get());
 
+	auto& renderer = m_renderSystem->renderer();
+
+	renderer.addRenderItem(m_sceneManager.get());
+	renderer.addPostRenderItem(&m_renderSystem->uiManager());
 
 	return true;
 }
@@ -151,5 +154,5 @@ bool AppManager::loadStaticSpace()
 
 void AppManager::tick(float deltaTime)
 {
-	m_sceneManager->space().updateDynamicLayer(*m_connectionManager);
+	m_sceneManager->initDynamicScene(*m_connectionManager);
 }

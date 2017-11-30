@@ -10,7 +10,7 @@ bool fileExists(const std::string& path)
 
 void generateTangentAndBinormal(XYZNUVTB& v)
 {
-	static Vector3 up1(0, 0, 1);
+	static Vector3 up1(1, 0, 0);
 	static Vector3 up2(0, 1, 0);
 
 	auto& up = up1;

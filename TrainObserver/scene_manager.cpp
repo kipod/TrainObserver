@@ -31,8 +31,6 @@ bool SceneManager::init(RendererDX9& renderer)
 
 	m_space.reset(new Space());
 
-	renderer.addRenderItem(this);
-
 	return result;
 }
 
@@ -47,15 +45,23 @@ void SceneManager::draw(RendererDX9& renderer)
 	m_renderer->draw(renderer);
 }
 
-void SceneManager::tick(float deltaTime)
-{
-}
 
 bool SceneManager::initStaticScene(ConnectionManager& connection)
 {
 	if (m_space->initStaticLayer(connection))
 	{
 		m_space->addStaticSceneToRender(*m_renderer);
+		return true;
+	}
+
+	return false;
+}
+
+bool SceneManager::initDynamicScene(class ConnectionManager& connection)
+{
+	if (m_space->updateDynamicLayer(connection))
+	{
+		m_space->addDynamicSceneToRender(*m_renderer);
 		return true;
 	}
 

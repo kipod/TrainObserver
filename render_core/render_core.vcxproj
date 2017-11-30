@@ -32,8 +32,11 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="supersampler.cpp" />
     <ClCompile Include="texture_manager.cpp" />
+    <ClCompile Include="ui.cpp" />
+    <ClCompile Include="ui_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_ui.h" />
     <ClInclude Include="file_formats\tiny_obj_loader.h" />
     <ClInclude Include="include\box.h" />
     <ClInclude Include="include\camera.h" />
@@ -48,36 +51,30 @@
     <ClInclude Include="include\resource_manager.h" />
     <ClInclude Include="include\supersampler.h" />
     <ClInclude Include="include\texture_manager.h" />
+    <ClInclude Include="include\ui_manager.h" />
     <ClInclude Include="include\vertex_formats.h" />
+    <ClInclude Include="ui.h" />
+    <ClInclude Include="ui_resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\TrainObserver\shaders\bb_copy.fx">
+    <FxCompile Include="..\TrainObserver\content\shaders\bb_copy.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\TrainObserver\shaders\lightonly.fx">
+    <FxCompile Include="..\TrainObserver\content\shaders\lightonly.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\TrainObserver\shaders\normalmap.fx">
+    <FxCompile Include="..\TrainObserver\content\shaders\normalmap.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\TrainObserver\shaders\common.fxh">
-      <FileType>Document</FileType>
+    <None Include="..\TrainObserver\content\shaders\common.fxh">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

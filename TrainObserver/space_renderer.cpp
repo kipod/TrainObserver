@@ -7,12 +7,14 @@
 
 const std::string RAIL_PATH = "content/meshes/rail/rail.obj";
 const std::string CITY_PATH = "content/meshes/cities/";
+const std::string TRAIN_PATH = "content/meshes/trains/";
 const std::string SHADER_LIGHTONLY_PATH = "content/shaders/lightonly.fx";
 const std::string SHADER_NORMALMAP_PATH = "content/shaders/normalmap.fx";
 const std::string TERRAIN_DIFFUSE_TEXTURE_PATH = "content/maps/terrain.dds";
 const std::string TERRAIN_NORMAL_TEXTURE_PATH = "content/maps/terrain_normal.jpg";
 
 const uint CITY_COUNT = 5;
+const uint TRAIN_COUNT = 6;
 const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
 const float RAIL_SCALE = 30.0f;
 
@@ -51,9 +53,9 @@ SpaceRenderer::SpaceRenderer():
 	m_sun(new SunLight)
 {
 	m_sun->color = Vector3(1.0f, 0.9f, 0.5f); // light yellow 
-	m_sun->dir = Vector3(0.2f, -1.0f, 0.3f);
+	m_sun->dir = Vector3(0.5f, -0.15f, 0.85f);
 	m_sun->dir.Normalize();
-	m_sun->scale = 10.0f;
+	m_sun->scale = 1.0f;
 	m_sun->power = 10.0f;
 
 	RenderSystemDX9::instance().globalEffectProperties().addProperty(GLOBAL, new SunEffectProperty(*m_sun.get()));
@@ -119,7 +121,6 @@ void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 
 void SpaceRenderer::createCity(const Vector3& pos)
 {
-	//return;
 	char buf[3];
 	static int cityIdx = 0;
 	_itoa_s(cityIdx+1, buf, 10);
@@ -149,6 +150,60 @@ void SpaceRenderer::createCity(const Vector3& pos)
 	tr.SetTranslation(Vector3(pos.x, yOffset + pos.y, pos.z));
 	newModel->setTransform(tr);
 	m_staticMeshes.emplace_back(newModel);
+}
+
+
+int SpaceRenderer::createTrain(const Vector3& pos, const Vector3& direction, int trainId)
+{
+	Geometry* trainGeometry = nullptr;
+	auto& rs = RenderSystemDX9::instance();
+	float yOffset = 0.0f;
+	float scale = RAIL_SCALE;
+
+	if (trainId < 0)
+	{
+		char buf[3];
+		static int trainCounter = 0;
+		_itoa_s(trainCounter + 1, buf, 10);
+		std::string dir = TRAIN_PATH + buf + "/";
+		std::string trainPath = dir + "train.obj";
+
+		std::string transformPath = dir + "transform.txt";
+		std::ifstream fs(transformPath);
+
+		if (!fs.fail())
+		{
+			fs >> yOffset;
+			fs >> scale;
+		}
+
+		trainGeometry = rs.geometryManager().get(trainPath);
+		m_trains.try_emplace(trainCounter, trainGeometry, scale, yOffset );
+		trainId = trainCounter;
+		trainCounter = (trainCounter + 1) % TRAIN_COUNT;
+	}
+	else
+	{
+		const auto& data = m_trains[trainId];
+		trainGeometry = data.geometry;
+		yOffset = data.yOffset;
+		scale = data.scale;
+	}
+
+	Model* newModel = new Model();
+	Effect* pLightonlyEffect = rs.effectManager().get(SHADER_LIGHTONLY_PATH);
+	newModel->setup(trainGeometry, pLightonlyEffect);
+
+
+	Matrix tr; tr.id();
+	float angle = direction.z >= 0.0f ? acosf(direction.x) : -acosf(direction.x);
+	tr.RotateY(angle + PI*0.5f);
+	tr.Scale(scale);
+	tr.SetTranslation(Vector3(pos.x, yOffset + pos.y, pos.z));
+	newModel->setTransform(tr);
+	m_dynamicMeshes.emplace_back(newModel);
+
+	return trainId;
 }
 
 void SpaceRenderer::setupStaticScene(uint x, uint y)

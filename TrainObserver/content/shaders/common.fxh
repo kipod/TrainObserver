@@ -36,6 +36,7 @@ struct SunLight
 };
 
 SunLight	g_sunLight;
+float3		g_cameraPos = { 0,0,0 };
 
 ////////////////////////////////////
 
@@ -56,9 +57,10 @@ struct PS_INPUT
 	float3 normal   : NORMAL;
 	float4 diffuse	: COLOR;
 	float2 tc		: TEXCOORD0;
+	float3 worldPos	: TEXCOORD1;
 #ifdef NORMALMAPPING
-	float3 tangent	: TEXCOORD1;
-	float3 binormal	: TEXCOORD2;
+	float3 tangent	: TEXCOORD2;
+	float3 binormal	: TEXCOORD3;
 #endif
 };
 
@@ -76,12 +78,21 @@ PS_INPUT vs(VS_INPUT i)
 
 	matrix wvp = mul(World, ViewProjection);
 	o.position = mul(i.position, wvp);
-	o.normal = normalize(mul(i.normal.xyz, World));
+	o.worldPos = mul(i.position, World).xyz;
+	o.normal = normalize(mul(i.normal.xyz, (float3x3)World));
 #ifdef NORMALMAPPING
 	o.tangent = normalize(mul(i.tangent.xyz, World));
 	o.binormal = normalize(mul(i.binormal.xyz, World));
 #endif
 	return o;
+}
+
+
+half3 getSunLight(half3 eye, half3 normal)
+{
+	half3 halfAngle = normalize(eye - g_sunLight.dir);
+	half specular = g_sunLight.scale * pow(saturate(dot(normal, halfAngle)), g_sunLight.power);
+	return (specular * g_sunLight.color);
 }
 
 PS_OUT ps(PS_INPUT i)
@@ -95,11 +106,21 @@ PS_OUT ps(PS_INPUT i)
 	float3x3 TBN = half3x3(i.tangent, i.binormal, i.normal);
 	float3  normal = normalize(mul(nn.xyz, TBN));
 #else
-	float3  normal = i.normal.xyz;
+	float3  normal = normalize(i.normal.xyz);
 #endif
-	float s = saturate(dot(-g_sunLight.dir, normal)) + 0.3f;
+	float ndotl = dot(-g_sunLight.dir, normal);
+	float s = saturate(ndotl) + 0.3f;
 	diffuse *= s;
+
+
 	o.color.xyz = saturate(diffuse);
+
+	if (ndotl > 0)
+	{
+		float3 eye = normalize(g_cameraPos.xyz - i.worldPos);
+		o.color.xyz += getSunLight(eye, normal) * 0.4f;//float3(i.tc, 0);
+	}
+
 	o.color.w = diffuse.w;
 	return o;
 }

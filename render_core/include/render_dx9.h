@@ -35,6 +35,7 @@ public:
 	Camera& camera() { return m_camera; }
 
 	void addRenderItem(IRenderable* obj);
+	void addPostRenderItem(IRenderable* obj);
 
 
 private:
@@ -42,7 +43,8 @@ private:
 	std::unique_ptr<class Supersampler>		m_supersampler;
 	Camera									m_camera;
 
-	std::vector<IRenderable*>				m_renderQueue;
+	std::vector<IRenderable*>				m_renderSet;
+	std::vector<IRenderable*>				m_postRenderSet;
 };
 
 
@@ -60,6 +62,7 @@ public:
 	GeometryManager& geometryManager();
 	class TextureManager& textureManager();
 	class EffectConstantManager& globalEffectProperties();
+	class UIManager& uiManager();
 
 	static RenderSystemDX9& instance();
 
@@ -72,6 +75,7 @@ private:
 	std::unique_ptr<EffectManager>			m_effectManager;
 	std::unique_ptr<GeometryManager>		m_geometryManager;
 	std::unique_ptr<TextureManager>			m_textureManager;
+	std::unique_ptr<UIManager>				m_uiManager;
 	std::unique_ptr<EffectConstantManager>	m_globalEffectProperties;
 
 	static RenderSystemDX9*					s_pInstance;

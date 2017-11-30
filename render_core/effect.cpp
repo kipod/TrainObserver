@@ -28,7 +28,7 @@ namespace
 			if (errorBuffer)
 			{
 #ifdef UNICODE
-				WCHAR buffer[10000];
+				char buffer[10000];
 				memset(buffer, 0, 10000);
 				MultiByteToWideChar(CP_ACP, 0, (char*)errorBuffer->GetBufferPointer(), -1, buffer, 10000);
 				LOG(MSG_ERROR, buffer);

@@ -95,7 +95,7 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 	return true;
 }
 
-void Space::updateDynamicLayer(const ConnectionManager& manager)
+bool Space::updateDynamicLayer(const ConnectionManager& manager)
 {
 	m_trains.clear();
 	m_posts.clear();
@@ -107,18 +107,22 @@ void Space::updateDynamicLayer(const ConnectionManager& manager)
 		if (!loadTrains(*reader))
 		{
 			LOG(MSG_ERROR, "Failed to create dynamic layer on space. Reason: cannot load trains.");
+			return false;
 		}
 
 		if (!loadPosts(*reader))
 		{
 			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load posts.");
+			return false;
 		}
 	}
 	else
 	{
 		LOG(MSG_ERROR, "Failed to create dynamic layer on  space. Reason: parcing MAP message failed");
+		return false;
 	}
 
+	return true;
 }
 
 Vector3 coordToVector3(const Coords& c)
@@ -144,6 +148,37 @@ void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 		renderer.createCity(coordToVector3(city.pos));
 	}
 
+}
+
+void Space::addDynamicSceneToRender(SpaceRenderer& renderer)
+{
+	for (const auto& train : m_trains)
+	{
+		const Train& t = train.second;
+		const Line& line = m_lines.at(t.line_idx);
+		float deltaPos = float(t.position) / float(line.length);
+
+		Vector3 p1(float(line.pt_1->pos.x), 0.0f, float(line.pt_1->pos.y));
+		Vector3 p2(float(line.pt_2->pos.x), 0.0f, float(line.pt_2->pos.y));
+
+		Vector3 delta(p2 - p1);
+		Vector3 position(p1 + delta * deltaPos);
+		delta.Normalize();
+		if (t.speed < 0)
+		{
+			delta *= -1.0f;
+		}
+
+		auto it = m_trainIdToGraphicsId.find(t.idx);
+		if (it == m_trainIdToGraphicsId.end())
+		{
+			m_trainIdToGraphicsId[t.idx] = renderer.createTrain(position, delta, -1);
+		}
+		else
+		{
+			renderer.createTrain(position, delta, it->second);
+		}
+	}
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)

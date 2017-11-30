@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "render_target.h"
 #include "supersampler.h"
+#include "ui_manager.h"
 
 namespace
 {
@@ -32,12 +33,31 @@ namespace
 	private:
 		const Camera& m_camera;
 	};
+
+	class CameraPositionEffectProperty : public IEffectProperty
+	{
+
+	public:
+		CameraPositionEffectProperty(const Camera& camera) :
+			IEffectProperty("g_cameraPos"),
+			m_camera(camera)
+		{}
+
+		virtual bool applyProperty(LPD3DXEFFECT pEffect) const override
+		{
+			return SUCCEEDED(pEffect->SetValue(m_name.c_str(), &m_camera.pos(), sizeof(Vector3)));
+		}
+	private:
+		const Camera& m_camera;
+	};
+
 }
 
 RendererDX9::RendererDX9(LPDIRECT3DDEVICE9 pDevice):
 	m_pD3DDevice(pDevice)
 {
 	RenderSystemDX9::instance().globalEffectProperties().addProperty(PER_FRAME, new CameraViewProjectionEffectProperty(m_camera));
+	RenderSystemDX9::instance().globalEffectProperties().addProperty(PER_FRAME, new CameraPositionEffectProperty(m_camera));
 }
 
 
@@ -56,9 +76,6 @@ void RendererDX9::draw()
 	if (!m_pD3DDevice)
 		return;
 
-	//ShowCursor(FALSE);
-
-
 	m_pD3DDevice->BeginScene();
 
 	m_supersampler->push();
@@ -66,12 +83,17 @@ void RendererDX9::draw()
 	m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
 		D3DCOLOR_COLORVALUE(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
 
-	for (auto& object : m_renderQueue)
+	for (auto& object : m_renderSet)
 	{
 		object->draw(*this);
 	}
 
 	m_supersampler->pop(m_pD3DDevice);
+
+	for (auto& object : m_postRenderSet)
+	{
+		object->draw(*this);
+	}
 
 	m_pD3DDevice->EndScene();
 
@@ -181,7 +203,12 @@ LPDIRECT3DDEVICE9 RendererDX9::device()
 
 void RendererDX9::addRenderItem(IRenderable* obj)
 {
-	m_renderQueue.emplace_back(obj);
+	m_renderSet.emplace_back(obj);
+}
+
+void RendererDX9::addPostRenderItem(IRenderable* obj)
+{
+	m_postRenderSet.emplace_back(obj);
 }
 
 RenderSystemDX9& RenderSystemDX9::instance()
@@ -195,6 +222,7 @@ RenderSystemDX9::RenderSystemDX9():
 	m_effectManager(new EffectManager()),
 	m_geometryManager(new GeometryManager()),
 	m_textureManager(new TextureManager()),
+	m_uiManager(new UIManager()),
 	m_globalEffectProperties(new EffectConstantManager())
 {
 	s_pInstance = this;
@@ -283,6 +311,8 @@ HRESULT RenderSystemDX9::init(HWND hwnd)
 	m_renderer.reset(new RendererDX9(m_pD3DDevice));
 	m_renderer->init(m_d3dpp);
 
+	m_uiManager->init(hwnd, m_pD3DDevice, m_d3dpp.BackBufferWidth, m_d3dpp.BackBufferHeight);
+
 	return S_OK;
 }
 
@@ -328,4 +358,9 @@ TextureManager& RenderSystemDX9::textureManager()
 EffectConstantManager& RenderSystemDX9::globalEffectProperties()
 {
 	return *m_globalEffectProperties.get();
+}
+
+UIManager& RenderSystemDX9::uiManager()
+{
+	return *m_uiManager.get();
 }

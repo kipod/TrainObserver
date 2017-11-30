@@ -1,11 +1,10 @@
 #pragma once
 #include <memory>
-#include "message_interface.h"
 #include "render_interface.h"
 
 
 
-class SceneManager : public IRenderable, public ITickable
+class SceneManager : public IRenderable
 {
 public:
 	SceneManager();
@@ -15,17 +14,13 @@ public:
 	class Space& space();
 
 	virtual void draw(RendererDX9& renderer) override;
-	virtual void tick(float deltaTime) override;
 
 	bool initStaticScene(class ConnectionManager& connection);
+	bool initDynamicScene(class ConnectionManager& connection);
 
 private:
 	std::unique_ptr<class SkyBox>			m_skybox;
 	std::unique_ptr<Space>					m_space;
 	std::unique_ptr<class SpaceRenderer>	m_renderer;
-
-
-
-
 };
 

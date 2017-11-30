@@ -9,6 +9,7 @@
 #include "space.h"
 #include "ui_manager.h"
 #include "SelectGameDlg.h"
+#include "PlayerDlg.h"
 
 
 AppManager::AppManager()
@@ -17,6 +18,7 @@ AppManager::AppManager()
 	, m_renderSystem(new RenderSystemDX9())
 	, m_connectionManager(new ConnectionManager())
 	, m_connected(false)
+	, m_gameController(this, m_connectionManager.get())
 {
 }
 
@@ -64,6 +66,8 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	renderer.addRenderItem(m_sceneManager.get());
 	renderer.addPostRenderItem(&m_renderSystem->uiManager());
 
+	m_gameController.initialize();
+
 	return true;
 }
 
@@ -92,11 +96,13 @@ bool AppManager::connect(const char* servername, uint16_t portNumber)
 
 			JSONQueryReader data(msg);
 			std::map<uint32_t, std::string> games;
+			std::map<uint32_t, unsigned int> lengths;
 			for (const auto& game : data.asArray())
 			{
 				std::string name = game.get<std::string>("name");
 				uint32_t idx = game.get<unsigned int>("idx");
 				games[idx] = name;
+				lengths[idx] = game.get<unsigned int>("length");
 			}
 
 			SelectGameDlg dlg(games);
@@ -105,6 +111,7 @@ bool AppManager::connect(const char* servername, uint16_t portNumber)
 				uint32_t idGame = dlg.getGameID();
 				JSONQueryWriter writer;
 				writer.add("idx", idGame);
+				m_gameController.maxTurn(lengths[idGame]);
 				if (m_connectionManager->sendMessage(Action::GAME, &writer.str()))
 				{
 					std::string msg;
@@ -142,6 +149,7 @@ void AppManager::disconnect()
 
 void AppManager::finalize()
 {
+	m_gameController.finalize();
 	m_connectionManager->reset();
 	m_renderSystem->fini();
 	m_windowManager->destroy();
@@ -154,5 +162,50 @@ bool AppManager::loadStaticSpace()
 
 void AppManager::tick(float deltaTime)
 {
-	m_sceneManager->initDynamicScene(*m_connectionManager);
+	ITickable* pController = &m_gameController;
+	pController->tick(deltaTime);
+}
+
+AppManager::GameController::GameController(AppManager *pManager, class ConnectionManager *pConnection)
+	: m_pAppManager(pManager)
+	, m_pConnection(pConnection)
+	, m_dlg(new PlayerDlg(this))
+{
+
+}
+
+AppManager::GameController::~GameController()
+{
+	
+}
+
+void AppManager::GameController::initialize()
+{
+	m_dlg->Create(m_pAppManager->m_windowManager->hwnd());
+	m_dlg->ShowWindow(SW_SHOW);
+}
+
+void AppManager::GameController::finalize()
+{
+	m_dlg->DestroyWindow();
+}
+
+void AppManager::GameController::turn(int turnNumber)
+{
+	m_currentTurn = turnNumber;
+}
+
+void AppManager::GameController::maxTurn(int val)
+{
+	m_nMaxTurn = val;
+	m_dlg->maxTurn(val);
+}
+
+void AppManager::GameController::tick(float deltaTime)
+{
+	if (m_updatedTurn != m_currentTurn)
+	{
+		m_pAppManager->m_sceneManager->initDynamicScene(*m_pConnection);
+		m_updatedTurn = m_currentTurn;
+	}
 }

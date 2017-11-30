@@ -59,6 +59,7 @@
       <Filter>Diaolgs</Filter>
     </ClCompile>
     <ClCompile Include="SelectGameDlg.cpp" />
+    <ClCompile Include="PlayerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connection_manager.h">
@@ -104,6 +105,7 @@
     <ClInclude Include="SelectGameDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="PlayerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc">

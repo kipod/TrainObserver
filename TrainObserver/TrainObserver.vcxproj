@@ -154,6 +154,7 @@
     <ClCompile Include="json_query_builder.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerDlg.cpp" />
     <ClCompile Include="scene_manager.cpp" />
     <ClCompile Include="SelectGameDlg.cpp" />
     <ClCompile Include="skybox.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="PlayerDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="scene_manager.h" />

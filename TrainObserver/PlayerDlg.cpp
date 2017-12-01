@@ -2,7 +2,7 @@
 #include "app_manager.h"
 #include "PlayerDlg.h"
 
-
+const DWORD PLAY_TIMER = ::RegisterWindowMessageW(L"WG_FORGE_PLAY_TIMER");
 
 PlayerDlg::PlayerDlg(AppManager::GameController* pController)
 	: m_pController(pController)
@@ -81,8 +81,16 @@ LRESULT PlayerDlg::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return TRUE;
 }
 
-LRESULT PlayerDlg::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT PlayerDlg::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	if (PLAY_TIMER == wParam)
+	{
+		if (!m_bPause)
+		{
+			BOOL bVal = FALSE;
+			PlayerDlg::OnBnClickedButtonNext(0, 0, NULL, bVal);
+		}
+	}
 	return TRUE;
 }
 
@@ -138,7 +146,24 @@ LRESULT PlayerDlg::OnBnClickedButtonEnd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT PlayerDlg::OnBnClickedButtonPlay(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// TODO: Add your control notification handler code here
+	m_bPause = false;
+	SetTimer(PLAY_TIMER, m_nSpeed * 1000);
 
+	return 0;
+}
+
+
+LRESULT PlayerDlg::OnBnClickedButtonStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_bPause = false;
+	KillTimer(PLAY_TIMER);
+
+	return 0;
+}
+
+
+LRESULT PlayerDlg::OnBnClickedButtonPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_bPause = !m_bPause;
 	return 0;
 }

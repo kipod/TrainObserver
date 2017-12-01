@@ -17,6 +17,8 @@
 #define IDC_BUTTON_NEXT                 1010
 #define IDC_BUTTON_PLAY                 1011
 #define IDC_SLIDER                      1012
+#define IDC_BUTTON_STOP                 1013
+#define IDC_BUTTON_PAUSE                1014
 
 // Next default values for new objects
 // 

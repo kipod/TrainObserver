@@ -58,8 +58,12 @@
     <ClCompile Include="connection_dlg.cpp">
       <Filter>Diaolgs</Filter>
     </ClCompile>
-    <ClCompile Include="SelectGameDlg.cpp" />
-    <ClCompile Include="PlayerDlg.cpp" />
+    <ClCompile Include="PlayerDlg.cpp">
+      <Filter>Diaolgs</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectGameDlg.cpp">
+      <Filter>Diaolgs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connection_manager.h">
@@ -102,10 +106,14 @@
       <Filter>Diaolgs</Filter>
     </ClInclude>
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="SelectGameDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="PlayerDlg.h" />
+    <ClInclude Include="PlayerDlg.h">
+      <Filter>Diaolgs</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectGameDlg.h">
+      <Filter>Diaolgs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc">

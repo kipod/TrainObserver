@@ -611,6 +611,7 @@ HRESULT CDXUTDialog::OnRender(float fElapsedTime)
 {
 	if (m_pManager->GetD3D9Device())
 		return OnRender9(fElapsedTime);
+	return E_ABORT;
 }
 
 static double startTime = timeGetTime();
@@ -1786,6 +1787,7 @@ HRESULT CDXUTDialog::DrawRect(RECT* pRect, D3DCOLOR color)
 {
 	if (m_pManager->GetD3D9Device())
 		return DrawRect9(pRect, color);
+	return E_ABORT;
 }
 
 
@@ -1884,6 +1886,7 @@ HRESULT CDXUTDialog::DrawSprite(CDXUTElement* pElement, RECT* prcDest, float fDe
 {
 	if (m_pManager->GetD3D9Device())
 		return DrawSprite9(pElement, prcDest);
+	return E_ABORT;
 }
 
 
@@ -1951,6 +1954,7 @@ HRESULT CDXUTDialog::DrawText(LPCSTR strText, CDXUTElement* pElement, RECT* prcD
 {
 	if (m_pManager->GetD3D9Device())
 		return DrawText9(strText, pElement, prcDest, bShadow, nCount);
+	return E_ABORT;
 }
 
 

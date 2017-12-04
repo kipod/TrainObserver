@@ -22,7 +22,7 @@ public:
 		void initialize();
 		void finalize();
 
-		void turn(int turnNumber);
+		bool turn(int turnNumber);
 		int turn() const { return m_currentTurn; }
 		int maxTurn() const { return m_nMaxTurn; }
 		void maxTurn(int val);

@@ -85,7 +85,7 @@ bool AppManager::connect(const char* servername, uint16_t portNumber)
 		return false;
 	}
 
-	if (m_connectionManager->sendMessage(Action::OBSERVER))
+	if (m_connectionManager->sendMessage(Action::OBSERVER, true))
 	{
 		std::string msg;
 		Result res = m_connectionManager->receiveMessage(msg);
@@ -112,12 +112,7 @@ bool AppManager::connect(const char* servername, uint16_t portNumber)
 				JSONQueryWriter writer;
 				writer.add("idx", idGame);
 				m_gameController.maxTurn(lengths[idGame]);
-				if (m_connectionManager->sendMessage(Action::GAME, &writer.str()))
-				{
-					std::string msg;
-					Result res = m_connectionManager->receiveMessage(msg);
-					return (res == Result::OKEY);
-				}
+				return m_connectionManager->sendMessage(Action::GAME, false, &writer.str());
 			}
 		}
 	}
@@ -134,15 +129,10 @@ void AppManager::disconnect()
 {
 	if (m_connected)
 	{
-		if (m_connectionManager->sendMessage(Action::LOGOUT, nullptr))
+		if (m_connectionManager->sendMessage(Action::LOGOUT))
 		{
-			std::string msg;
-			Result res = m_connectionManager->receiveMessage(msg);
-			if (res == Result::OKEY)
-			{
-				LOG(MSG_NORMAL, "Logged out from server.");
-				m_connected = false;
-			}
+			LOG(MSG_NORMAL, "Logged out from server.");
+			m_connected = false;
 		}
 	}
 }
@@ -190,9 +180,12 @@ void AppManager::GameController::finalize()
 	m_dlg->DestroyWindow();
 }
 
-void AppManager::GameController::turn(int turnNumber)
+bool AppManager::GameController::turn(int turnNumber)
 {
 	m_currentTurn = turnNumber;
+	JSONQueryWriter writer;
+	writer.add("idx", turnNumber);
+	return m_pConnection->sendMessage(Action::TURN, false, &writer.str());
 }
 
 void AppManager::GameController::maxTurn(int val)

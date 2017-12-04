@@ -103,9 +103,10 @@ bool ConnectionManager::connect(const char* servername, uint16_t portNumber)
 	return true;
 }
 
-bool ConnectionManager::sendMessage(Action actionCode, const std::string* message) const
+bool ConnectionManager::sendMessage(Action actionCode, bool needResponce, const std::string* message) const
 {
 	size_t msgLength = message ? message->length() : 0;
+	bool result = false;
 	if (msgLength > 0)
 	{
 		size_t fullLength = msgLength + sizeof(ActionMessageHeader);
@@ -113,13 +114,21 @@ bool ConnectionManager::sendMessage(Action actionCode, const std::string* messag
 		action->header.actionCode = actionCode;
 		action->header.dataLength = msgLength;
 		::memcpy(action->buffer, message->c_str(), msgLength);
-		return send(action, fullLength);
+		result = send(action, fullLength);
 	}
 	else
 	{
 		ActionMessageHeader header = { actionCode, 0 };
-		return send(&header, sizeof(header));
+		result = send(&header, sizeof(header));
 	}
+
+	if (result && !needResponce)
+	{
+		std::string msg;
+		return receiveMessage(msg) == Result::OKEY;
+	}
+
+	return result;
 }
 
 Result ConnectionManager::receiveMessage(std::string& message) const

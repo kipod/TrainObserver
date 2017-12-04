@@ -13,7 +13,7 @@ const std::string SHADER_NORMALMAP_PATH = "content/shaders/normalmap.fx";
 const std::string TERRAIN_DIFFUSE_TEXTURE_PATH = "content/maps/terrain.dds";
 const std::string TERRAIN_NORMAL_TEXTURE_PATH = "content/maps/terrain_normal.jpg";
 
-const uint CITY_COUNT = 5;
+const uint CITY_COUNT = 4;
 const uint TRAIN_COUNT = 6;
 const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
 const float RAIL_SCALE = 30.0f;
@@ -84,8 +84,6 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 	}
 
 	camera.endZBIASDraw();
-
-	m_dynamicMeshes.clear();
 }
 
 void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
@@ -153,17 +151,30 @@ void SpaceRenderer::createCity(const Vector3& pos)
 }
 
 
-int SpaceRenderer::createTrain(const Vector3& pos, const Vector3& direction, int trainId)
+void SpaceRenderer::moveTrain(const Vector3& pos, const Vector3& direction, int trainId)
 {
-	Geometry* trainGeometry = nullptr;
+	auto& train = getTrain(trainId);
 	auto& rs = RenderSystemDX9::instance();
-	float yOffset = 0.0f;
-	float scale = RAIL_SCALE;
 
-	if (trainId < 0)
+	Matrix tr; tr.id();
+
+	float angle = direction.z >= 0.0f ? acosf(direction.x) : -acosf(direction.x);
+	tr.RotateY(angle + PI*0.5f);
+	tr.Scale(train.scale);
+	tr.SetTranslation(Vector3(pos.x, train.yOffset + pos.y, pos.z));
+	train.model->setTransform(tr);
+
+	m_dynamicMeshes.emplace_back(train.model.get());
+}
+
+const SpaceRenderer::TrainGeometryData& SpaceRenderer::loadTrainGeometry()
+{
+	static int trainCounter = 0;
+
+	auto it = m_trainModels.find(trainCounter);
+	if (it == m_trainModels.end())
 	{
 		char buf[3];
-		static int trainCounter = 0;
 		_itoa_s(trainCounter + 1, buf, 10);
 		std::string dir = TRAIN_PATH + buf + "/";
 		std::string trainPath = dir + "train.obj";
@@ -171,39 +182,45 @@ int SpaceRenderer::createTrain(const Vector3& pos, const Vector3& direction, int
 		std::string transformPath = dir + "transform.txt";
 		std::ifstream fs(transformPath);
 
+		float yOffset = 0.0f;
+		float scale = RAIL_SCALE;
 		if (!fs.fail())
 		{
 			fs >> yOffset;
 			fs >> scale;
 		}
 
-		trainGeometry = rs.geometryManager().get(trainPath);
-		m_trains.try_emplace(trainCounter, trainGeometry, scale, yOffset );
-		trainId = trainCounter;
-		trainCounter = (trainCounter + 1) % TRAIN_COUNT;
+		auto& rs = RenderSystemDX9::instance();
+		auto trainGeometry = rs.geometryManager().get(trainPath);
+
+		it = m_trainModels.try_emplace(trainCounter, trainGeometry, scale, yOffset).first;
 	}
-	else
+
+	trainCounter = (trainCounter + 1) % TRAIN_COUNT;
+	return it->second;
+}
+
+SpaceRenderer::TrainModel& SpaceRenderer::getTrain(int trainId)
+{
+	auto it = m_trains.find(trainId);
+	if (it != m_trains.end())
 	{
-		const auto& data = m_trains[trainId];
-		trainGeometry = data.geometry;
-		yOffset = data.yOffset;
-		scale = data.scale;
+		return it->second;
 	}
+
+	auto& rs = RenderSystemDX9::instance();
+	const auto& data = loadTrainGeometry();
 
 	Model* newModel = new Model();
 	Effect* pLightonlyEffect = rs.effectManager().get(SHADER_LIGHTONLY_PATH);
-	newModel->setup(trainGeometry, pLightonlyEffect);
+	newModel->setup(data.geometry, pLightonlyEffect);
+	
+	return m_trains.try_emplace(trainId, newModel, data.scale, data.yOffset).first->second;
+}
 
-
-	Matrix tr; tr.id();
-	float angle = direction.z >= 0.0f ? acosf(direction.x) : -acosf(direction.x);
-	tr.RotateY(angle + PI*0.5f);
-	tr.Scale(scale);
-	tr.SetTranslation(Vector3(pos.x, yOffset + pos.y, pos.z));
-	newModel->setTransform(tr);
-	m_dynamicMeshes.emplace_back(newModel);
-
-	return trainId;
+void SpaceRenderer::clearDynamics()
+{
+	m_dynamicMeshes.clear();
 }
 
 void SpaceRenderer::setupStaticScene(uint x, uint y)

@@ -17,7 +17,7 @@ public:
 	void reset();
 
 	bool connect(const char* servername, uint16_t portNumber);
-	bool sendMessage(Action actionCode, const std::string* message = nullptr) const;
+	bool sendMessage(Action actionCode, bool needResponce = false, const std::string* message = nullptr) const;
 	Result receiveMessage(std::string& message) const;
 
 private:

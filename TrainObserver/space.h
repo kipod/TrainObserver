@@ -96,7 +96,5 @@ private:
 	std::unordered_map<uint, Line>	m_lines;
 	std::unordered_map<uint, Train> m_trains;
 	std::unordered_map<uint, Post>	m_posts;
-
-	std::unordered_map<uint, uint> m_trainIdToGraphicsId;
 };
 

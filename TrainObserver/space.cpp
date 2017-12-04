@@ -23,7 +23,7 @@ std::shared_ptr<JSONQueryReader> getLayer(const ConnectionManager& connect, Spac
 	JSONQueryWriter writer;
 	writer.add("layer", layerId); // STATIC layer
 
-	if (!connect.sendMessage(Action::MAP, &writer.str()))
+	if (!connect.sendMessage(Action::MAP, true, &writer.str()))
 	{
 		LOG(MSG_ERROR, "Failed to create space. Reason: send MAP message failed");
 		return nullptr;
@@ -152,6 +152,8 @@ void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 
 void Space::addDynamicSceneToRender(SpaceRenderer& renderer)
 {
+	renderer.clearDynamics();
+
 	for (const auto& train : m_trains)
 	{
 		const Train& t = train.second;
@@ -169,15 +171,7 @@ void Space::addDynamicSceneToRender(SpaceRenderer& renderer)
 			delta *= -1.0f;
 		}
 
-		auto it = m_trainIdToGraphicsId.find(t.idx);
-		if (it == m_trainIdToGraphicsId.end())
-		{
-			m_trainIdToGraphicsId[t.idx] = renderer.createTrain(position, delta, -1);
-		}
-		else
-		{
-			renderer.createTrain(position, delta, it->second);
-		}
+		renderer.moveTrain(position, delta, t.idx);
 	}
 }
 

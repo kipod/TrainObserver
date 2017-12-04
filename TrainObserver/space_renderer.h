@@ -8,14 +8,19 @@
 
 class SpaceRenderer
 {
+	struct TrainDesc
+	{
+		float scale;
+		float yOffset;
+		float angle;
+	};
 	struct TrainGeometryData
 	{
 		class Geometry* geometry;
-		float scale;
-		float yOffset;
+		TrainDesc desc;
 
-		TrainGeometryData(Geometry* g, float scale_, float yOff) :
-			geometry(g), scale(scale_), yOffset(yOff)
+		TrainGeometryData(Geometry* g, const TrainDesc& _data) :
+			geometry(g), desc(_data)
 		{}
 
 		TrainGeometryData() : geometry(nullptr) {}
@@ -24,11 +29,10 @@ class SpaceRenderer
 	struct TrainModel
 	{
 		std::unique_ptr<Model> model;
-		float scale;
-		float yOffset;
+		TrainDesc data;
 
-		TrainModel(Model* m, float scale_, float yOff) :
-			model(m), scale(scale_), yOffset(yOff)
+		TrainModel(Model* m, const TrainDesc& _data) :
+			model(m), data(_data)
 		{}
 
 		TrainModel() {}

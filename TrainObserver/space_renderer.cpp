@@ -119,6 +119,7 @@ void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 
 void SpaceRenderer::createCity(const Vector3& pos)
 {
+	return;
 	char buf[3];
 	static int cityIdx = 0;
 	_itoa_s(cityIdx+1, buf, 10);
@@ -159,9 +160,9 @@ void SpaceRenderer::moveTrain(const Vector3& pos, const Vector3& direction, int 
 	Matrix tr; tr.id();
 
 	float angle = direction.z >= 0.0f ? acosf(direction.x) : -acosf(direction.x);
-	tr.RotateY(angle + PI*0.5f);
-	tr.Scale(train.scale);
-	tr.SetTranslation(Vector3(pos.x, train.yOffset + pos.y, pos.z));
+	tr.RotateY(angle + train.data.angle);
+	tr.Scale(train.data.scale);
+	tr.SetTranslation(Vector3(pos.x, train.data.yOffset + pos.y, pos.z));
 	train.model->setTransform(tr);
 
 	m_dynamicMeshes.emplace_back(train.model.get());
@@ -182,18 +183,18 @@ const SpaceRenderer::TrainGeometryData& SpaceRenderer::loadTrainGeometry()
 		std::string transformPath = dir + "transform.txt";
 		std::ifstream fs(transformPath);
 
-		float yOffset = 0.0f;
-		float scale = RAIL_SCALE;
+		TrainDesc desc = { RAIL_SCALE, 0.0f, 0.0f };
 		if (!fs.fail())
 		{
-			fs >> yOffset;
-			fs >> scale;
+			fs >> desc.yOffset;
+			fs >> desc.scale;
+			fs >> desc.angle;
 		}
 
 		auto& rs = RenderSystemDX9::instance();
 		auto trainGeometry = rs.geometryManager().get(trainPath);
 
-		it = m_trainModels.try_emplace(trainCounter, trainGeometry, scale, yOffset).first;
+		it = m_trainModels.try_emplace(trainCounter, trainGeometry, desc).first;
 	}
 
 	trainCounter = (trainCounter + 1) % TRAIN_COUNT;
@@ -215,7 +216,7 @@ SpaceRenderer::TrainModel& SpaceRenderer::getTrain(int trainId)
 	Effect* pLightonlyEffect = rs.effectManager().get(SHADER_LIGHTONLY_PATH);
 	newModel->setup(data.geometry, pLightonlyEffect);
 	
-	return m_trains.try_emplace(trainId, newModel, data.scale, data.yOffset).first->second;
+	return m_trains.try_emplace(trainId, newModel, data.desc).first->second;
 }
 
 void SpaceRenderer::clearDynamics()

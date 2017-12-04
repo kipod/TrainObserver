@@ -74,7 +74,13 @@ namespace
 		std::vector<tinyobj::material_t> materials;
 		if (tinyobj::LoadObj(&attrib, &shapes, &materials, &err, &ifs, &mtlReader))
 		{
-			outData.vertices.reserve(attrib.vertices.size() / 3);
+			uint nVertices = 0;
+			for (const auto shape : shapes)
+			{
+				nVertices += shape.mesh.indices.size();
+			}
+
+			outData.vertices.reserve(nVertices);
 
 			bool hasUV = !attrib.texcoords.empty();
 			bool hasNormal = !attrib.normals.empty();
@@ -284,7 +290,7 @@ Geometry* Geometry::create(const std::string& path, bool normalizeSize)
 		pGeom->m_loadingData.reset(new GeometryLoadData());
 		pGeom->m_loadingData->normalizeSize = normalizeSize;
 		pGeom->m_status = EResouceStatus::LOADING;		
-		std::thread([=]
+		std::thread([path, pGeom]
 		{
 			auto pDevice = RenderSystemDX9::instance().renderer().device();
 			if (loadObj(pDevice, path, *pGeom->m_loadingData))
@@ -353,7 +359,7 @@ void Geometry::draw(LPDIRECT3DDEVICE9 pDevice, Effect& effect)
 
 		if (effect.begin())
 		{
-			for (UINT i = 0; i < effect.numPasses(); i++)
+			for (uint i = 0; i < effect.numPasses(); i++)
 			{
 				if (effect.beginPass(i))
 				{

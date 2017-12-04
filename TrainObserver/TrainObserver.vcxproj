@@ -71,13 +71,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\PROGRA~2\MI9164~1\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\PROGRA~2\MI9164~1\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;C:\PROGRA~2\MI9164~1\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\PROGRA~2\MI9164~1\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\PROGRA~2\MI9164~1\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\PROGRA~2\MI9164~1\Lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\PROGRA~2\MI9164~1\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\PROGRA~2\MI9164~1\Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -154,7 +162,9 @@
     <ClCompile Include="json_query_builder.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerDlg.cpp" />
     <ClCompile Include="scene_manager.cpp" />
+    <ClCompile Include="SelectGameDlg.cpp" />
     <ClCompile Include="skybox.cpp" />
     <ClCompile Include="space.cpp" />
     <ClCompile Include="space_renderer.cpp" />
@@ -164,18 +174,27 @@
     <ClInclude Include="..\common\log_interface.h" />
     <ClInclude Include="..\common\message_interface.h" />
     <ClInclude Include="app_manager.h" />
+    <ClInclude Include="connection_dlg.h" />
     <ClInclude Include="connection_manager.h" />
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="PlayerDlg.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="scene_manager.h" />
+    <ClInclude Include="SelectGameDlg.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="space.h" />
     <ClInclude Include="space_renderer.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TrainObserver.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

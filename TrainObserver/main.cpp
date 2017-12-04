@@ -27,10 +27,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		AppManager app;
 		if (app.initialize(hInstance, nCmdShow, 1600, 1100))
 		{
-			if (app.connect(dlg.serverAddr(), dlg.port(), dlg.userName()) && app.loadStaticSpace())
+			if (app.connect(dlg.serverAddr(), dlg.port()))
 			{
-				result = app.mainLoop();
-				app.disconnect();
+				if (app.loadStaticSpace())
+				{
+					result = app.mainLoop();
+					app.disconnect();
+				}
 			}
 		}
 		else

@@ -20,7 +20,9 @@ enum Action : uint
 	LOGOUT = 2,
 	MOVE = 3,
 	TURN = 5,
-	MAP = 10
+	MAP = 10,
+	OBSERVER = 100,
+	GAME = 101
 };
 
 enum Result : uint
@@ -37,11 +39,20 @@ enum Result : uint
 	INCORRECT_RESPOND_FORMAT= 0xff000001
 };
 
+#pragma pack(push)
 struct ActionMessageHeader
 {
     Action actionCode;
     size_t dataLength;
 };
+
+struct ActionMessage
+{
+	ActionMessageHeader header;
+	char buffer[1];
+};
+
+#pragma pack(pop)
 //
 //struct ResposeMessage
 //{

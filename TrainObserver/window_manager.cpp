@@ -86,7 +86,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool bMouseCaptured = false;
 	static bool bIgnoreMouseMove = false;
 	static POINT initCursorPos = {0,0};
-	static bool mouseDown = false;
+	//static bool mouseDown = false;
 
 	bool bNoFurtherProcessing = false;
 	auto res = RenderSystemDX9::instance().uiManager().msgProc(hWnd, msg, wParam, lParam, &bNoFurtherProcessing);
@@ -112,22 +112,24 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 	}
 	break;
-	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
 	{
 		::GetCursorPos(&initCursorPos);
-		mouseDown = true;
+		bMouseCaptured = true;
 		ShowCursor(FALSE);
+		::SetCapture(hWnd);
 		break;
 	}
-	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
 	{
-		mouseDown = false;
+		bMouseCaptured = false;
 		ShowCursor(TRUE);
+		::ReleaseCapture();
 		break;
 	}
 	case WM_MOUSEMOVE:
 	{
-		if (mouseDown && bMouseCaptured && !bIgnoreMouseMove)
+		if (bMouseCaptured && !bIgnoreMouseMove)
 		{
 			POINT curCursorPos = { 0,0 };
 			::GetCursorPos(&curCursorPos);
@@ -154,25 +156,25 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		WindowManager::onMouseWheel(nMouseWheelDelta);
 	}
 	break;
-	case WM_ACTIVATE:
-	{
-		switch (wParam)
-		{
-		case WA_CLICKACTIVE:
-		case WA_ACTIVE:
-			::SetCapture(hWnd);
-			bMouseCaptured = true;
-			//::ShowCursor(FALSE);
-			::GetCursorPos(&initCursorPos);
-			break;
-		case WA_INACTIVE:
-			::ReleaseCapture();
-			bMouseCaptured = false;
-			//::ShowCursor(TRUE);
-			break;
-		}
-	}
-	break;
+// 	case WM_ACTIVATE:
+// 	{
+// 		switch (wParam)
+// 		{
+// 		case WA_CLICKACTIVE:
+// 		case WA_ACTIVE:
+// 			::SetCapture(hWnd);
+// 			bMouseCaptured = true;
+// 			//::ShowCursor(FALSE);
+// 			::GetCursorPos(&initCursorPos);
+// 			break;
+// 		case WA_INACTIVE:
+// 			::ReleaseCapture();
+// 			bMouseCaptured = false;
+// 			//::ShowCursor(TRUE);
+// 			break;
+// 		}
+// 	}
+// 	break;
 	case WM_DESTROY:
 	{
 		PostQuitMessage(0);

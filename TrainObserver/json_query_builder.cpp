@@ -38,10 +38,15 @@ JSONQueryReader::JSONQueryReader(const Json::Value& value):
 }
 
 
-std::vector<JSONQueryReader> JSONQueryReader::getArray(const char* name) const
+JSONQueryReader JSONQueryReader::getValue(const char* name) const
+{
+	return m_root[name];	
+}
+
+std::vector<JSONQueryReader> JSONQueryReader::asArray() const
 {
 	std::vector<JSONQueryReader> res;
-	const Json::Value& val = m_root[name];
+	const Json::Value& val = m_root;
 	if (!val.isNull())
 	{
 		for (auto it = val.begin(); it != val.end(); ++it)

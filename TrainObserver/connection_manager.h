@@ -17,14 +17,14 @@ public:
 	void reset();
 
 	bool connect(const char* servername, uint16_t portNumber);
-	bool sendMessage(Action actionCode, const std::string* message) const;
+	bool sendMessage(Action actionCode, const std::string* message = nullptr) const;
 	Result receiveMessage(std::string& message) const;
 
 private:
 	void closeSocket();
 	bool createSocket();
 	bool initAddr(const char* servername, uint16_t portNumber);
-	bool send(const void* buf, int nbytes) const;
+	bool send(const void* buf, size_t nbytes) const;
 	int receive(char* buf, uint length) const;
 
 	template<class T>

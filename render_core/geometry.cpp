@@ -357,7 +357,7 @@ void Geometry::draw(LPDIRECT3DDEVICE9 pDevice, Effect& effect)
 			{
 				if (effect.beginPass(i))
 				{
-					for (const auto primGroup : m_primitiveGroups)
+					for (const auto& primGroup : m_primitiveGroups)
 					{
 						primGroup.properties.applyProperties(&effect);
 						effect.flush();

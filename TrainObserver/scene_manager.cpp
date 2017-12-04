@@ -57,11 +57,11 @@ bool SceneManager::initStaticScene(ConnectionManager& connection)
 	return false;
 }
 
-bool SceneManager::initDynamicScene(class ConnectionManager& connection)
+bool SceneManager::updateDynamicScene(class ConnectionManager& connection, bool needUpdate, float delta)
 {
-	if (m_space->updateDynamicLayer(connection))
+	if (!needUpdate || m_space->updateDynamicLayer(connection))
 	{
-		m_space->addDynamicSceneToRender(*m_renderer);
+		m_space->addDynamicSceneToRender(*m_renderer, delta);
 		return true;
 	}
 

@@ -15,6 +15,8 @@ public:
 
 	void maxTurn(int val);
 
+	float deltaTime() const; // 0 <= t <= 1
+
 protected:
 	BEGIN_MSG_MAP(SelectGameDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -57,8 +59,10 @@ private:
 	bool m_bMouseCaptured;
 
 	// for implement player
-	int m_nSpeed = 1;
-	bool m_bPause = false;
+	int m_nSpeed = 2;
+	bool m_bPause = true;
+
+	DWORD m_prevTime;
 public:
 	
 };

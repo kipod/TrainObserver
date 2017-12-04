@@ -196,9 +196,12 @@ void AppManager::GameController::maxTurn(int val)
 
 void AppManager::GameController::tick(float deltaTime)
 {
+	bool needUpdate = false;
 	if (m_updatedTurn != m_currentTurn)
 	{
-		m_pAppManager->m_sceneManager->initDynamicScene(*m_pConnection);
+		needUpdate = true;
 		m_updatedTurn = m_currentTurn;
 	}
+
+	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, needUpdate, m_dlg->deltaTime());
 }

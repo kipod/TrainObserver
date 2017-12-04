@@ -97,8 +97,9 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 
 bool Space::updateDynamicLayer(const ConnectionManager& manager)
 {
-	m_trains.clear();
-	m_posts.clear();
+	m_prevDynamicLayer = m_dynamicLayer;
+	m_dynamicLayer.trains.clear();
+	m_dynamicLayer.posts.clear();
 
 	auto reader = getLayer(manager, SpaceLayer::DYNAMIC);
 
@@ -150,28 +151,47 @@ void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 
 }
 
-void Space::addDynamicSceneToRender(SpaceRenderer& renderer)
+void Space::getWorldTrainCoords(const Train& t, Vector3& position, Vector3& dir)
+{
+	const Line& line = m_lines.at(t.line_idx);
+	float deltaPos = float(t.position) / float(line.length);
+
+	Vector3 p1(float(line.pt_1->pos.x), 0.0f, float(line.pt_1->pos.y));
+	Vector3 p2(float(line.pt_2->pos.x), 0.0f, float(line.pt_2->pos.y));
+
+	dir = p2 - p1;
+	position = p1 + dir * deltaPos;
+	dir.Normalize();
+	if (t.speed < 0)
+	{
+		dir *= -1.0f;
+	}
+}
+
+void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 {
 	renderer.clearDynamics();
 
-	for (const auto& train : m_trains)
+	for (const auto& train : m_dynamicLayer.trains)
 	{
 		const Train& t = train.second;
-		const Line& line = m_lines.at(t.line_idx);
-		float deltaPos = float(t.position) / float(line.length);
+		Vector3 pos, dir;
+		getWorldTrainCoords(t, pos, dir);
 
-		Vector3 p1(float(line.pt_1->pos.x), 0.0f, float(line.pt_1->pos.y));
-		Vector3 p2(float(line.pt_2->pos.x), 0.0f, float(line.pt_2->pos.y));
-
-		Vector3 delta(p2 - p1);
-		Vector3 position(p1 + delta * deltaPos);
-		delta.Normalize();
-		if (t.speed < 0)
+		if (interpolator != 1.0f)
 		{
-			delta *= -1.0f;
+			auto it = m_prevDynamicLayer.trains.find(t.idx);
+			if (it != m_prevDynamicLayer.trains.end())
+			{
+				Vector3 pos2, dir2;
+				getWorldTrainCoords(it->second, pos2, dir2);
+
+				pos = pos * interpolator + pos2 * (1.0f - interpolator);
+				dir = dir2;
+			}
 		}
 
-		renderer.moveTrain(position, delta, t.idx);
+		renderer.setTrain(pos, dir, t.idx);
 	}
 }
 
@@ -230,7 +250,7 @@ bool Space::loadTrains(const JSONQueryReader& reader)
 	auto values = reader.getValue("train").asArray();
 	if (values.size() > 0)
 	{
-		m_trains.reserve(values.size());
+		m_dynamicLayer.trains.reserve(values.size());
 		for (const auto& value : values)
 		{
 			Train train;
@@ -239,7 +259,7 @@ bool Space::loadTrains(const JSONQueryReader& reader)
 			train.position = value.get<uint>("position");
 			train.speed = value.get<uint>("speed");
 			train.player_id = value.get<std::string>("player_id");
-			m_trains.insert(std::make_pair(train.idx, train));
+			m_dynamicLayer.trains.insert(std::make_pair(train.idx, train));
 		}
 		return true;
 	}
@@ -252,7 +272,7 @@ bool Space::loadPosts(const JSONQueryReader& reader)
 	auto values = reader.getValue("post").asArray();
 	if (values.size() > 0)
 	{
-		m_trains.reserve(values.size());
+		m_dynamicLayer.posts.reserve(values.size());
 		for (const auto& value : values)
 		{
 			Post post;
@@ -262,7 +282,7 @@ bool Space::loadPosts(const JSONQueryReader& reader)
 			post.product = value.get<uint>("product");
 			post.type = value.get<uint>("type");
 			post.name = value.get<std::string>("name");
-			m_posts.insert(std::make_pair(post.idx, post));
+			m_dynamicLayer.posts.insert(std::make_pair(post.idx, post));
 		}
 		return true;
 	}

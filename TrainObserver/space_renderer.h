@@ -43,11 +43,14 @@ public:
 	~SpaceRenderer();
 
 	void draw(class RendererDX9& renderer);
-	void setupStaticScene(uint x, uint y);
 
+	// static scene
+	void setupStaticScene(uint x, uint y);
 	void createRailModel(const struct Vector3& from, const Vector3& to);
 	void createCity(const Vector3& pos);
-	void moveTrain(const Vector3& pos, const Vector3& dir, int trainId);
+
+	// dynamic scene
+	void setTrain(const Vector3& pos, const Vector3& dir, int trainId);
 
 	void clearDynamics();
 

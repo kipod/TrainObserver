@@ -152,7 +152,7 @@ void SpaceRenderer::createCity(const Vector3& pos)
 }
 
 
-void SpaceRenderer::moveTrain(const Vector3& pos, const Vector3& direction, int trainId)
+void SpaceRenderer::setTrain(const Vector3& pos, const Vector3& direction, int trainId)
 {
 	auto& train = getTrain(trainId);
 	auto& rs = RenderSystemDX9::instance();

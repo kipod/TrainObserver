@@ -77,7 +77,7 @@ public:
 	bool updateDynamicLayer(const ConnectionManager& manager);
 
 	void addStaticSceneToRender(class SpaceRenderer& renderer);
-	void addDynamicSceneToRender(SpaceRenderer& renderer);
+	void addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator = 1.0f);
 
 private:
 	bool loadLines(const JSONQueryReader& reader);
@@ -86,6 +86,7 @@ private:
 	bool loadPosts(const JSONQueryReader& reader);
 	bool loadCoordinates(const JSONQueryReader& reader);
 	void postCreateStaticLayer();
+	void getWorldTrainCoords(const Train& train, struct Vector3& pos, Vector3& dir);
 private:
 	uint			m_idx;
 	std::string		m_name;
@@ -94,7 +95,14 @@ private:
 
 	std::unordered_map<uint, City>	m_points;
 	std::unordered_map<uint, Line>	m_lines;
-	std::unordered_map<uint, Train> m_trains;
-	std::unordered_map<uint, Post>	m_posts;
+
+	struct DynamicLayer
+	{
+		std::unordered_map<uint, Train> trains;
+		std::unordered_map<uint, Post>	posts;
+	};
+	
+	DynamicLayer	m_dynamicLayer;
+	DynamicLayer	m_prevDynamicLayer;
 };
 

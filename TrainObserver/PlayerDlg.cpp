@@ -25,6 +25,18 @@ void PlayerDlg::maxTurn(int val)
 	m_tracker.SetRangeMax(m_nMaxTurn, TRUE);
 }
 
+float PlayerDlg::deltaTime() const
+{
+	if (m_bPause)
+	{
+		return 1.0f;
+	}
+
+	DWORD delta = timeGetTime() - m_prevTime;
+
+	return fminf(1.0f, float(delta) / (m_nSpeed * 1000));
+}
+
 LRESULT PlayerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	//CenterWindow(GetParent());
@@ -88,6 +100,7 @@ LRESULT PlayerDlg::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL
 		if (!m_bPause)
 		{
 			BOOL bVal = FALSE;
+			m_prevTime = timeGetTime();
 			PlayerDlg::OnBnClickedButtonNext(0, 0, NULL, bVal);
 		}
 	}
@@ -147,6 +160,7 @@ LRESULT PlayerDlg::OnBnClickedButtonEnd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT PlayerDlg::OnBnClickedButtonPlay(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_bPause = false;
+	m_prevTime = timeGetTime();
 	SetTimer(PLAY_TIMER, m_nSpeed * 1000);
 
 	return 0;

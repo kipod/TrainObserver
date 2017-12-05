@@ -69,24 +69,31 @@ struct Post
 
 class Space
 {
+	struct DynamicLayer
+	{
+		std::unordered_map<uint, Train> trains;
+		std::unordered_map<uint, Post>	posts;
+		int								turn = -1;
+	};
 public:
 	Space();
 	~Space();
 
 	bool initStaticLayer(const ConnectionManager& manager);
-	bool updateDynamicLayer(const ConnectionManager& manager);
+	bool updateDynamicLayer(const ConnectionManager& manager, float turn);
 
 	void addStaticSceneToRender(class SpaceRenderer& renderer);
-	void addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator = 1.0f);
+	void addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator);
 
 private:
 	bool loadLines(const JSONQueryReader& reader);
 	bool loadPoints(const JSONQueryReader& reader);
-	bool loadTrains(const JSONQueryReader& reader);
-	bool loadPosts(const JSONQueryReader& reader);
+	bool loadTrains(const JSONQueryReader& reader, DynamicLayer& layer) const;
+	bool loadPosts(const JSONQueryReader& reader, DynamicLayer& layer) const;
 	bool loadCoordinates(const JSONQueryReader& reader);
 	void postCreateStaticLayer();
 	void getWorldTrainCoords(const Train& train, struct Vector3& pos, Vector3& dir);
+	bool loadDynamicLayer(const ConnectionManager& manager, int turn, DynamicLayer& layer) const;
 private:
 	uint			m_idx;
 	std::string		m_name;
@@ -96,11 +103,6 @@ private:
 	std::unordered_map<uint, City>	m_points;
 	std::unordered_map<uint, Line>	m_lines;
 
-	struct DynamicLayer
-	{
-		std::unordered_map<uint, Train> trains;
-		std::unordered_map<uint, Post>	posts;
-	};
 	
 	DynamicLayer	m_dynamicLayer;
 	DynamicLayer	m_prevDynamicLayer;

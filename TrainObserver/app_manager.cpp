@@ -180,12 +180,9 @@ void AppManager::GameController::finalize()
 	m_dlg->DestroyWindow();
 }
 
-bool AppManager::GameController::turn(int turnNumber)
+void AppManager::GameController::turn(float turnNumber)
 {
 	m_currentTurn = turnNumber;
-	JSONQueryWriter writer;
-	writer.add("idx", turnNumber);
-	return m_pConnection->sendMessage(Action::TURN, false, &writer.str());
 }
 
 void AppManager::GameController::maxTurn(int val)
@@ -196,12 +193,6 @@ void AppManager::GameController::maxTurn(int val)
 
 void AppManager::GameController::tick(float deltaTime)
 {
-	bool needUpdate = false;
-	if (m_updatedTurn != m_currentTurn)
-	{
-		needUpdate = true;
-		m_updatedTurn = m_currentTurn;
-	}
-
-	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, needUpdate, m_dlg->deltaTime());
+	m_dlg->tick(deltaTime);
+	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, m_currentTurn);
 }

@@ -16,7 +16,7 @@ public:
 	virtual void draw(RendererDX9& renderer) override;
 
 	bool initStaticScene(class ConnectionManager& connection);
-	bool updateDynamicScene(class ConnectionManager& connection, bool needUpdate, float delta = 1.0f);
+	bool updateDynamicScene(class ConnectionManager& connection, float turn);
 
 private:
 	std::unique_ptr<class SkyBox>			m_skybox;

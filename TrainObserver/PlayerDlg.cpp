@@ -25,16 +25,12 @@ void PlayerDlg::maxTurn(int val)
 	m_tracker.SetRangeMax(m_nMaxTurn, TRUE);
 }
 
-float PlayerDlg::deltaTime() const
+void PlayerDlg::tick(float deltaTime)
 {
-	if (m_bPause)
+	if (!m_bPause)
 	{
-		return 1.0f;
+		m_pController->turn(m_pController->turn() + deltaTime / m_nSpeed);
 	}
-
-	DWORD delta = timeGetTime() - m_prevTime;
-
-	return fminf(1.0f, float(delta) / (m_nSpeed * 1000));
 }
 
 LRESULT PlayerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -93,19 +89,6 @@ LRESULT PlayerDlg::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return TRUE;
 }
 
-LRESULT PlayerDlg::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	if (PLAY_TIMER == wParam)
-	{
-		if (!m_bPause)
-		{
-			BOOL bVal = FALSE;
-			m_prevTime = timeGetTime();
-			PlayerDlg::OnBnClickedButtonNext(0, 0, NULL, bVal);
-		}
-	}
-	return TRUE;
-}
 
 LRESULT PlayerDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -123,7 +106,7 @@ LRESULT PlayerDlg::OnBnClickedButtonPrev(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	if (m_pController->turn() > 0)
 	{
 		m_pController->turn(m_pController->turn() - 1);
-		m_tracker.SetPos(m_pController->turn());
+		m_tracker.SetPos((int)m_pController->turn());
 	}
 	
 	return 0;
@@ -135,8 +118,9 @@ LRESULT PlayerDlg::OnBnClickedButtonNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	if (m_pController->turn() < m_nMaxTurn)
 	{
 		m_pController->turn(m_pController->turn() + 1);
-		m_tracker.SetPos(m_pController->turn());
+		m_tracker.SetPos((int)m_pController->turn());
 	}
+
 	return 0;
 }
 
@@ -144,15 +128,15 @@ LRESULT PlayerDlg::OnBnClickedButtonNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 LRESULT PlayerDlg::OnBnClickedButtonBegin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_pController->turn(0);
-	m_tracker.SetPos(m_pController->turn());
+	m_tracker.SetPos((int)m_pController->turn());
 	return 0;
 }
 
 
 LRESULT PlayerDlg::OnBnClickedButtonEnd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_pController->turn(m_pController->maxTurn());
-	m_tracker.SetPos(m_pController->turn());
+	m_pController->turn((float)m_pController->maxTurn());
+	m_tracker.SetPos((int)m_pController->turn());
 	return 0;
 }
 
@@ -160,8 +144,6 @@ LRESULT PlayerDlg::OnBnClickedButtonEnd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT PlayerDlg::OnBnClickedButtonPlay(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_bPause = false;
-	m_prevTime = timeGetTime();
-	SetTimer(PLAY_TIMER, m_nSpeed * 1000);
 
 	return 0;
 }
@@ -169,8 +151,7 @@ LRESULT PlayerDlg::OnBnClickedButtonPlay(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT PlayerDlg::OnBnClickedButtonStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_bPause = false;
-	KillTimer(PLAY_TIMER);
+	m_bPause = true;
 
 	return 0;
 }

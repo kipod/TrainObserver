@@ -95,23 +95,29 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 	return true;
 }
 
-bool Space::updateDynamicLayer(const ConnectionManager& manager)
+bool Space::loadDynamicLayer(const ConnectionManager& manager, int turn, DynamicLayer& layer) const
 {
-	m_prevDynamicLayer = m_dynamicLayer;
-	m_dynamicLayer.trains.clear();
-	m_dynamicLayer.posts.clear();
+	JSONQueryWriter writer;
+	writer.add("idx", turn);
+	if (!manager.sendMessage(Action::TURN, false, &writer.str()))
+	{
+		return false;
+	}
+
+	layer.trains.clear();
+	layer.posts.clear();
 
 	auto reader = getLayer(manager, SpaceLayer::DYNAMIC);
 
 	if (reader && reader->isValid())
 	{
-		if (!loadTrains(*reader))
+		if (!loadTrains(*reader, layer))
 		{
 			LOG(MSG_ERROR, "Failed to create dynamic layer on space. Reason: cannot load trains.");
 			return false;
 		}
 
-		if (!loadPosts(*reader))
+		if (!loadPosts(*reader, layer))
 		{
 			LOG(MSG_ERROR, "Failed to create static layer on space. Reason: cannot load posts.");
 			return false;
@@ -124,6 +130,34 @@ bool Space::updateDynamicLayer(const ConnectionManager& manager)
 	}
 
 	return true;
+}
+
+bool Space::updateDynamicLayer(const ConnectionManager& manager, float turn)
+{
+	int curTurn = (int)ceilf(turn);
+	int prevTurn = (int)floorf(turn);
+
+	if (m_dynamicLayer.turn == curTurn && m_prevDynamicLayer.turn == prevTurn)
+	{
+		return true;
+	}
+
+	bool success = true;
+	if (m_dynamicLayer.turn == prevTurn)
+	{
+		m_prevDynamicLayer = m_dynamicLayer;
+	}
+	else
+	{
+		success &= loadDynamicLayer(manager, prevTurn, m_prevDynamicLayer);
+	}
+
+	success &= loadDynamicLayer(manager, curTurn, m_dynamicLayer);
+
+	m_prevDynamicLayer.turn = prevTurn;
+	m_dynamicLayer.turn = curTurn;
+
+	return success;
 }
 
 Vector3 coordToVector3(const Coords& c)
@@ -178,17 +212,19 @@ void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 		Vector3 pos, dir;
 		getWorldTrainCoords(t, pos, dir);
 
-		if (interpolator != 1.0f)
+		auto it = m_prevDynamicLayer.trains.find(t.idx);
+		if (it != m_prevDynamicLayer.trains.end())
 		{
-			auto it = m_prevDynamicLayer.trains.find(t.idx);
-			if (it != m_prevDynamicLayer.trains.end())
-			{
-				Vector3 pos2, dir2;
-				getWorldTrainCoords(it->second, pos2, dir2);
+			Vector3 pos2, dir2;
+			getWorldTrainCoords(it->second, pos2, dir2);
 
-				pos = pos * interpolator + pos2 * (1.0f - interpolator);
-				dir = dir2;
+			if (!pos2.almostEqual(pos))
+			{
+				dir = pos - pos2;
+				dir.Normalize();
 			}
+
+			pos = pos * interpolator + pos2 * (1.0f - interpolator);
 		}
 
 		renderer.setTrain(pos, dir, t.idx);
@@ -245,12 +281,12 @@ bool Space::loadPoints(const JSONQueryReader& reader)
 	return false;
 }
 
-bool Space::loadTrains(const JSONQueryReader& reader)
+bool Space::loadTrains(const JSONQueryReader& reader, DynamicLayer& layer) const
 {
 	auto values = reader.getValue("train").asArray();
 	if (values.size() > 0)
 	{
-		m_dynamicLayer.trains.reserve(values.size());
+		layer.trains.reserve(values.size());
 		for (const auto& value : values)
 		{
 			Train train;
@@ -259,7 +295,7 @@ bool Space::loadTrains(const JSONQueryReader& reader)
 			train.position = value.get<uint>("position");
 			train.speed = value.get<uint>("speed");
 			train.player_id = value.get<std::string>("player_id");
-			m_dynamicLayer.trains.insert(std::make_pair(train.idx, train));
+			layer.trains.insert(std::make_pair(train.idx, train));
 		}
 		return true;
 	}
@@ -267,12 +303,12 @@ bool Space::loadTrains(const JSONQueryReader& reader)
 	return false;
 }
 
-bool Space::loadPosts(const JSONQueryReader& reader)
+bool Space::loadPosts(const JSONQueryReader& reader, DynamicLayer& layer) const
 {
 	auto values = reader.getValue("post").asArray();
 	if (values.size() > 0)
 	{
-		m_dynamicLayer.posts.reserve(values.size());
+		layer.posts.reserve(values.size());
 		for (const auto& value : values)
 		{
 			Post post;
@@ -282,7 +318,7 @@ bool Space::loadPosts(const JSONQueryReader& reader)
 			post.product = value.get<uint>("product");
 			post.type = value.get<uint>("type");
 			post.name = value.get<std::string>("name");
-			m_dynamicLayer.posts.insert(std::make_pair(post.idx, post));
+			layer.posts.insert(std::make_pair(post.idx, post));
 		}
 		return true;
 	}

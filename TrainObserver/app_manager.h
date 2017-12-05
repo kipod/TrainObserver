@@ -13,7 +13,7 @@ public:
 	AppManager& operator=(const AppManager&) = delete;
 	AppManager(AppManager&&) = delete;
 
-	 struct GameController : public ITickable
+	struct GameController : public ITickable
 	{
 		 GameController(AppManager *pManager, class ConnectionManager *pConnection);
 		
@@ -22,8 +22,8 @@ public:
 		void initialize();
 		void finalize();
 
-		bool turn(int turnNumber);
-		int turn() const { return m_currentTurn; }
+		void turn(float turnNumber);
+		float turn() const { return m_currentTurn; }
 		int maxTurn() const { return m_nMaxTurn; }
 		void maxTurn(int val);
 
@@ -33,8 +33,7 @@ public:
 	private:
 		AppManager* m_pAppManager;
 		ConnectionManager* m_pConnection;
-		int m_updatedTurn = -1;
-		int m_currentTurn = 0;
+		float m_currentTurn = 0.0f;
 		int m_nMaxTurn = 0;
 		std::unique_ptr<class PlayerDlg>m_dlg;
 	};

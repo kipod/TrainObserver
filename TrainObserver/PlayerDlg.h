@@ -1,8 +1,9 @@
 #pragma once
 #include "resource.h"
+#include "message_interface.h"
 
 
-class PlayerDlg : public CDialogImpl<PlayerDlg>
+class PlayerDlg : public CDialogImpl<PlayerDlg>, public ITickable
 {
 public:
 	enum
@@ -15,7 +16,8 @@ public:
 
 	void maxTurn(int val);
 
-	float deltaTime() const; // 0 <= t <= 1
+
+	virtual void tick(float deltaTime) override;
 
 protected:
 	BEGIN_MSG_MAP(SelectGameDlg)
@@ -23,7 +25,6 @@ protected:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_HANDLER(IDC_BUTTON_PREV, BN_CLICKED, OnBnClickedButtonPrev)
@@ -39,7 +40,6 @@ protected:
 	LRESULT		OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT		OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT		OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT		OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnBnClickedButtonPrev(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnBnClickedButtonNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -62,7 +62,6 @@ private:
 	int m_nSpeed = 2;
 	bool m_bPause = true;
 
-	DWORD m_prevTime;
 public:
 	
 };

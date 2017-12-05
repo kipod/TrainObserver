@@ -67,3 +67,8 @@ bool SceneManager::updateDynamicScene(class ConnectionManager& connection, float
 
 	return false;
 }
+
+void SceneManager::onLMouseUp(int x, int y)
+{
+	
+}

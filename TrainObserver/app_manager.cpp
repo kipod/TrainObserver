@@ -57,6 +57,7 @@ bool AppManager::initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint 
 	}
 
 	m_windowManager->addInputListener(&m_renderSystem->renderer());
+	m_windowManager->addInputListener(m_sceneManager.get());
 
 	m_windowManager->addTickListener(this);
 	m_windowManager->addTickListener(&m_renderSystem->renderer());

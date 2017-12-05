@@ -1,10 +1,11 @@
 #pragma once
 #include <memory>
 #include "render_interface.h"
+#include "message_interface.h"
 
 
 
-class SceneManager : public IRenderable
+class SceneManager : public IRenderable , public IInputListener
 {
 public:
 	SceneManager();
@@ -17,6 +18,9 @@ public:
 
 	bool initStaticScene(class ConnectionManager& connection);
 	bool updateDynamicScene(class ConnectionManager& connection, float turn);
+
+
+	virtual void onLMouseUp(int x, int y) override;
 
 private:
 	std::unique_ptr<class SkyBox>			m_skybox;

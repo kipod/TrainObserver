@@ -62,6 +62,17 @@ void WindowManager::onMouseWheel(int nMouseWheelDelta)
 }
 
 
+void WindowManager::onLMouseUp(int x, int y)
+{
+	if (!s_pInstance)
+		return;
+
+	for (auto& listener : s_pInstance->m_inputListeners)
+	{
+		listener->onLMouseUp(x, y);
+	}
+}
+
 void WindowManager::addInputListener(IInputListener* pListener)
 {
 	m_inputListeners.emplace_back(pListener);
@@ -86,7 +97,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool bMouseCaptured = false;
 	static bool bIgnoreMouseMove = false;
 	static POINT initCursorPos = {0,0};
-	//static bool mouseDown = false;
 
 	bool bNoFurtherProcessing = false;
 	auto res = RenderSystemDX9::instance().uiManager().msgProc(hWnd, msg, wParam, lParam, &bNoFurtherProcessing);
@@ -112,6 +122,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 	}
 	break;
+	case WM_LBUTTONUP:
+	{
+		POINT cursorPos;
+		::GetCursorPos(&cursorPos);
+		::ScreenToClient(hWnd, &cursorPos);
+		WindowManager::onLMouseUp(cursorPos.x, cursorPos.y);
+	}
 	case WM_RBUTTONDOWN:
 	{
 		::GetCursorPos(&initCursorPos);

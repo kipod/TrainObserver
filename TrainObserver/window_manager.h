@@ -17,6 +17,7 @@ public:
 
 	static void	onMouseMove(int x, int y, int delta_x, int delta_y, bool bLeftButton);
 	static void	onMouseWheel(int nMouseWheelDelta);
+	static void	onLMouseUp(int x, int y);
 
 	void addInputListener(class IInputListener* pListener);
 	void addTickListener(class ITickable* pListener);

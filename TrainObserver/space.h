@@ -53,7 +53,7 @@ struct Train
 	uint line_idx;
 	std::string player_id;
 	uint position;
-	uint speed;
+	int speed;
 };
 
 struct Post

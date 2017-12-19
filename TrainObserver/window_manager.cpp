@@ -88,6 +88,8 @@ HWND WindowManager::hwnd() const
 	return m_impl->hwnd;
 }
 
+HCURSOR hCursor = nullptr;
+
 //-----------------------------------------------------------------------------
 // Name: WindowProc()
 // Desc: The window's message handler
@@ -128,6 +130,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		::GetCursorPos(&cursorPos);
 		::ScreenToClient(hWnd, &cursorPos);
 		WindowManager::onLMouseUp(cursorPos.x, cursorPos.y);
+		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
@@ -140,6 +143,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 	{
 		bMouseCaptured = false;
+		SetCursor(hCursor);
 		ShowCursor(TRUE);
 		::ReleaseCapture();
 		break;
@@ -173,25 +177,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		WindowManager::onMouseWheel(nMouseWheelDelta);
 	}
 	break;
-// 	case WM_ACTIVATE:
-// 	{
-// 		switch (wParam)
-// 		{
-// 		case WA_CLICKACTIVE:
-// 		case WA_ACTIVE:
-// 			::SetCapture(hWnd);
-// 			bMouseCaptured = true;
-// 			//::ShowCursor(FALSE);
-// 			::GetCursorPos(&initCursorPos);
-// 			break;
-// 		case WA_INACTIVE:
-// 			::ReleaseCapture();
-// 			bMouseCaptured = false;
-// 			//::ShowCursor(TRUE);
-// 			break;
-// 		}
-// 	}
-// 	break;
 	case WM_DESTROY:
 	{
 		PostQuitMessage(0);
@@ -216,11 +201,13 @@ HRESULT WindowManager::create(HINSTANCE hInstance, int nCmdShow, uint width, uin
 	m_impl->winClass.hInstance = hInstance;
 	m_impl->winClass.hIcon = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
 	m_impl->winClass.hIconSm = LoadIcon(hInstance, (LPCTSTR) _T("icon.png"));
-	m_impl->winClass.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
+	m_impl->winClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 	m_impl->winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	m_impl->winClass.lpszMenuName = NULL;
 	m_impl->winClass.cbClsExtra = 0;
 	m_impl->winClass.cbWndExtra = 0;
+
+	hCursor = ::LoadCursor(NULL, IDC_ARROW);
 
 	if (!RegisterClassEx(&m_impl->winClass))
 		return E_FAIL;

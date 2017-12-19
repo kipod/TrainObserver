@@ -293,7 +293,7 @@ bool Space::loadTrains(const JSONQueryReader& reader, DynamicLayer& layer) const
 			train.idx = value.get<uint>("idx");
 			train.line_idx = value.get<uint>("line_idx");
 			train.position = value.get<uint>("position");
-			train.speed = value.get<uint>("speed");
+			train.speed = value.get<int>("speed");
 			train.player_id = value.get<std::string>("player_id");
 			layer.trains.insert(std::make_pair(train.idx, train));
 		}

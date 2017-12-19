@@ -32,7 +32,6 @@ private:
 	std::vector<ITickable*>				m_tickListeners;
 	double								m_lastTime;
 
-
 	static WindowManager* s_pInstance;
 
 };

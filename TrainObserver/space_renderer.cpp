@@ -14,7 +14,7 @@ const std::string TERRAIN_DIFFUSE_TEXTURE_PATH = "content/maps/terrain.dds";
 const std::string TERRAIN_NORMAL_TEXTURE_PATH = "content/maps/terrain_normal.jpg";
 
 const uint CITY_COUNT = 4;
-const uint TRAIN_COUNT = 6;
+const uint TRAIN_COUNT = 2;
 const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
 const float RAIL_SCALE = 30.0f;
 

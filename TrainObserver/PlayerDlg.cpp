@@ -29,7 +29,7 @@ void PlayerDlg::tick(float deltaTime)
 {
 	if (!m_bPause)
 	{
-		m_pController->turn(m_pController->turn() + deltaTime / m_nSpeed);
+		m_pController->turn(m_pController->turn() + deltaTime / m_stepTime);
 	}
 }
 

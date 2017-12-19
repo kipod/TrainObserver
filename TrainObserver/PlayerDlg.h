@@ -59,7 +59,7 @@ private:
 	bool m_bMouseCaptured;
 
 	// for implement player
-	int m_nSpeed = 2;
+	float m_stepTime = 0.5f;
 	bool m_bPause = true;
 
 public:

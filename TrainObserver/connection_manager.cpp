@@ -260,18 +260,22 @@ bool ConnectionManager::createSocket()
 
 bool ConnectionManager::initAddr(const char* servername, uint16_t portNumber)
 {
-	/*---Initialize server address/port struct---*/
-	m_addr.reset(new sockaddr_in());
-	ZeroMemory(m_addr.get(), sizeof(sockaddr_in));
-	m_addr->sin_family = AF_INET;
-	m_addr->sin_port = htons(portNumber);
-	//dest.sin_addr.s_addr = ::inet_addr(SERVER_ADDR);
-	if (InetPton(AF_INET, servername, &m_addr->sin_addr) != 1)
+	struct addrinfo *pAddrInfoLListItem = NULL;
+
+	if (0 != ::getaddrinfo(servername, NULL, NULL, &pAddrInfoLListItem))
 	{
 		LOG(MSG_ERROR, "Could not resolve server name: \"%s\"", servername);
 		return false;
 	}
+	sockaddr_in *sockAddr = reinterpret_cast<sockaddr_in *>(pAddrInfoLListItem->ai_addr);
+	
+	m_addr.reset(new sockaddr_in());
+	::memcpy(m_addr.get(), sockAddr, sizeof(sockaddr_in));
 
+	::freeaddrinfo(pAddrInfoLListItem);
+
+ 	m_addr->sin_family = AF_INET;
+ 	m_addr->sin_port = htons(portNumber); 	
 	return true;
 }
 

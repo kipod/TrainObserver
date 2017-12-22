@@ -179,6 +179,7 @@
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="json_query_builder.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="mutex.h" />
     <ClInclude Include="PlayerDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />

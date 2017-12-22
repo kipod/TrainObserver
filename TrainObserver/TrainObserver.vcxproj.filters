@@ -114,6 +114,9 @@
     <ClInclude Include="SelectGameDlg.h">
       <Filter>Diaolgs</Filter>
     </ClInclude>
+    <ClInclude Include="mutex.h">
+      <Filter>app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TrainObserver.rc">

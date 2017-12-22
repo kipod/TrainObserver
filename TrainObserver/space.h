@@ -115,5 +115,6 @@ private:
 	
 	DynamicLayer	m_dynamicLayer;
 	DynamicLayer	m_prevDynamicLayer;
+	SimpleMutex		m_dynamicMutex;
 };
 

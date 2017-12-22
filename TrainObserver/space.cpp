@@ -132,6 +132,19 @@ bool Space::loadDynamicLayer(const ConnectionManager& manager, int turn, Dynamic
 	return true;
 }
 
+const SpacePoint* Space::findPoint(uint idx) const
+{
+	for (const auto& p : m_points)
+	{
+		if (p.second.post_id == idx)
+		{
+			return &p.second;
+		}
+	}
+
+	return nullptr;
+}
+
 bool Space::updateDynamicLayer(const ConnectionManager& manager, float turn)
 {
 	int curTurn = (int)ceilf(turn);
@@ -175,14 +188,6 @@ void Space::addStaticSceneToRender(SpaceRenderer& renderer)
 
 		renderer.createRailModel(coordToVector3(line.pt_1->pos), coordToVector3(line.pt_2->pos));
 	}
-
-	for (const auto& p : m_points)
-	{
-		const City& city = p.second;
-
-		renderer.createCity(coordToVector3(city.pos));
-	}
-
 }
 
 void Space::getWorldTrainCoords(const Train& t, Vector3& position, Vector3& dir)
@@ -229,6 +234,18 @@ void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 
 		renderer.setTrain(pos, dir, t.idx);
 	}
+
+	for (const auto& p : m_dynamicLayer.posts)
+	{
+		auto idx = p.second.idx;
+		const SpacePoint* point = findPoint(idx);
+
+		if (point)
+		{
+			renderer.createCityPoint(coordToVector3(point->pos), p.second.type);
+		}
+	}
+
 }
 
 bool Space::loadLines(const JSONQueryReader& reader)
@@ -273,7 +290,7 @@ bool Space::loadPoints(const JSONQueryReader& reader)
 		{
 			uint idx = value.get<uint>("idx");
 			uint post_id = value.get<uint>("post_id");
-			m_points.insert(std::make_pair(idx, City(idx, post_id)));
+			m_points.insert(std::make_pair(idx, SpacePoint(idx, post_id)));
 		}
 		return true;
 	}
@@ -316,7 +333,7 @@ bool Space::loadPosts(const JSONQueryReader& reader, DynamicLayer& layer) const
 			post.armor = value.get<uint>("armor");
 			post.population = value.get<uint>("population");
 			post.product = value.get<uint>("product");
-			post.type = value.get<uint>("type");
+			post.type = static_cast<EPostType>(value.get<uint>("type"));
 			post.name = value.get<std::string>("name");
 			layer.posts.insert(std::make_pair(post.idx, post));
 		}

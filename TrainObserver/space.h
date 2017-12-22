@@ -14,7 +14,7 @@ struct Coords
 	uint y = 0;
 };
 
-struct City
+struct SpacePoint
 {
 	uint	idx;
 	uint	post_id;
@@ -22,7 +22,7 @@ struct City
 
 	std::vector<const Line*> lines;
 
-	City(uint idx_, uint post_id_) :
+	SpacePoint(uint idx_, uint post_id_) :
 		idx(idx_),
 		post_id(post_id_)
 	{}
@@ -36,8 +36,8 @@ struct Line
 	uint pid_1;
 	uint pid_2;
 
-	City*		pt_1;
-	City*		pt_2;
+	SpacePoint*		pt_1;
+	SpacePoint*		pt_2;
 
 	Line(uint idx_, uint length_, uint pid1, uint pid2):
 		idx(idx_),
@@ -56,14 +56,22 @@ struct Train
 	int speed;
 };
 
+enum class EPostType
+{
+	CITY = 1,
+	MARKET = 2,
+	MILITARY_STORAGE = 3,
+};
+
+
 struct Post
 {
 	uint idx;
 	uint armor;
-	std::string name;
 	uint population;
 	uint product;
-	uint type;
+	EPostType type;
+	std::string name;
 };
 
 
@@ -94,13 +102,14 @@ private:
 	void postCreateStaticLayer();
 	void getWorldTrainCoords(const Train& train, struct Vector3& pos, Vector3& dir);
 	bool loadDynamicLayer(const ConnectionManager& manager, int turn, DynamicLayer& layer) const;
+	const SpacePoint* findPoint(uint idx) const;
 private:
 	uint			m_idx;
 	std::string		m_name;
 	Coords			m_size;
 	bool			m_staticLayerLoaded;
 
-	std::unordered_map<uint, City>	m_points;
+	std::unordered_map<uint, SpacePoint>	m_points;
 	std::unordered_map<uint, Line>	m_lines;
 
 	

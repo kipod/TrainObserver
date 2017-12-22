@@ -31,6 +31,7 @@ enum EObjectType
 class IRenderable
 {
 public:
+	virtual ~IRenderable() {};
 	virtual void draw(class RendererDX9& renderer) = 0;
 };
 

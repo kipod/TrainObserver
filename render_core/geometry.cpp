@@ -82,7 +82,6 @@ namespace
 
 			outData.vertices.reserve(nVertices);
 
-			bool hasUV = !attrib.texcoords.empty();
 			bool hasNormal = !attrib.normals.empty();
 			outData.primitiveGroups.resize(shapes.size());
 			uint i = 0;
@@ -93,32 +92,48 @@ namespace
 				primitiveGroup.nTriangles = shape.mesh.indices.size() / 3;
 				primitiveGroup.vertexOffset = outData.vertices.size();
 				int matId = shape.mesh.material_ids[0];
+				
+				bool diffTextureExists = false;
+				std::string diffTex;
 
 				if (matId >= 0 && materials.size() > 0)
 				{
-					auto diffTex = materials[matId].diffuse_texname;
+					diffTex = materials[matId].diffuse_texname;
 					if (!diffTex.empty())
 					{
-						bool exists = fileExists(diffTex);
-						if (!exists)
+						diffTextureExists = fileExists(diffTex);
+						if (!diffTextureExists)
 						{
 							diffTex = dir + diffTex;
-							exists = fileExists(diffTex);
+							diffTextureExists = fileExists(diffTex);
 						}
 
-						if (exists)
+						if (!diffTextureExists)
 						{
-							primitiveGroup.textureData.emplace_back();
-							auto& texData = primitiveGroup.textureData.back();
-							texData.paramName = "diffuseTex"; 
-							texData.path = diffTex.c_str();
-						}
-						else
-						{
-							LOG(MSG_ERROR, "Cannot find texture %s", diffTex.c_str());
+							diffTex = dir + "default.jpg";
+							diffTextureExists = fileExists(diffTex);
 						}
 					}
 				}
+				else
+				{
+					diffTex = dir + "default.jpg";
+					diffTextureExists = fileExists(diffTex);
+				}
+
+				if (diffTextureExists)
+				{
+					primitiveGroup.textureData.emplace_back();
+					auto& texData = primitiveGroup.textureData.back();
+					texData.paramName = "diffuseTex"; 
+					texData.path = diffTex.c_str();
+				}
+				else
+				{
+					LOG(MSG_WARNING, "Cannot find texture %s", diffTex.c_str());
+				}
+
+				bool hasUV = !attrib.texcoords.empty() && diffTextureExists;
 
 				for (uint f = 0; f < primitiveGroup.nTriangles; ++f)
 				{

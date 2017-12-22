@@ -28,7 +28,7 @@ class SpaceRenderer
 
 	struct TrainModel
 	{
-		std::unique_ptr<Model> model;
+		std::shared_ptr<Model> model;
 		TrainDesc data;
 
 		TrainModel(Model* m, const TrainDesc& _data) :
@@ -47,7 +47,7 @@ public:
 	// static scene
 	void setupStaticScene(uint x, uint y);
 	void createRailModel(const struct Vector3& from, const Vector3& to);
-	void createCity(const Vector3& pos);
+	void createCityPoint(const Vector3& pos, enum class EPostType type);
 
 	// dynamic scene
 	void setTrain(const Vector3& pos, const Vector3& dir, int trainId);
@@ -61,7 +61,7 @@ private:
 private:
 	std::unique_ptr<struct SunLight>	m_sun;
 	std::vector<class IRenderable*>		m_staticMeshes;
-	std::vector<IRenderable*>			m_dynamicMeshes;
+	std::vector< std::shared_ptr<IRenderable> >			m_dynamicMeshes;
 	Model*								m_terrain;
 
 

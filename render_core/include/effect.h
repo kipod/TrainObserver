@@ -42,6 +42,7 @@ public:
 private:
 
 	inline void setProp(IEffectProperty* newProp);
+	inline IEffectProperty* findProp(const char* name);
 
 private:
 	std::vector< std::shared_ptr<IEffectProperty> > m_properties;

@@ -13,8 +13,8 @@ const std::string SHADER_NORMALMAP_PATH = "content/shaders/normalmap.fx";
 const std::string TERRAIN_DIFFUSE_TEXTURE_PATH = "content/maps/terrain.dds";
 const std::string TERRAIN_NORMAL_TEXTURE_PATH = "content/maps/terrain_normal.jpg";
 
-const uint CITY_COUNT = 4;
-const uint TRAIN_COUNT = 2;
+const uint CITY_COUNT = 3;
+const uint TRAIN_COUNT = 1;
 const float RAIL_CONNECTION_OFFSET = 1.0f - 0.01f;
 const float RAIL_SCALE = 30.0f;
 
@@ -73,12 +73,12 @@ void SpaceRenderer::draw(class RendererDX9& renderer)
 	auto& camera = RenderSystemDX9::instance().renderer().camera();
 	camera.beginZBIASDraw(1.001f);
 
-	for (const auto obj : m_staticMeshes)
+	for (const auto& obj : m_staticMeshes)
 	{
 		obj->draw(renderer);
 	}
 
-	for (const auto obj : m_dynamicMeshes)
+	for (const auto& obj : m_dynamicMeshes)
 	{
 		obj->draw(renderer);
 	}
@@ -117,15 +117,15 @@ void SpaceRenderer::createRailModel(const Vector3& from, const Vector3& to)
 	}
 }
 
-void SpaceRenderer::createCity(const Vector3& pos)
+void SpaceRenderer::createCityPoint(const Vector3& pos, EPostType type)
 {
-	return;
+	assert((int)type <= CITY_COUNT);
+
 	char buf[3];
-	static int cityIdx = 0;
-	_itoa_s(cityIdx+1, buf, 10);
+	int cityIdx = int(type);
+	_itoa_s(cityIdx, buf, 10);
 	std::string dir = CITY_PATH + buf + "/";
 	std::string cityPath = dir + "city.obj";
-	cityIdx = (cityIdx + 1) % CITY_COUNT;
 
 	auto& rs = RenderSystemDX9::instance();
 	Model* newModel = new Model();
@@ -148,7 +148,7 @@ void SpaceRenderer::createCity(const Vector3& pos)
 	tr.Scale(scale);
 	tr.SetTranslation(Vector3(pos.x, yOffset + pos.y, pos.z));
 	newModel->setTransform(tr);
-	m_staticMeshes.emplace_back(newModel);
+	m_dynamicMeshes.emplace_back(newModel);
 }
 
 
@@ -165,7 +165,7 @@ void SpaceRenderer::setTrain(const Vector3& pos, const Vector3& direction, int t
 	tr.SetTranslation(Vector3(pos.x, train.data.yOffset + pos.y, pos.z));
 	train.model->setTransform(tr);
 
-	m_dynamicMeshes.emplace_back(train.model.get());
+	m_dynamicMeshes.emplace_back(train.model);
 }
 
 const SpaceRenderer::TrainGeometryData& SpaceRenderer::loadTrainGeometry()

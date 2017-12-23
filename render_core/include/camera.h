@@ -2,12 +2,18 @@
 #include "math\matrix.h"
 #include "math\vector3.h"
 
+struct ScreenPos
+{
+	unsigned int x = 0;
+	unsigned int y = 0;
+};
+
 class Camera
 {
 public:
 	Camera();
 
-	void init(float nearPlane, float farPlane, float fov, float aspectRatio);
+	void init(float nearPlane, float farPlane, float fov, unsigned int screenWidth, unsigned int screenHeight);
 
 	float	nearPlane() const;
 	void	nearPlane(float f);
@@ -41,6 +47,7 @@ public:
 	const Matrix& projection() const;
 	const Matrix& view() const;
 	const Matrix& viewProjection() const;
+	const Matrix& invViewProjection() const;
 
 	void beginZBIASDraw(float bias);
 	void endZBIASDraw();
@@ -48,6 +55,10 @@ public:
 	const Vector3& up() const;
 	const Vector3& look() const;
 	const Vector3& pos() const;
+
+	bool worldPosToScreenPos(const Vector3& worldPos, ScreenPos& screenPos);
+
+
 private:
 	void updateProjection();
 private:
@@ -56,6 +67,9 @@ private:
 	float	m_fov;
 	float	m_aspectRatio;
 	float	m_viewHeight;
+
+	unsigned int	m_screenWidth;
+	unsigned int	m_screenHeight;
 
 	float	m_fYaw = 0.0f;
 	float	m_fPitch = -30.0f;
@@ -70,5 +84,6 @@ private:
 	Matrix	m_invProj;
 
 	Matrix	m_viewProjection;
+	Matrix	m_invViewProjection;
 };
 

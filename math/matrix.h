@@ -36,7 +36,8 @@ public:
 	inline void SetTranslation(float x, float y, float z);
 	inline const Vector3& applyToOrigin() const;
 
-	inline Vector3	applyPoint( const Vector3& v2 ) const;
+	inline Vector3	applyPoint(const Vector3& v2) const;
+	inline Vector4	applyPoint(const Vector4& v2) const;
 	inline void	applyPoint( Vector3&v1, const Vector3& v2) const;
 	inline void	applyPoint( Vector4&v1, const Vector3& v2) const;
 	inline void	applyPoint( Vector4&v1, const Vector4& v2) const;

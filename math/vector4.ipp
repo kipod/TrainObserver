@@ -41,6 +41,13 @@ inline Vector4::Vector4( const Vector3 & v, float w ) :
 }
 
 
+inline Vector4::Vector4(const Vector4& v) :
+Vector4Base(v)
+{
+
+}
+
+
 /**
  *	This method constructs this Vector4 from an SSE register
  */

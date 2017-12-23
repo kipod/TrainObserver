@@ -64,6 +64,9 @@
     <ClCompile Include="SelectGameDlg.cpp">
       <Filter>Diaolgs</Filter>
     </ClCompile>
+    <ClCompile Include="space_ui.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connection_manager.h">
@@ -116,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="mutex.h">
       <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="space_ui.h">
+      <Filter>logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

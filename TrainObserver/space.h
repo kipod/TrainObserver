@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include "defs.hpp"
+#include "mutex.h"
 
 struct Line;
 class ConnectionManager;
@@ -103,6 +104,7 @@ private:
 	void getWorldTrainCoords(const Train& train, struct Vector3& pos, Vector3& dir);
 	bool loadDynamicLayer(const ConnectionManager& manager, int turn, DynamicLayer& layer) const;
 	const SpacePoint* findPoint(uint idx) const;
+
 private:
 	uint			m_idx;
 	std::string		m_name;

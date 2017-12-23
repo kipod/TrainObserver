@@ -1,0 +1,94 @@
+#include "space_ui.h"
+#include "space.h"
+#include "camera.h"
+#include "render_dx9.h"
+#include "ui_manager.h"
+#include "..\ui.h"
+#include <d3d9types.h>
+
+
+
+
+namespace SpaceUI
+{
+enum class UIObjectType : uint
+{
+	POST = 1,
+	TRAIN = 2,
+};
+
+const DWORD colors[4] = {
+	D3DCOLOR_ARGB(255, 210, 45, 20),
+	D3DCOLOR_ARGB(255, 210, 250, 180),
+	D3DCOLOR_ARGB(255, 180, 210, 250),
+	D3DCOLOR_ARGB(255, 245, 180, 250)
+};
+
+
+uint generateUIIndex(UIObjectType objType, uint objIdx, uint uiElementIdx)
+{
+	return ((uint)objType << 24) | (objIdx << 16) | uiElementIdx;
+}
+
+void createPostUI(const Vector3& pos, const Post& post)
+{
+	auto& rs = RenderSystemDX9::instance();
+	auto& view = rs.uiManager().view();
+
+	// get screen pos from world pos
+	ScreenPos screenPos;
+	bool	  isInScreen = rs.renderer().camera().worldPosToScreenPos(pos, screenPos);
+
+	uint uiControlIdx = 0;
+
+	{
+		uint uiIdx = generateUIIndex(UIObjectType::POST, post.idx, uiControlIdx++);
+
+		view.RemoveControl(uiIdx); // remove previous frame control
+
+		if (isInScreen)
+		{
+			char	  buf[512];
+			ScreenPos controlSize = {100, 40};
+			switch (post.type)
+			{
+			case EPostType::CITY:
+				sprintf_s(
+					buf,
+					"%s\npopulation: %d\nproduct: %d\narmor: %d",
+					post.name.c_str(),
+					post.population,
+					post.product,
+					post.armor);
+				controlSize.x = 100;
+				controlSize.y = 70;
+				break;
+			case EPostType::MARKET:
+				sprintf_s(buf, "%s\nproduct: %d", post.name.c_str(), post.product);
+				controlSize.x = 80;
+				controlSize.y = 40;
+				break;
+			case EPostType::MILITARY_STORAGE:
+				sprintf_s(buf, "%s\narmor: %d", post.name.c_str(), post.armor);
+				controlSize.x = 80;
+				controlSize.y = 40;
+				break;
+			}
+
+			view.AddStatic(
+				uiIdx,
+				buf,
+				screenPos.x - controlSize.x / 2,
+				screenPos.y - controlSize.y * 2,
+				controlSize.x,
+				controlSize.y);
+			view.GetStatic(uiIdx)->SetTextColor(colors[(unsigned)post.type]);
+		}
+	}
+}
+
+void createTrainUI(const Vector3& pos, const Train& train)
+{
+}
+
+} // namespace SpaceUI

@@ -67,7 +67,7 @@ RendererDX9::~RendererDX9()
 
 void RendererDX9::init(const D3DPRESENT_PARAMETERS& d3dpp)
 {
-	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), float(d3dpp.BackBufferWidth) / d3dpp.BackBufferHeight);
+	m_camera.init(0.1f, FAR_PLANE, D3DXToRadian(60.0f), d3dpp.BackBufferWidth, d3dpp.BackBufferHeight);
 	m_supersampler.reset(new Supersampler(m_pD3DDevice, d3dpp.BackBufferWidth, d3dpp.BackBufferHeight, D3DFMT_A8R8G8B8));
 }
 

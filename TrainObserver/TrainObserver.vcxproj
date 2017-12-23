@@ -168,6 +168,7 @@
     <ClCompile Include="skybox.cpp" />
     <ClCompile Include="space.cpp" />
     <ClCompile Include="space_renderer.cpp" />
+    <ClCompile Include="space_ui.cpp" />
     <ClCompile Include="window_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="skybox.h" />
     <ClInclude Include="space.h" />
     <ClInclude Include="space_renderer.h" />
+    <ClInclude Include="space_ui.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>

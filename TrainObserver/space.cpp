@@ -5,6 +5,8 @@
 #include "log_interface.h"
 #include "space_renderer.h"
 #include "math\vector3.h"
+#include "space_ui.h"
+
 
 using Vector3 = Vector3;
 
@@ -145,6 +147,7 @@ const SpacePoint* Space::findPoint(uint idx) const
 	return nullptr;
 }
 
+
 bool Space::updateDynamicLayer(const ConnectionManager& manager, float turn)
 {
 	int curTurn = (int)ceilf(turn);
@@ -242,7 +245,9 @@ void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 
 		if (point)
 		{
-			renderer.createCityPoint(coordToVector3(point->pos), p.second.type);
+			Vector3 worldPos(coordToVector3(point->pos));
+			SpaceUI::createPostUI(worldPos, p.second);
+			renderer.createCityPoint(worldPos, p.second.type);
 		}
 	}
 

@@ -47,10 +47,10 @@ public:
 	// static scene
 	void setupStaticScene(uint x, uint y);
 	void createRailModel(const struct Vector3& from, const Vector3& to);
-	void createCityPoint(const Vector3& pos, enum class EPostType type);
 
 	// dynamic scene
 	void setTrain(const Vector3& pos, const Vector3& dir, int trainId);
+	void createCityPoint(const Vector3& pos, enum class EPostType type);
 
 	void clearDynamics();
 

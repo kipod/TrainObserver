@@ -14,12 +14,14 @@ Camera::Camera() :
 	updateProjection();
 }
 
-void Camera::init(float nearPlane, float farPlane, float fov, float aspectRatio)
+void Camera::init(float nearPlane, float farPlane, float fov, unsigned int screenWidth, unsigned int screenHeight)
 {
 	m_nearPlane = nearPlane;
 	m_farPlane = farPlane;
 	m_fov = fov;
-	m_aspectRatio = aspectRatio;
+	m_aspectRatio = float(screenWidth) / screenHeight;
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
 
 	// Setup View Matrix Values
 	lookAt(Vector3(170.0f, 140.0f, -20.0f),
@@ -140,6 +142,11 @@ const Matrix& Camera::viewProjection() const
 	return m_viewProjection;
 }
 
+const Matrix& Camera::invViewProjection() const
+{
+	return m_invViewProjection;
+}
+
 float savedNearPlane_, savedFarPlane_;
 
 
@@ -183,6 +190,7 @@ void Camera::look(const Vector3& look)
 	D3DXMatrixLookAtLH(&m_view, &m_pos, &(m_pos + m_look), &m_up);
 	D3DXMatrixInverse(&m_invView, NULL, &m_view);
 	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
+	D3DXMatrixInverse(&m_invViewProjection, NULL, &m_viewProjection);
 }
 
 const Vector3& Camera::pos() const
@@ -196,6 +204,35 @@ void Camera::pos(const Vector3& pos)
 	D3DXMatrixLookAtLH(&m_view, &m_pos, &(m_pos + m_look), &m_up);
 	D3DXMatrixInverse(&m_invView, NULL, &m_view);
 	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
+	D3DXMatrixInverse(&m_invViewProjection, NULL, &m_viewProjection);
+}
+
+bool Camera::worldPosToScreenPos(const Vector3& worldPos, ScreenPos& screenPos)
+{
+	Vector4 posClip(m_viewProjection.applyPoint(Vector4(worldPos, 1.0f)));
+	if (posClip.w == 0.0f)
+	{
+		return false;
+	}
+
+	posClip *= 1.0f / posClip.w;
+	if (posClip.z < 0.0f || posClip.z > 1.0f)
+	{
+		return false;
+	}
+
+	posClip.x = (posClip.x + 1.0f) / 2.0f;
+	posClip.y = (1.0f - posClip.y) / 2.0f;
+
+	if(posClip.x <= 0.0f || posClip.y <= 0.0f || posClip.x >= 1.0f || posClip.y >= 1.0f)
+	{
+		return false;
+	}
+
+	screenPos.x = unsigned int(posClip.x * m_screenWidth);
+	screenPos.y = unsigned int(posClip.y * m_screenHeight);
+
+	return true;
 }
 
 void Camera::updateProjection()
@@ -204,5 +241,6 @@ void Camera::updateProjection()
 	D3DXMatrixInverse(&m_invProj, NULL, &m_proj);
 
 	D3DXMatrixMultiply(&m_viewProjection, &m_view, &m_proj);
+	D3DXMatrixInverse(&m_invViewProjection, NULL, &m_viewProjection);
 }
 

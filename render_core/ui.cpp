@@ -2293,6 +2293,10 @@ void CDXUTDialog::InitDefaultElements()
 	//-------------------------------------
 	Element.SetFont(0);
 	Element.FontColor.States[DXUT_STATE_DISABLED] = D3DCOLOR_ARGB(200, 200, 200, 200);
+	SetRect(&rcTexture, 0, 0, 136, 54);
+	Element.SetTexture(0, &rcTexture, D3DCOLOR_ARGB(255, 255, 255, 255));
+	Element.TextureColor.States[DXUT_STATE_NORMAL] = D3DCOLOR_ARGB(255, 255, 255, 255);
+	Element.TextureColor.States[DXUT_STATE_HIDDEN] = D3DCOLOR_ARGB(255, 255, 255, 255);
 
 	// Assign the Element
 	SetDefaultElement(DXUT_CONTROL_STATIC, 0, &Element);
@@ -2695,9 +2699,12 @@ void CDXUTStatic::Render(float fElapsedTime)
 		iState = DXUT_STATE_DISABLED;
 
 	CDXUTElement* pElement = m_Elements.at(0);
+	float fBlendRate = (iState == DXUT_STATE_PRESSED) ? 0.0f : 0.8f;
 
 	pElement->FontColor.Blend(iState, fElapsedTime);
+	pElement->TextureColor.Blend(iState, fElapsedTime, fBlendRate);
 
+	m_pDialog->DrawSprite(pElement, &m_rcBoundingBox, DXUT_NEAR_BUTTON_DEPTH);
 	m_pDialog->DrawText(m_strText, pElement, &m_rcBoundingBox, true);
 }
 

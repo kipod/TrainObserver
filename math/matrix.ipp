@@ -317,6 +317,19 @@ inline Vector3 Matrix::applyPoint( const Vector3& v2 ) const
 	return Vector3( res.x, res.y, res.z );
 }
 
+/**
+ *	This method multiplies the point represented by the input vector with this
+ *	matrix. The input vector is on the left of the multiplication. i.e. it
+ *	produces vM, where v is the input point and M is this matrix.
+ *
+ *	@return The resulting point represented by a Vector4.
+ */
+inline Vector4 Matrix::applyPoint( const Vector4& v2 ) const
+{
+	Vector4 res;
+	this->applyPoint( res, v2 );
+	return res;
+}
 
 /**
  *	This method multiplies the point represented by the input v2 with this

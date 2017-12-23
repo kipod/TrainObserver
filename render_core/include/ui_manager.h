@@ -6,7 +6,7 @@
 typedef struct HWND__ *HWND;
 typedef void (__stdcall *PCALLBACKDXUTGUIEVENT)(unsigned int nEvent, int nControlID, class CDXUTControl* pControl, void* pUserContext);
 
-class UIManager : public IRenderable//, public IInputListener
+class UIManager : public IRenderable
 {
 public:
 	UIManager();

@@ -235,6 +235,7 @@ void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 			pos = pos * interpolator + pos2 * (1.0f - interpolator);
 		}
 
+		SpaceUI::createTrainUI(pos, train.second);
 		renderer.setTrain(pos, dir, t.idx);
 	}
 
@@ -315,6 +316,9 @@ bool Space::loadTrains(const JSONQueryReader& reader, DynamicLayer& layer) const
 			train.idx = value.get<uint>("idx");
 			train.line_idx = value.get<uint>("line_idx");
 			train.position = value.get<uint>("position");
+			train.cooldown = value.get<uint>("cooldown");
+			train.goods = value.get<uint>("goods");
+			train.goods_capacity = value.get<uint>("goods_capacity");
 			train.speed = value.get<int>("speed");
 			train.player_id = value.get<std::string>("player_id");
 			layer.trains.insert(std::make_pair(train.idx, train));
@@ -336,10 +340,15 @@ bool Space::loadPosts(const JSONQueryReader& reader, DynamicLayer& layer) const
 			Post post;
 			post.idx = value.get<uint>("idx");
 			post.armor = value.get<uint>("armor");
+			post.armor_capacity = value.get<uint>("armor_capacity");
+			post.level = value.get<uint>("level");
 			post.population = value.get<uint>("population");
+			post.population_capacity = value.get<uint>("population_capacity");
 			post.product = value.get<uint>("product");
+			post.product_capacity = value.get<uint>("product_capacity");
 			post.type = static_cast<EPostType>(value.get<uint>("type"));
 			post.name = value.get<std::string>("name");
+			post.player_id = value.get<std::string>("player_id");
 			layer.posts.insert(std::make_pair(post.idx, post));
 		}
 		return true;

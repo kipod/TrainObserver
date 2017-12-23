@@ -101,11 +101,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	static POINT initCursorPos = {0,0};
 
 	bool bNoFurtherProcessing = false;
-	auto res = RenderSystemDX9::instance().uiManager().msgProc(hWnd, msg, wParam, lParam, &bNoFurtherProcessing);
-	if (bNoFurtherProcessing)
-	{
-		return res;
-	}
+	//auto res = RenderSystemDX9::instance().uiManager().msgProc(hWnd, msg, wParam, lParam, &bNoFurtherProcessing);
+	//if (bNoFurtherProcessing)
+	//{
+	//	return res;
+	//}
 
 	switch (msg)
 	{

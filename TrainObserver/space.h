@@ -52,8 +52,12 @@ struct Train
 {
 	uint idx;
 	uint line_idx;
+	uint level;
+	uint goods;
+	uint goods_capacity;
 	std::string player_id;
 	uint position;
+	uint cooldown;
 	int speed;
 };
 
@@ -69,10 +73,15 @@ struct Post
 {
 	uint idx;
 	uint armor;
+	uint armor_capacity;
+	uint level;
 	uint population;
+	uint population_capacity;
 	uint product;
+	uint product_capacity;
 	EPostType type;
 	std::string name;
+	std::string player_id;
 };
 
 

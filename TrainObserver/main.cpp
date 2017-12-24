@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (IDOK == dlg.DoModal())
 	{
 		AppManager app;
-		if (app.initialize(hInstance, nCmdShow, 1600, 1100))
+		if (app.initialize(hInstance, nCmdShow, 1400, 900))
 		{
 			if (app.connect(dlg.serverAddr(), dlg.port()))
 			{

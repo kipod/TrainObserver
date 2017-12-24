@@ -14,10 +14,11 @@ public:
 	bool init(class RendererDX9& renderer);
 	class Space& space();
 
-	virtual void draw(RendererDX9& renderer) override;
+	void draw(RendererDX9& renderer) override;
 
 	bool initStaticScene(class ConnectionManager& connection);
-	bool updateDynamicScene(class ConnectionManager& connection, float turn);
+	bool updateDynamicScene(class ConnectionManager& connection, int turn);
+	void renderDynamicScene(float turnTime);
 
 
 	virtual void onLMouseUp(int x, int y) override;

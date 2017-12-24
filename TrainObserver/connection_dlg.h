@@ -16,10 +16,10 @@ public:
 	~ConnectionDialog();
 
 	BEGIN_MSG_MAP(ConnectionDialog)
-	MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-	COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-	COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-	COMMAND_HANDLER(IDC_COMBO_SUCCESS, CBN_SELCHANGE, OnCbnSelchangeComboSuccess)
+	  MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+	  COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
+	  COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+	  COMMAND_HANDLER(IDC_COMBO_SUCCESS, CBN_SELCHANGE, OnCbnSelchangeComboSuccess)
 	END_MSG_MAP()
 
 	// Handler prototypes (uncomment arguments if needed):

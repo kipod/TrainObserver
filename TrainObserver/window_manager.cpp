@@ -243,24 +243,24 @@ void WindowManager::destroy()
 uint WindowManager::mainLoop()
 {
 	MSG uMsg;
-	memset(&uMsg, 0, sizeof(uMsg));
-	double curTime;
-	m_lastTime = timeGetTime();
+	::ZeroMemory(&uMsg, sizeof(uMsg));
+	DWORD curTime = 0;
+	DWORD lastTime = ::timeGetTime();
 	float deltaTime = 0.0f;
 
 	while (uMsg.message != WM_QUIT)
 	{
-		if (PeekMessage(&uMsg, NULL, 0, 0, PM_REMOVE))
+		if (::PeekMessage(&uMsg, NULL, 0, 0, PM_REMOVE))
 		{
-			TranslateMessage(&uMsg);
-			DispatchMessage(&uMsg);
+			::TranslateMessage(&uMsg);
+			::DispatchMessage(&uMsg);
 		}
 		else
 		{
 			// Goofy little timer
-			curTime = timeGetTime();
-			deltaTime = (float)((curTime - m_lastTime) * 0.001);
-			m_lastTime = curTime;
+			curTime = ::timeGetTime();
+			deltaTime = (curTime - lastTime) / 1000.f;
+			lastTime = curTime;
 
 			// Process the keyboard presses
 			processInput(deltaTime);
@@ -279,8 +279,8 @@ WindowManager* WindowManager::s_pInstance = nullptr;
 
 void WindowManager::processInput(float deltaTime)
 {
-	unsigned char keys[256];
-	GetKeyboardState(keys);
+	static unsigned char keys[256];
+	::GetKeyboardState(keys);
 
 	for (auto& listener : s_pInstance->m_inputListeners)
 	{

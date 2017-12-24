@@ -97,11 +97,11 @@ bool Space::initStaticLayer(const ConnectionManager& manager)
 	return true;
 }
 
-bool Space::loadDynamicLayer(const ConnectionManager& manager, int turn, DynamicLayer& layer) const
+bool Space::loadDynamicLayer(const ConnectionManager& connection, int turn, DynamicLayer& layer) const
 {
 	JSONQueryWriter writer;
 	writer.add("idx", turn);
-	if (!manager.sendMessage(Action::TURN, false, &writer.str()))
+	if (!connection.sendMessage(Action::TURN, false, &writer.str()))
 	{
 		return false;
 	}
@@ -109,7 +109,7 @@ bool Space::loadDynamicLayer(const ConnectionManager& manager, int turn, Dynamic
 	layer.trains.clear();
 	layer.posts.clear();
 
-	auto reader = getLayer(manager, SpaceLayer::DYNAMIC);
+	auto reader = getLayer(connection, SpaceLayer::DYNAMIC);
 
 	if (reader && reader->isValid())
 	{
@@ -148,32 +148,9 @@ const SpacePoint* Space::findPoint(uint idx) const
 }
 
 
-bool Space::updateDynamicLayer(const ConnectionManager& manager, float turn)
+bool Space::updateDynamicLayer(const ConnectionManager& conn, int turn)
 {
-	int curTurn = (int)ceilf(turn);
-	int prevTurn = (int)floorf(turn);
-
-	if (m_dynamicLayer.turn == curTurn && m_prevDynamicLayer.turn == prevTurn)
-	{
-		return true;
-	}
-
-	bool success = true;
-	if (m_dynamicLayer.turn == prevTurn)
-	{
-		m_prevDynamicLayer = m_dynamicLayer;
-	}
-	else
-	{
-		success &= loadDynamicLayer(manager, prevTurn, m_prevDynamicLayer);
-	}
-
-	success &= loadDynamicLayer(manager, curTurn, m_dynamicLayer);
-
-	m_prevDynamicLayer.turn = prevTurn;
-	m_dynamicLayer.turn = curTurn;
-
-	return success;
+	return loadDynamicLayer(conn, turn, m_dynamicLayer);
 }
 
 Vector3 coordToVector3(const Coords& c)
@@ -212,43 +189,29 @@ void Space::getWorldTrainCoords(const Train& t, Vector3& position, Vector3& dir)
 
 void Space::addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator)
 {
-	renderer.clearDynamics();
+	//renderer.clearDynamics();
 
-	for (const auto& train : m_dynamicLayer.trains)
+	for (const auto& train_pair : m_dynamicLayer.trains)
 	{
-		const Train& t = train.second;
+		const Train& train = train_pair.second;
 		Vector3 pos, dir;
-		getWorldTrainCoords(t, pos, dir);
+		getWorldTrainCoords(train, pos, dir);
 
-		auto it = m_prevDynamicLayer.trains.find(t.idx);
-		if (it != m_prevDynamicLayer.trains.end())
-		{
-			Vector3 pos2, dir2;
-			getWorldTrainCoords(it->second, pos2, dir2);
-
-			if (!pos2.almostEqual(pos))
-			{
-				dir = pos - pos2;
-				dir.Normalize();
-			}
-
-			pos = pos * interpolator + pos2 * (1.0f - interpolator);
-		}
-
-		SpaceUI::createTrainUI(pos, train.second);
-		renderer.setTrain(pos, dir, t.idx);
+		SpaceUI::createTrainUI(pos, train);
+		renderer.setTrain(pos, dir, train.idx);
 	}
 
 	for (const auto& p : m_dynamicLayer.posts)
 	{
-		auto idx = p.second.idx;
+		const Post& post = p.second;
+		auto idx = post.idx;
 		const SpacePoint* point = findPoint(idx);
 
 		if (point)
 		{
 			Vector3 worldPos(coordToVector3(point->pos));
-			SpaceUI::createPostUI(worldPos, p.second);
-			renderer.createCityPoint(worldPos, p.second.type);
+			SpaceUI::createPostUI(worldPos, post);
+			renderer.createCityPoint(worldPos, post.type);
 		}
 	}
 
@@ -265,7 +228,7 @@ bool Space::loadLines(const JSONQueryReader& reader)
 			uint idx = value.get<uint>("idx");
 			uint length = value.get<uint>("length");
 			auto points = value.getValue("point").asArray();
-			uint pid_1, pid_2;
+			uint pid_1(0), pid_2(0);
 
 			if (points.size() == 2)
 			{

@@ -112,8 +112,12 @@ bool AppManager::connect(const char* servername, uint16_t portNumber)
 				uint32_t idGame = dlg.getGameID();
 				JSONQueryWriter writer;
 				writer.add("idx", idGame);
-				m_gameController.maxTurn(lengths[idGame]);
-				return m_connectionManager->sendMessage(Action::GAME, false, &writer.str());
+				
+				if (m_connectionManager->sendMessage(Action::GAME, false, &writer.str()))
+				{
+					m_gameController.maxTurn(lengths[idGame]);
+					return true;
+				}
 			}
 		}
 	}
@@ -181,19 +185,21 @@ void AppManager::GameController::finalize()
 	m_dlg->DestroyWindow();
 }
 
-void AppManager::GameController::turn(float turnNumber)
+void AppManager::GameController::turn(int turnNumber)
 {
 	m_currentTurn = turnNumber;
+	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, turnNumber);
 }
 
 void AppManager::GameController::maxTurn(int val)
 {
 	m_nMaxTurn = val;
 	m_dlg->maxTurn(val);
+	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, 0);
 }
 
 void AppManager::GameController::tick(float deltaTime)
 {
 	m_dlg->tick(deltaTime);
-	m_pAppManager->m_sceneManager->updateDynamicScene(*m_pConnection, m_currentTurn);
+	m_pAppManager->m_sceneManager->renderDynamicScene(m_dlg->turnTime());
 }

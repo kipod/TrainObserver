@@ -27,10 +27,32 @@ void PlayerDlg::maxTurn(int val)
 
 void PlayerDlg::tick(float deltaTime)
 {
+	m_curTime += deltaTime;
 	if (!m_bPause)
 	{
-		m_pController->turn(m_pController->turn() + deltaTime / m_stepTime);
+		if ((m_curTime - m_turnTime) > 1)
+		{ // make turn
+			int make_turns = int(m_curTime - m_turnTime);
+			m_pController->turn(m_pController->turn() + make_turns);
+			m_turnTime = m_curTime;
+			m_tracker.SetPos(m_pController->turn());
+		}		
 	}
+	else
+	{
+		m_turnTime = m_curTime;
+	}
+	
+}
+
+bool PlayerDlg::isPaused() const
+{
+	return m_bPause;
+}
+
+float PlayerDlg::turnTime()
+{
+	return m_turnTime;
 }
 
 LRESULT PlayerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -135,8 +157,8 @@ LRESULT PlayerDlg::OnBnClickedButtonBegin(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT PlayerDlg::OnBnClickedButtonEnd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_pController->turn((float)m_pController->maxTurn());
-	m_tracker.SetPos((int)m_pController->turn());
+	m_pController->turn(m_pController->maxTurn());
+	m_tracker.SetPos(m_pController->turn());
 	return 0;
 }
 
@@ -160,5 +182,13 @@ LRESULT PlayerDlg::OnBnClickedButtonStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 LRESULT PlayerDlg::OnBnClickedButtonPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_bPause = !m_bPause;
+	return 0;
+}
+
+
+LRESULT PlayerDlg::OnNMReleasedcaptureSlider(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+{
+	int pos = m_tracker.GetPos();
+	m_pController->turn(pos);
 	return 0;
 }

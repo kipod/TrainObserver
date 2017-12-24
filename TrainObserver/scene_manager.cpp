@@ -57,15 +57,16 @@ bool SceneManager::initStaticScene(ConnectionManager& connection)
 	return false;
 }
 
-bool SceneManager::updateDynamicScene(class ConnectionManager& connection, float turn)
+bool SceneManager::updateDynamicScene(ConnectionManager& connection, int turn)
 {
-	if (m_space->updateDynamicLayer(connection, turn))
-	{
-		m_space->addDynamicSceneToRender(*m_renderer, turn - floorf(turn));
-		return true;
-	}
+	
+	return m_space->updateDynamicLayer(connection, turn);
+}
 
-	return false;
+void SceneManager::renderDynamicScene(float turnTime)
+{
+	m_renderer->clearDynamics();
+	m_space->addDynamicSceneToRender(*m_renderer, turnTime - floorf(turnTime));
 }
 
 void SceneManager::onLMouseUp(int x, int y)

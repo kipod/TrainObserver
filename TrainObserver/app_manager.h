@@ -15,27 +15,33 @@ public:
 
 	struct GameController : public ITickable
 	{
-		 GameController(AppManager *pManager, class ConnectionManager *pConnection);
-		
+		GameController(AppManager* pManager, class ConnectionManager* pConnection);
+
 		virtual ~GameController();
 
 		void initialize();
 		void finalize();
 
-		void turn(float turnNumber);
-		float turn() const { return m_currentTurn; }
-		int maxTurn() const { return m_nMaxTurn; }
+		void  turn(int turnNumber);
+		int turn() const
+		{
+			return m_currentTurn;
+		}
+		int maxTurn() const
+		{
+			return m_nMaxTurn;
+		}
 		void maxTurn(int val);
 
 	protected:
 		void tick(float deltaTime) override;
 
 	private:
-		AppManager* m_pAppManager;
-		ConnectionManager* m_pConnection;
-		float m_currentTurn = 0.0f;
-		int m_nMaxTurn = 0;
-		std::unique_ptr<class PlayerDlg>m_dlg;
+		AppManager*						 m_pAppManager;
+		ConnectionManager*				 m_pConnection;
+		int								 m_currentTurn = 0;
+		int								 m_nMaxTurn = 0;
+		std::unique_ptr<class PlayerDlg> m_dlg;
 	};
 
 	bool initialize(HINSTANCE hInstance, int nCmdShow, uint width, uint height);
@@ -45,9 +51,7 @@ public:
 	void finalize();
 	bool loadStaticSpace();
 
-	virtual void tick(float deltaTime) override;
-
-
+	void tick(float deltaTime) override;
 
 private:
 	std::unique_ptr<class WindowManager>	 m_windowManager;
@@ -55,6 +59,6 @@ private:
 	std::unique_ptr<class ConnectionManager> m_connectionManager;
 	std::unique_ptr<class SceneManager>		 m_sceneManager;
 
-	bool m_connected;
+	bool		   m_connected;
 	GameController m_gameController;
 };

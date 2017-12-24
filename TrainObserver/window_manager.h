@@ -30,7 +30,6 @@ private:
 	std::unique_ptr<struct WindowImpl>	m_impl;
 	std::vector<IInputListener*>		m_inputListeners;
 	std::vector<ITickable*>				m_tickListeners;
-	double								m_lastTime;
 
 	static WindowManager* s_pInstance;
 

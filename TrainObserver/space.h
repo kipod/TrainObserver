@@ -91,14 +91,14 @@ class Space
 	{
 		std::unordered_map<uint, Train> trains;
 		std::unordered_map<uint, Post>	posts;
-		int								turn = -1;
 	};
+
 public:
 	Space();
-	~Space();
+	virtual ~Space();
 
 	bool initStaticLayer(const ConnectionManager& manager);
-	bool updateDynamicLayer(const ConnectionManager& manager, float turn);
+	bool updateDynamicLayer(const ConnectionManager& manager, int turn);
 
 	void addStaticSceneToRender(class SpaceRenderer& renderer);
 	void addDynamicSceneToRender(SpaceRenderer& renderer, float interpolator);
@@ -125,7 +125,6 @@ private:
 
 	
 	DynamicLayer	m_dynamicLayer;
-	DynamicLayer	m_prevDynamicLayer;
 	SimpleMutex		m_dynamicMutex;
 };
 
